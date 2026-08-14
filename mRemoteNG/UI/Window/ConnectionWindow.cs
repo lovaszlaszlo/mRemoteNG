@@ -424,6 +424,31 @@ namespace mRemoteNG.UI.Window
             InterfaceControl ic = GetInterfaceControl();
             if (ic?.Info == null) return;
             FrmMain.Default.SelectedConnection = ic.Info;
+
+            // Activating a tab only moves the WinForms focus. That reaches the RDP ActiveX, which is
+            // a real control, but not the protocols whose window belongs to another process and is
+            // only reparented into the tab (PuTTY and friends) - those keep receiving no keyboard
+            // input until they are clicked. Ask the protocol to focus itself instead.
+            FocusActiveConnection();
+        }
+
+        /// <summary>
+        /// Gives the keyboard focus to the protocol of the tab that is now active. Deferred, because
+        /// the docking library is still moving the focus around while this event runs and would
+        /// otherwise overwrite it.
+        /// </summary>
+        private void FocusActiveConnection()
+        {
+            if (!IsHandleCreated || IsDisposed) return;
+
+            BeginInvoke(new Action(() =>
+            {
+                // Never claim the keyboard while another application is in front: PuttyBase and the
+                // terminal protocols focus themselves with SetForegroundWindow, which would pull
+                // this window forward.
+                if (!FrmMain.ApplicationIsInForeground()) return;
+                GetInterfaceControl()?.Protocol?.Focus();
+            }));
         }
 
         #endregion

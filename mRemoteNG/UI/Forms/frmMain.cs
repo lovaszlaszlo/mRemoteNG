@@ -804,7 +804,7 @@ namespace mRemoteNG.UI.Forms
         /// windows (PuTTY and friends) live in another process but are reparented into ours, so the
         /// foreground window is still one of ours while they are in use.
         /// </summary>
-        private static bool ApplicationIsInForeground()
+        internal static bool ApplicationIsInForeground()
         {
             IntPtr foregroundWindow = NativeMethods.GetForegroundWindow();
             if (foregroundWindow == IntPtr.Zero) return false;
