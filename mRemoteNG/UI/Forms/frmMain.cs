@@ -240,9 +240,9 @@ namespace mRemoteNG.UI.Forms
             Runtime.ConnectionsService.ConnectionsLoaded += ConnectionsServiceOnConnectionsLoaded;
             Runtime.ConnectionsService.ConnectionsSaved += ConnectionsServiceOnConnectionsSaved;
             
-            // Close splash screen before loading connections to ensure password dialog appears on top
-            ProgramRoot.CloseSplash();
-
+            // The splash screen stays up until the main window is actually shown; the dialogs that
+            // must not end up behind it (password prompt, compatibility and load errors) close it
+            // themselves through ProgramRoot.CloseSplash(), which is safe to call more than once.
             CredsAndConsSetup credsAndConsSetup = new();
             credsAndConsSetup.LoadCredsAndCons();
 
@@ -408,6 +408,7 @@ namespace mRemoteNG.UI.Forms
         private async void FrmMain_Shown(object sender, EventArgs e)
         {
             // Bring the main window to the front after splash screen closes
+            ProgramRoot.CloseSplash();
             BringWindowToForeground();
 
             PromptForUpdatesPreference();

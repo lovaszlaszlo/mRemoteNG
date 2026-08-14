@@ -38,10 +38,10 @@ namespace mRemoteNG.Tools
 
         public static Optional<SecureString> PasswordDialog(string? passwordName = null, bool verify = true)
         {
-            //var splash = FrmSplashScreenNew.GetInstance();
-            //TODO: something not right there 
-            //if (PresentationSource.FromVisual(splash))
-            //    splash.Close();
+            // The splash screen runs its own message loop on another thread and would sit on top of
+            // this dialog during startup, leaving the application looking hung. Closing it here is a
+            // no-op once startup is over, and it lets the splash stay up for the rest of the load.
+            ProgramRoot.CloseSplash();
 
             passwordName ??= string.Empty; // Ensure passwordName is not null
             FrmPassword passwordForm = new(passwordName, verify);
