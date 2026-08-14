@@ -74,6 +74,7 @@ namespace mRemoteNG.UI.Forms
         private static ClipboardchangeEventHandler _clipboardChangedEvent;
         private bool _inSizeMove;
         private bool _inMouseActivate;
+        private bool _connectionHadFocusOnDeactivate;
         private IntPtr _fpChainedWindowHandle;
         private bool _usingSqlServer;
         private string _connectionsFileName;
@@ -600,9 +601,27 @@ namespace mRemoteNG.UI.Forms
                         _inMouseActivate = true;
                         break;
                     case NativeMethods.WM_ACTIVATEAPP:
+                        bool appIsActivating = m.WParam != IntPtr.Zero;
+                        if (!appIsActivating)
+                            _connectionHadFocusOnDeactivate = ConnectionHasFocus();
+
                         Control candidateTabToFocus = FromChildHandle(NativeMethods.WindowFromPoint(MousePosition))
                                                ?? GetChildAtPoint(MousePosition);
-                        if (candidateTabToFocus is InterfaceControl) candidateTabToFocus.Parent.Focus();
+                        if (candidateTabToFocus is InterfaceControl)
+                        {
+                            candidateTabToFocus.Parent.Focus();
+                        }
+                        else if (appIsActivating && !_inMouseActivate && _connectionHadFocusOnDeactivate &&
+                                 !Properties.OptionsStartupExitPage.Default.DisableRefocus)
+                        {
+                            // Keyboard activation (Alt+Tab, taskbar) never matches the mouse based lookup
+                            // above, because the cursor is usually nowhere near the connection. The
+                            // WM_WINDOWPOSCHANGED handler does call ActivateConnection(), but it runs
+                            // before the activation sequence has finished, so the focus it sets is
+                            // sometimes discarded. Retry once the message loop has settled.
+                            BeginInvoke(new Action(ActivateConnection));
+                        }
+
                         _inMouseActivate = false;
                         break;
                     case NativeMethods.WM_ACTIVATE:
@@ -705,6 +724,31 @@ namespace mRemoteNG.UI.Forms
                                       (IntPtr)NativeMethods.MAKELPARAM(ref temp_wLow, ref temp_wHigh));
             clientMousePosition.X = temp_wLow;
             clientMousePosition.Y = temp_wHigh;
+        }
+
+        /// <summary>
+        /// Determines whether the innermost focused control lives inside a <see cref="ConnectionTab"/>.
+        /// Recorded when the application is deactivated so that the refocus fallback in WM_ACTIVATEAPP
+        /// does not steal the focus away from e.g. the connection tree search box.
+        /// </summary>
+        private bool ConnectionHasFocus()
+        {
+            Control innermostActiveControl = this;
+            int depth = 0;
+            while (innermostActiveControl is ContainerControl container &&
+                   container.ActiveControl != null &&
+                   container.ActiveControl != innermostActiveControl &&
+                   depth++ < 16)
+            {
+                innermostActiveControl = container.ActiveControl;
+            }
+
+            for (Control control = innermostActiveControl; control != null; control = control.Parent)
+            {
+                if (control is ConnectionTab) return true;
+            }
+
+            return false;
         }
 
         private void ActivateConnection()
