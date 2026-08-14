@@ -425,12 +425,20 @@ namespace mRemoteNG.UI.Window
             if (ic?.Info == null) return;
             FrmMain.Default.SelectedConnection = ic.Info;
 
+            // This event also fires while the application is being activated or deactivated, with
+            // the same content still active. Only react to a real tab change, so losing the
+            // activation cannot trigger a focus call.
+            if (ReferenceEquals(connDock.ActiveContent, _lastActiveContent)) return;
+            _lastActiveContent = connDock.ActiveContent;
+
             // Activating a tab only moves the WinForms focus. That reaches the RDP ActiveX, which is
             // a real control, but not the protocols whose window belongs to another process and is
             // only reparented into the tab (PuTTY and friends) - those keep receiving no keyboard
             // input until they are clicked. Ask the protocol to focus itself instead.
             FocusActiveConnection();
         }
+
+        private object _lastActiveContent;
 
         /// <summary>
         /// Gives the keyboard focus to the protocol of the tab that is now active. Deferred, because

@@ -46,6 +46,39 @@ namespace mRemoteNG.App
         [DllImport("kernel32.dll")]
         internal static extern uint GetCurrentThreadId();
 
+        [DllImport("user32.dll")]
+        internal static extern IntPtr SetFocus(IntPtr hWnd);
+
+        /// <summary>
+        /// Gives the keyboard focus to a window owned by another thread.
+        /// </summary>
+        /// <remarks>
+        /// The protocol windows (PuTTY and the other integrated programs) are reparented into our
+        /// tabs but keep belonging to their own process. SetFocus only acts on the calling thread's
+        /// input queue, so we have to attach to theirs for the duration of the call. Unlike
+        /// SetForegroundWindow this leaves the window activation alone, so it cannot drag the
+        /// application to the front or cancel an Alt+Tab the user is performing.
+        /// </remarks>
+        internal static void FocusWindowOfOtherThread(IntPtr hWnd)
+        {
+            if (hWnd == IntPtr.Zero) return;
+
+            uint currentThreadId = GetCurrentThreadId();
+            uint targetThreadId = GetWindowThreadProcessId(hWnd, out _);
+            if (targetThreadId == 0) return;
+
+            bool attached = targetThreadId != currentThreadId &&
+                            AttachThreadInput(currentThreadId, targetThreadId, true);
+            try
+            {
+                SetFocus(hWnd);
+            }
+            finally
+            {
+                if (attached) AttachThreadInput(currentThreadId, targetThreadId, false);
+            }
+        }
+
         [DllImport("user32.dll", SetLastError = true, CharSet = CharSet.Unicode)]
         internal static extern IntPtr GetSystemMenu(IntPtr hWnd, bool bRevert);
 

@@ -411,7 +411,10 @@ namespace mRemoteNG.Connection.Protocol
         {
             try
             {
-                NativeMethods.SetForegroundWindow(PuttyHandle);
+                // SetForegroundWindow would activate our top level window, because the PuTTY window
+                // is reparented into it - which cancelled an Alt+Tab away from an active SSH tab and
+                // left the application flashing back to the front. Move only the keyboard focus.
+                NativeMethods.FocusWindowOfOtherThread(PuttyHandle);
             }
             catch (Exception ex)
             {
