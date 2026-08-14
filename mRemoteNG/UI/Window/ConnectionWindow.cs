@@ -425,40 +425,11 @@ namespace mRemoteNG.UI.Window
             if (ic?.Info == null) return;
             FrmMain.Default.SelectedConnection = ic.Info;
 
-            // This event fires on every focus move, not just on a tab change, and the PuTTY window -
-            // reparented into the tab without the WS_CHILD style - triggers it constantly, because
-            // no docked content holds the WinForms focus while PuTTY has it. Comparing ActiveContent
-            // here was not enough: it alternated, so the handler kept passing its own guard and
-            // traded the focus with PuTTY about twice a second. ActiveDocument stays put during that
-            // churn and only changes on a real tab switch.
-            IDockContent activeDocument = connDock.ActiveDocument;
-            if (activeDocument == null || ReferenceEquals(activeDocument, _lastFocusedDocument)) return;
-            _lastFocusedDocument = activeDocument;
-
-            FocusActiveConnection(activeDocument);
-        }
-
-        private IDockContent _lastFocusedDocument;
-
-        /// <summary>
-        /// Gives the keyboard focus to the protocol of the tab that just became active. Deferred,
-        /// because the docking library is still moving the focus while the event runs.
-        /// </summary>
-        private void FocusActiveConnection(IDockContent expectedDocument)
-        {
-            if (!IsHandleCreated || IsDisposed) return;
-
-            BeginInvoke(new Action(() =>
-            {
-                // The user may have moved on while this was queued - only act on the tab we were
-                // asked about, and never while another application is in front.
-                if (!ReferenceEquals(connDock.ActiveDocument, expectedDocument)) return;
-                if (!FrmMain.ApplicationIsInForeground()) return;
-
-                // Both RdpProtocol.Focus() and PuttyBase.Focus() do nothing when they already hold
-                // the focus, so this cannot start trading it back and forth.
-                GetInterfaceControl()?.Protocol?.Focus();
-            }));
+            // Do NOT focus the protocol from here. The PuTTY window is reparented into the tab
+            // without the WS_CHILD style, so whenever it takes the focus no docked content holds
+            // the WinForms focus any more and this event fires again - focusing the active document
+            // then took the focus back off PuTTY, which fired the event once more. With an RDP and
+            // an SSH tab open that oscillated about twice a second and made the tabs unusable.
         }
 
         #endregion
