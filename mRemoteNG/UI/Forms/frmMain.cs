@@ -799,8 +799,29 @@ namespace mRemoteNG.UI.Forms
             return false;
         }
 
+        /// <summary>
+        /// True while any top level window of this process owns the foreground. Embedded protocol
+        /// windows (PuTTY and friends) live in another process but are reparented into ours, so the
+        /// foreground window is still one of ours while they are in use.
+        /// </summary>
+        private static bool ApplicationIsInForeground()
+        {
+            IntPtr foregroundWindow = NativeMethods.GetForegroundWindow();
+            if (foregroundWindow == IntPtr.Zero) return false;
+
+            _ = NativeMethods.GetWindowThreadProcessId(foregroundWindow, out uint foregroundProcessId);
+            return foregroundProcessId == (uint)Environment.ProcessId;
+        }
+
         private void ActivateConnection()
         {
+            // Refocusing must never pull the application to the front. PuttyBase.Focus() and the
+            // terminal, PowerShell, WSL and external program protocols all focus themselves with
+            // SetForegroundWindow, and because their windows are reparented into this form that
+            // call activates this window - cancelling an Alt+Tab the user just performed, or
+            // getting refused and leaving the focus somewhere invisible.
+            if (!ApplicationIsInForeground()) return;
+
             // Ask the docking library which document is active rather than going through
             // ConnectionWindow.ActiveControl - that goes stale as soon as another panel is clicked,
             // and then this method silently did nothing for the rest of the session.
