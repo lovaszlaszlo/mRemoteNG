@@ -52,7 +52,7 @@ namespace mRemoteNG.UI.Window
             connDock.ActiveContentChanged += ConnDockOnActiveContentChanged;
         }
 
-        private InterfaceControl GetInterfaceControl()
+        internal InterfaceControl GetInterfaceControl()
         {
             return InterfaceControl.FindInterfaceControl(connDock);
         }

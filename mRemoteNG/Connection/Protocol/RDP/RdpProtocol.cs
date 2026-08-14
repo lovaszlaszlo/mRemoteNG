@@ -305,7 +305,22 @@ namespace mRemoteNG.Connection.Protocol.RDP
             {
                 if (Control.ContainsFocus == false)
                 {
-                    Control.Focus();
+                    // RdpClient_GotFocus pushes the focus from this control up to the ConnectionTab,
+                    // which selects this control again. Tracing showed that loop running 15-28 times
+                    // per activation and settling on either side non-deterministically, which is why
+                    // the session sometimes stayed unfocused. Detach the handler while we focus the
+                    // control explicitly so the ActiveX keeps the focus it was just given.
+                    bool suppressRefocusHandler = !Properties.OptionsStartupExitPage.Default.DisableRefocus;
+                    if (suppressRefocusHandler) Control.GotFocus -= RdpClient_GotFocus;
+
+                    try
+                    {
+                        Control.Focus();
+                    }
+                    finally
+                    {
+                        if (suppressRefocusHandler) Control.GotFocus += RdpClient_GotFocus;
+                    }
                 }
             }
             catch (Exception ex)

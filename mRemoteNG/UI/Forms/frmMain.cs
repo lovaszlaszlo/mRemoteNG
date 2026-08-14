@@ -727,23 +727,35 @@ namespace mRemoteNG.UI.Forms
         }
 
         /// <summary>
-        /// Determines whether the innermost focused control lives inside a <see cref="ConnectionTab"/>.
-        /// Recorded when the application is deactivated so that the refocus fallback in WM_ACTIVATEAPP
-        /// does not steal the focus away from e.g. the connection tree search box.
+        /// Determines whether the control that currently has the keyboard focus lives inside a
+        /// <see cref="ConnectionTab"/>. Recorded when the application is deactivated so that the
+        /// refocus fallback in WM_ACTIVATEAPP does not steal the focus away from e.g. the
+        /// connection tree search box.
         /// </summary>
+        /// <remarks>
+        /// The WinForms ActiveControl chain is not usable here: once another panel has been clicked
+        /// it keeps pointing at that panel even while the RDP ActiveX control holds the real
+        /// keyboard focus. Ask the operating system instead and only fall back to ActiveControl
+        /// when no window on this thread has the focus.
+        /// </remarks>
         private bool ConnectionHasFocus()
         {
-            Control innermostActiveControl = this;
-            int depth = 0;
-            while (innermostActiveControl is ContainerControl container &&
-                   container.ActiveControl != null &&
-                   container.ActiveControl != innermostActiveControl &&
-                   depth++ < 16)
+            Control focusedControl = FromChildHandle(NativeMethods.GetFocus());
+
+            if (focusedControl == null)
             {
-                innermostActiveControl = container.ActiveControl;
+                focusedControl = this;
+                int depth = 0;
+                while (focusedControl is ContainerControl container &&
+                       container.ActiveControl != null &&
+                       container.ActiveControl != focusedControl &&
+                       depth++ < 16)
+                {
+                    focusedControl = container.ActiveControl;
+                }
             }
 
-            for (Control control = innermostActiveControl; control != null; control = control.Parent)
+            for (Control control = focusedControl; control != null; control = control.Parent)
             {
                 if (control is ConnectionTab) return true;
             }
@@ -753,16 +765,17 @@ namespace mRemoteNG.UI.Forms
 
         private void ActivateConnection()
         {
-            ConnectionWindow cw = pnlDock.ActiveDocument as ConnectionWindow;
-            DockPane dp = cw?.ActiveControl as DockPane;
+            // Ask the docking library which document is active rather than going through
+            // ConnectionWindow.ActiveControl - that goes stale as soon as another panel is clicked,
+            // and then this method silently did nothing for the rest of the session.
+            if (pnlDock.ActiveDocument is not ConnectionWindow cw) return;
 
-            if (dp?.ActiveContent is not ConnectionTab tab) return;
-            InterfaceControl ifc = InterfaceControl.FindInterfaceControl(tab);
+            InterfaceControl ifc = cw.GetInterfaceControl();
             if (ifc == null) return;
 
             ifc.Protocol.Focus();
             Form conFormWindow = ifc.FindForm();
-            ((ConnectionTab)conFormWindow)?.RefreshInterfaceController();
+            (conFormWindow as ConnectionTab)?.RefreshInterfaceController();
         }
 
         private void PnlDock_ActiveDocumentChanged(object sender, EventArgs e)

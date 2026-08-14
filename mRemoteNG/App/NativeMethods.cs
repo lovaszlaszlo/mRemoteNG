@@ -104,6 +104,13 @@ namespace mRemoteNG.App
         [DllImport("user32.dll", SetLastError = true, CharSet = CharSet.Unicode)]
         internal static extern IntPtr WindowFromPoint(Point point);
 
+        /// <summary>
+        /// Window that has the keyboard focus on the calling thread's message queue. Unlike the
+        /// WinForms ActiveControl chain this stays correct when an ActiveX control takes the focus.
+        /// </summary>
+        [DllImport("user32.dll")]
+        internal static extern IntPtr GetFocus();
+
         [DllImport("user32.dll", SetLastError = true, CharSet = CharSet.Unicode)]
         internal static extern int GetClassName(IntPtr hWnd, StringBuilder lpClassName, int nMaxCount);
 
