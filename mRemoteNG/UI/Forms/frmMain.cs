@@ -408,12 +408,47 @@ namespace mRemoteNG.UI.Forms
         private async void FrmMain_Shown(object sender, EventArgs e)
         {
             // Bring the main window to the front after splash screen closes
-            Activate();
-            BringToFront();
-            NativeMethods.SetForegroundWindow(Handle);
+            BringWindowToForeground();
 
             PromptForUpdatesPreference();
             await CheckForUpdates();
+        }
+
+        /// <summary>
+        /// Claims the foreground for the main window at startup.
+        /// </summary>
+        /// <remarks>
+        /// The splash screen is closed early in <see cref="FrmMain_Load"/> so that the password
+        /// prompt can appear on top of it. Loading the connections afterwards takes long enough for
+        /// Windows to hand the foreground to another application, and by the time this window
+        /// becomes visible the process has lost its activation right - so a plain
+        /// SetForegroundWindow is ignored and the window is left behind whatever is in front.
+        /// Attaching to the input queue of the thread that currently owns the foreground restores
+        /// the right for the duration of the call.
+        /// </remarks>
+        private void BringWindowToForeground()
+        {
+            // Starting minimized (optionally to the tray) is a deliberate choice - do not undo it.
+            if (WindowState == FormWindowState.Minimized) return;
+
+            uint currentThreadId = NativeMethods.GetCurrentThreadId();
+            IntPtr foregroundWindow = NativeMethods.GetForegroundWindow();
+            uint foregroundThreadId = foregroundWindow != IntPtr.Zero
+                ? NativeMethods.GetWindowThreadProcessId(foregroundWindow, out _)
+                : 0;
+
+            bool attached = foregroundThreadId != 0 && foregroundThreadId != currentThreadId &&
+                            NativeMethods.AttachThreadInput(currentThreadId, foregroundThreadId, true);
+            try
+            {
+                Activate();
+                BringToFront();
+                NativeMethods.SetForegroundWindow(Handle);
+            }
+            finally
+            {
+                if (attached) NativeMethods.AttachThreadInput(currentThreadId, foregroundThreadId, false);
+            }
         }
 
         private void PromptForUpdatesPreference()

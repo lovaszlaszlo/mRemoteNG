@@ -30,6 +30,22 @@ namespace mRemoteNG.App
         [DllImport("user32.dll", SetLastError = true, CharSet = CharSet.Unicode)]
         internal static extern IntPtr GetForegroundWindow();
 
+        [DllImport("user32.dll", SetLastError = true)]
+        internal static extern uint GetWindowThreadProcessId(IntPtr hWnd, out uint lpdwProcessId);
+
+        /// <summary>
+        /// Attaches or detaches the input processing of two threads. Attaching to the thread that
+        /// owns the foreground window is what makes a later SetForegroundWindow call succeed when
+        /// this process no longer holds the foreground activation right.
+        /// </summary>
+        [DllImport("user32.dll", SetLastError = true)]
+        [return: MarshalAs(UnmanagedType.Bool)]
+        internal static extern bool AttachThreadInput(uint idAttach, uint idAttachTo,
+                                                      [MarshalAs(UnmanagedType.Bool)] bool fAttach);
+
+        [DllImport("kernel32.dll")]
+        internal static extern uint GetCurrentThreadId();
+
         [DllImport("user32.dll", SetLastError = true, CharSet = CharSet.Unicode)]
         internal static extern IntPtr GetSystemMenu(IntPtr hWnd, bool bRevert);
 
