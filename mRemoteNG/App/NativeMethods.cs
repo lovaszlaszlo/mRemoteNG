@@ -49,6 +49,12 @@ namespace mRemoteNG.App
         [DllImport("user32.dll")]
         internal static extern IntPtr SetFocus(IntPtr hWnd);
 
+        /// <summary>Root of the parent chain, i.e. the window the title bar belongs to.</summary>
+        internal const uint GA_ROOT = 2;
+
+        [DllImport("user32.dll")]
+        internal static extern IntPtr GetAncestor(IntPtr hWnd, uint gaFlags);
+
         /// <summary>
         /// Gives the keyboard focus to a window owned by another thread.
         /// </summary>

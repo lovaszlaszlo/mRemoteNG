@@ -800,17 +800,24 @@ namespace mRemoteNG.UI.Forms
         }
 
         /// <summary>
-        /// True while any top level window of this process owns the foreground. Embedded protocol
-        /// windows (PuTTY and friends) live in another process but are reparented into ours, so the
-        /// foreground window is still one of ours while they are in use.
+        /// True while the foreground belongs to this application.
         /// </summary>
+        /// <remarks>
+        /// The process id of the foreground window is not enough. PuTTY is reparented into a tab
+        /// with SetParent but keeps its overlapped window style instead of becoming a WS_CHILD, so
+        /// while an SSH tab is in use GetForegroundWindow() returns a window owned by the PuTTY
+        /// process. Walk up to the root of the parent chain, which is our own form in that case.
+        /// </remarks>
         internal static bool ApplicationIsInForeground()
         {
             IntPtr foregroundWindow = NativeMethods.GetForegroundWindow();
             if (foregroundWindow == IntPtr.Zero) return false;
 
-            _ = NativeMethods.GetWindowThreadProcessId(foregroundWindow, out uint foregroundProcessId);
-            return foregroundProcessId == (uint)Environment.ProcessId;
+            IntPtr rootWindow = NativeMethods.GetAncestor(foregroundWindow, NativeMethods.GA_ROOT);
+            if (rootWindow == IntPtr.Zero) rootWindow = foregroundWindow;
+
+            _ = NativeMethods.GetWindowThreadProcessId(rootWindow, out uint rootProcessId);
+            return rootProcessId == (uint)Environment.ProcessId;
         }
 
         private void ActivateConnection()
