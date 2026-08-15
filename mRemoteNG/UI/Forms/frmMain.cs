@@ -644,7 +644,14 @@ namespace mRemoteNG.UI.Forms
                         Control clickedControl = FromChildHandle(NativeMethods.WindowFromPoint(MousePosition));
                         if (clickedControl is InterfaceControl clickedConnection)
                         {
-                            BeginInvoke(new Action(() => clickedConnection.Protocol?.Focus()));
+                            BeginInvoke(new Action(() =>
+                            {
+                                // WS_EX_NOACTIVATE also stops the click from bringing the
+                                // application forward, so do that ourselves first - the click just
+                                // gave this process the right to take the foreground.
+                                BringWindowToForeground();
+                                clickedConnection.Protocol?.Focus();
+                            }));
                         }
 
                         break;
