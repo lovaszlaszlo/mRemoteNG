@@ -284,6 +284,14 @@ namespace mRemoteNG.App
         #region GetWindowLong
 
         public const int GWL_STYLE = (-16);
+        public const int GWL_EXSTYLE = (-20);
+
+        /// <summary>
+        /// A window with this extended style is not activated by a click. It still receives the
+        /// keyboard focus when it is given explicitly, so its focus and caret handling keeps
+        /// working - unlike WS_CHILD, which takes the top level window status away entirely.
+        /// </summary>
+        public const int WS_EX_NOACTIVATE = 0x08000000;
 
         #endregion
 

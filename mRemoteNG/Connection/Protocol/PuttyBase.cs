@@ -344,6 +344,31 @@ namespace mRemoteNG.Connection.Protocol
                     }
                 }
 
+                // EXPERIMENT: stop the embedded window from being activated by a click.
+                //
+                // The window is parented into the tab but keeps its own top level window style, so
+                // Windows lets it take the foreground away from the main form. That single fact is
+                // behind all three symptoms: Alt+Tab from an SSH tab offers mRemoteNG itself and
+                // goes nowhere (the PuTTY window has a parent, so it is not in the switcher list),
+                // and clicking the console while the application is behind focuses it without
+                // bringing the window forward.
+                //
+                // WS_CHILD fixed the activation but broke PuTTY - it drew the inactive caret and
+                // stopped taking keystrokes after a tab switch. WS_EX_NOACTIVATE is the lighter
+                // touch: the window stays a top level window and still gets WM_SETFOCUS, so the
+                // caret and keyboard handling are untouched; it just cannot steal the activation.
+                //
+                // Revert with: git checkout fix/rdp-fit-to-panel-anchor
+                if (PuttyHandle != IntPtr.Zero)
+                {
+                    int exStyle = NativeMethods.GetWindowLong(PuttyHandle, NativeMethods.GWL_EXSTYLE);
+                    NativeMethods.SetWindowLong(PuttyHandle, NativeMethods.GWL_EXSTYLE,
+                                                exStyle | NativeMethods.WS_EX_NOACTIVATE);
+
+                    Runtime.MessageCollector.AddMessage(MessageClass.InformationMsg,
+                        "PuTTY window marked as non-activating (WS_EX_NOACTIVATE experiment)", true);
+                }
+
                 if (!_isPuttyNg)
                 {
                     NativeMethods.SetParent(PuttyHandle, InterfaceControl.Handle);
