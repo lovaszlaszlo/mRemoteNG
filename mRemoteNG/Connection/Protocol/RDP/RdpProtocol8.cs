@@ -93,14 +93,17 @@ namespace mRemoteNG.Connection.Protocol.RDP
             // Actual RDP session resize is deferred to ResizeEnd() to prevent flickering
             DoResizeControl();
 
-            // Only resize RDP session on window state changes (Maximize/Restore)
-            // Manual drag-resizing will be handled by ResizeEnd()
+            // A window state change used to resize the session immediately. Entering fullscreen
+            // goes Maximized -> Normal -> Maximized in one go (see FullscreenHandler), so that
+            // fired a burst of resolution changes at the server and the session came back without
+            // the keyboard. Debounce this the same as everything else, so a burst settles into a
+            // single resize.
             if (LastWindowState != _frmMain.WindowState)
             {
                 Runtime.MessageCollector.AddMessage(MessageClass.DebugMsg,
-                    $"Resize() - Window state changed from {LastWindowState} to {_frmMain.WindowState}, calling DoResizeClient()");
+                    $"Resize() - Window state changed from {LastWindowState} to {_frmMain.WindowState}, scheduling debounced resize");
                 LastWindowState = _frmMain.WindowState;
-                DoResizeClient();
+                ScheduleDebouncedResize();
             }
             else
             {
