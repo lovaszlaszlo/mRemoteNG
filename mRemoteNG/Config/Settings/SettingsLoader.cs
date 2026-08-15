@@ -78,22 +78,23 @@ namespace mRemoteNG.Config.Settings
         private void SetApplicationWindowPositionAndSize()
         {
             MainForm.WindowState = FormWindowState.Normal;
-            if (Properties.App.Default.MainFormState == FormWindowState.Normal)
-            {
-                if (!Properties.App.Default.MainFormLocation.IsEmpty)
-                    MainForm.Location = Properties.App.Default.MainFormLocation;
-                if (!Properties.App.Default.MainFormSize.IsEmpty)
-                    MainForm.Size = Properties.App.Default.MainFormSize;
-            }
-            else
-            {
-                if (!Properties.App.Default.MainFormRestoreLocation.IsEmpty)
-                    MainForm.Location = Properties.App.Default.MainFormRestoreLocation;
-                if (!Properties.App.Default.MainFormRestoreSize.IsEmpty)
-                    MainForm.Size = Properties.App.Default.MainFormRestoreSize;
-            }
 
-            if (Properties.App.Default.MainFormState == FormWindowState.Maximized)
+            bool startsMaximized = Properties.App.Default.MainFormState == FormWindowState.Maximized;
+            Size savedSize = startsMaximized
+                ? Properties.App.Default.MainFormRestoreSize
+                : Properties.App.Default.MainFormSize;
+            Point savedLocation = startsMaximized
+                ? Properties.App.Default.MainFormRestoreLocation
+                : Properties.App.Default.MainFormLocation;
+
+            if (!savedLocation.IsEmpty)
+                MainForm.Location = savedLocation;
+            if (!savedSize.IsEmpty)
+                MainForm.Size = savedSize;
+            else
+                SizeToMostOfTheScreen();
+
+            if (startsMaximized)
             {
                 MainForm.WindowState = FormWindowState.Maximized;
             }
@@ -114,6 +115,31 @@ namespace mRemoteNG.Config.Settings
                 newBounds.Y = screenBounds.Bottom - minVertical;
 
             MainForm.Location = newBounds.Location;
+        }
+
+        /// <summary>
+        /// Fraction of the screen the main window gets when it has no remembered size.
+        /// </summary>
+        private const double DefaultScreenFraction = 0.9;
+
+        /// <summary>
+        /// Sizes the main window to most of its screen, centred.
+        /// </summary>
+        /// <remarks>
+        /// Only used when nothing has been remembered yet. Without it the window falls back to the
+        /// size the designer gave it, which is a small dialog - so restoring a window that started
+        /// maximised produced something far too small to work in.
+        /// </remarks>
+        private void SizeToMostOfTheScreen()
+        {
+            Rectangle workingArea = Screen.FromHandle(MainForm.Handle).WorkingArea;
+
+            Size size = new((int)(workingArea.Width * DefaultScreenFraction),
+                            (int)(workingArea.Height * DefaultScreenFraction));
+
+            MainForm.Size = size;
+            MainForm.Location = new Point(workingArea.Left + (workingArea.Width - size.Width) / 2,
+                                          workingArea.Top + (workingArea.Height - size.Height) / 2);
         }
 
         private void SetAutoSave()
