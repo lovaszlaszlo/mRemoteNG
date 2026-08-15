@@ -344,6 +344,36 @@ namespace mRemoteNG.Connection.Protocol
                     }
                 }
 
+                // EXPERIMENT: give the embedded window the WS_CHILD style.
+                //
+                // Both PuTTY (reparented below with SetParent) and PuTTYNG (which creates its
+                // window under our handle itself) end up parented into the tab but WITHOUT
+                // WS_CHILD. Windows therefore still treats the window as separately activatable:
+                // GetForegroundWindow() returns it rather than the main form, it is left out of
+                // the Alt+Tab list because it has a parent, focusing it activates it and pulls the
+                // tab selection with it, and clicking it while mRemoteNG is in the background does
+                // not bring the application forward. Adding the style makes it a genuine child, so
+                // the main form owns the activation.
+                //
+                // Risk: PuTTY may rely on being a top level window for keyboard handling or
+                // painting. Revert with: git checkout fix/rdp-fit-to-panel-anchor
+                if (PuttyHandle != IntPtr.Zero)
+                {
+                    int embeddedStyle = NativeMethods.GetWindowLong(PuttyHandle, NativeMethods.GWL_STYLE);
+                    if ((embeddedStyle & NativeMethods.WS_CHILD) == 0)
+                    {
+                        NativeMethods.SetWindowLong(PuttyHandle, NativeMethods.GWL_STYLE,
+                                                    embeddedStyle | NativeMethods.WS_CHILD);
+                        NativeMethods.SetWindowPos(PuttyHandle, IntPtr.Zero,
+                            0, 0, 0, 0,
+                            NativeMethods.SWP_NOMOVE | NativeMethods.SWP_NOSIZE |
+                            NativeMethods.SWP_NOZORDER | NativeMethods.SWP_FRAMECHANGED);
+
+                        Runtime.MessageCollector.AddMessage(MessageClass.InformationMsg,
+                            "PuTTY window turned into a real child window (WS_CHILD experiment)", true);
+                    }
+                }
+
                 if (!_isPuttyNg)
                 {
                     NativeMethods.SetParent(PuttyHandle, InterfaceControl.Handle);
