@@ -155,6 +155,10 @@ namespace mRemoteNG.Connection.Protocol.SSH
             _ = Task.Run(() => PumpOutputAsync(_readCancellation.Token));
 
             Event_Connected(this);
+
+            // The terminal is only worth typing into now, and the tab was built while the page was
+            // still loading, so nothing has given it the keyboard yet.
+            Focus();
         }
 
         private Renci.SshNet.ConnectionInfo BuildSshConnectionInfo()
@@ -409,11 +413,24 @@ namespace mRemoteNG.Connection.Protocol.SSH
         /// </remarks>
         private void WriteStatus(string text) => PostToPage(new { type = "status", text });
 
+        /// <summary>
+        /// Focusing the control is not enough on its own: the keyboard belongs to a hidden textarea
+        /// inside the page, so the page has to be told to take it as well.
+        /// </summary>
         public override void Focus()
         {
             try
             {
-                _webView?.Focus();
+                if (_webView == null || _webView.IsDisposed) return;
+
+                if (_webView.InvokeRequired)
+                {
+                    _webView.BeginInvoke(new Action(Focus));
+                    return;
+                }
+
+                _webView.Focus();
+                PostToPage(new { type = "focus" });
             }
             catch (Exception ex)
             {

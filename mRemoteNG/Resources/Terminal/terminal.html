@@ -56,7 +56,9 @@
         host.addEventListener('message', event => {
             const message = JSON.parse(event.data);
 
-            if (message.type === 'appearance') {
+            if (message.type === 'focus') {
+                term.focus();
+            } else if (message.type === 'appearance') {
                 // Font and colours of the PuTTY session the connection names, so the same
                 // connection looks the same whichever terminal opens it.
                 if (message.fontFamily) term.options.fontFamily = `"${message.fontFamily}", Consolas, monospace`;
