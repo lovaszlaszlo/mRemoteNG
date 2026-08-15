@@ -75,6 +75,9 @@ namespace mRemoteNG.Connection.Protocol.SSH
             }
             catch (Exception ex)
             {
+                // Deliberately leaves the tab open, unlike a session that ended normally: the
+                // reason it could not connect is worth reading, and it is written into the
+                // terminal itself.
                 Runtime.MessageCollector.AddExceptionMessage($"SSH connection to '{_connectionInfo.Hostname}' failed", ex);
                 WriteStatus($"[31m{ex.Message}[0m");
                 Event_Disconnected(this, ex.Message, null);
@@ -332,10 +335,13 @@ namespace mRemoteNG.Connection.Protocol.SSH
 
             if (cancellationToken.IsCancellationRequested) return;
 
-            // Say so in the terminal as well: mRemoteNG may keep the tab open, and an empty
-            // console that silently stopped responding is the worst of both worlds.
+            // Written for the case where the tab outlives the session; normally it is gone before
+            // this can be read.
             WriteStatus("[2m-- the session ended --[0m");
-            Event_Disconnected(this, "The SSH session ended", null);
+
+            // Tear the tab down, the way the PuTTY protocol does when its process exits. A tab
+            // holding a dead console is nothing but clutter.
+            Event_Closed(this);
         }
 
         private void OnWebMessageReceived(object sender, CoreWebView2WebMessageReceivedEventArgs e)
