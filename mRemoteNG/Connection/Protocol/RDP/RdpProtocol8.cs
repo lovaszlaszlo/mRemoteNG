@@ -251,12 +251,13 @@ namespace mRemoteNG.Connection.Protocol.RDP
 
             try
             {
-                // DoResizeControl() has just sized the control to the space actually available, so
-                // use that: InterfaceControl.Size still includes the connection frame padding, and
-                // a session even a few pixels too large brings the scrollbars back.
+                // Never measure Control here: the RDP ActiveX sizes itself to the resolution of the
+                // session, so feeding its size back in pins the session to the first value it ever
+                // got. Tracing showed exactly that - the panel grew from 1190x622 to 3193x1974
+                // while every call kept requesting 3258x1979.
                 Size size = Fullscreen
                     ? Screen.FromControl(Control).Bounds.Size
-                    : Control.Size;
+                    : GetAvailableContentSize();
 
                 Runtime.MessageCollector.AddMessage(MessageClass.DebugMsg,
                     $"Calling UpdateSessionDisplaySettings({size.Width}, {size.Height}) for '{connectionInfo.Hostname}' (Control.Size={Control.Size}, InterfaceControl.Size={InterfaceControl.Size})");
@@ -272,6 +273,24 @@ namespace mRemoteNG.Connection.Protocol.RDP
                     string.Format(Language.ChangeConnectionResolutionError, connectionInfo.Hostname),
                     ex, MessageClass.WarningMsg, false);
             }
+        }
+
+        /// <summary>
+        /// Space the connection actually has on screen: the panel's client area minus the padding
+        /// that draws the connection frame.
+        /// </summary>
+        /// <remarks>
+        /// Deliberately measured on InterfaceControl and never on Control. The RDP ActiveX sizes
+        /// itself to the resolution of the session, so using its size as the input for the next
+        /// resize pins the session to the first value it ever received.
+        /// </remarks>
+        private Size GetAvailableContentSize()
+        {
+            if (InterfaceControl == null || InterfaceControl.IsDisposed) return Size.Empty;
+
+            Padding padding = InterfaceControl.Padding;
+            Rectangle client = InterfaceControl.ClientRectangle;
+            return new Size(client.Width - padding.Horizontal, client.Height - padding.Vertical);
         }
 
         private bool DoResizeControl()
@@ -290,11 +309,10 @@ namespace mRemoteNG.Connection.Protocol.RDP
 
                 InterfaceControl.AutoScrollMinSize = Size.Empty;
 
-                Padding padding = InterfaceControl.Padding;
-                Rectangle client = InterfaceControl.ClientRectangle;
-                Size target = new(client.Width - padding.Horizontal, client.Height - padding.Vertical);
+                Size target = GetAvailableContentSize();
                 if (target.Width <= 0 || target.Height <= 0) return false;
 
+                Padding padding = InterfaceControl.Padding;
                 Control.Dock = DockStyle.None;
                 Control.Location = new Point(padding.Left, padding.Top);
                 Control.Size = target;
