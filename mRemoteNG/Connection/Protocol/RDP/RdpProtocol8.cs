@@ -236,13 +236,13 @@ namespace mRemoteNG.Connection.Protocol.RDP
                 return;
             }
 
-            // FitToWindow: fixed resolution set at connect time, scrollbars handle overflow.
-            // SmartSize: SmartSizing scales the image client-side, no session resize needed.
-            // Only Fullscreen benefits from dynamically changing the remote session resolution.
-            if (InterfaceControl.Info.Resolution != RDPResolutions.Fullscreen)
+            // SmartSize scales the image client-side, so the remote session must keep the
+            // resolution it connected with. FitToWindow and Fullscreen both mean "the session is
+            // as big as the space it is shown in", so they follow the panel.
+            if (InterfaceControl.Info.Resolution == RDPResolutions.SmartSize)
             {
                 Runtime.MessageCollector.AddMessage(MessageClass.DebugMsg,
-                    $"Resize skipped for '{connectionInfo.Hostname}': Resolution is {InterfaceControl.Info.Resolution} (only Fullscreen supports dynamic resize)");
+                    $"Resize skipped for '{connectionInfo.Hostname}': SmartSize scales the image instead of resizing the session");
                 return;
             }
 
@@ -251,11 +251,12 @@ namespace mRemoteNG.Connection.Protocol.RDP
 
             try
             {
-                // Use InterfaceControl.Size instead of Control.Size because Control may be docked
-                // and not reflect the actual available space
+                // DoResizeControl() has just sized the control to the space actually available, so
+                // use that: InterfaceControl.Size still includes the connection frame padding, and
+                // a session even a few pixels too large brings the scrollbars back.
                 Size size = Fullscreen
                     ? Screen.FromControl(Control).Bounds.Size
-                    : InterfaceControl.Size;
+                    : Control.Size;
 
                 Runtime.MessageCollector.AddMessage(MessageClass.DebugMsg,
                     $"Calling UpdateSessionDisplaySettings({size.Width}, {size.Height}) for '{connectionInfo.Hostname}' (Control.Size={Control.Size}, InterfaceControl.Size={InterfaceControl.Size})");
@@ -280,9 +281,28 @@ namespace mRemoteNG.Connection.Protocol.RDP
             // Check if controls are being disposed during shutdown
             if (Control.IsDisposed || InterfaceControl.IsDisposed) return false;
 
-            // FitToWindow: control is undocked at a fixed size with scrollbars; don't touch it.
+            // FitToWindow means the session follows the panel, so the control has to follow it too.
+            // Clear the scroll range first: while it is set, ClientRectangle is shrunk by the
+            // scrollbars and we would keep chasing a size that never fits.
             if (InterfaceControl.Info.Resolution == RDPResolutions.FitToWindow)
-                return false;
+            {
+                if (!InterfaceControl.Info.AutomaticResize) return false;
+
+                InterfaceControl.AutoScrollMinSize = Size.Empty;
+
+                Padding padding = InterfaceControl.Padding;
+                Rectangle client = InterfaceControl.ClientRectangle;
+                Size target = new(client.Width - padding.Horizontal, client.Height - padding.Vertical);
+                if (target.Width <= 0 || target.Height <= 0) return false;
+
+                Control.Dock = DockStyle.None;
+                Control.Location = new Point(padding.Left, padding.Top);
+                Control.Size = target;
+
+                Runtime.MessageCollector?.AddMessage(MessageClass.DebugMsg,
+                    $"DoResizeControl - FitToWindow control resized to {target.Width}x{target.Height}");
+                return true;
+            }
 
             Runtime.MessageCollector?.AddMessage(MessageClass.DebugMsg,
                 $"DoResizeControl - Before: Control.Size={Control.Size}, InterfaceControl.Size={InterfaceControl.Size}, Control.Dock={Control.Dock}");
