@@ -104,8 +104,14 @@ namespace mRemoteNG.Connection.Protocol.RDP
             }
             else
             {
+                // Do not wait for ResizeEnd: that only arrives for a drag of the main window. The
+                // panel also changes size when the connection tree splitter is dragged or the dock
+                // layout changes, and those never raise it - the session then kept its old
+                // resolution and the panel grew scrollbars instead. The debounce timer restarts on
+                // every call, so a drag still results in a single resize once it settles.
                 Runtime.MessageCollector.AddMessage(MessageClass.DebugMsg,
-                    $"Resize() - Window state unchanged ({_frmMain.WindowState}), deferring to ResizeEnd()");
+                    $"Resize() - Window state unchanged ({_frmMain.WindowState}), scheduling debounced resize");
+                ScheduleDebouncedResize();
             }
         }
 
