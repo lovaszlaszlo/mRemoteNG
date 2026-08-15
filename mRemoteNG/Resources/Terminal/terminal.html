@@ -53,6 +53,44 @@
 
         term.onData(data => send({ type: 'input', data: data }));
 
+        // Font size: the PuTTY session sets the base size, and this remembers an adjustment on
+        // top of it. Kept in localStorage rather than in the connection file - the page is always
+        // served from the same virtual host, so the value survives restarts, and the size is a
+        // property of this screen rather than of any one server.
+        let baseFontSize = term.options.fontSize;
+
+        function fontSizeDelta() {
+            return parseInt(localStorage.getItem('fontSizeDelta') || '0', 10);
+        }
+
+        function applyFontSize() {
+            const size = Math.min(72, Math.max(6, baseFontSize + fontSizeDelta()));
+            term.options.fontSize = size;
+            fitAndReport();
+        }
+
+        function zoom(step) {
+            localStorage.setItem('fontSizeDelta', step === 0 ? 0 : fontSizeDelta() + step);
+            applyFontSize();
+        }
+
+        // Return false to keep the key away from the session.
+        term.attachCustomKeyEventHandler(e => {
+            if (!e.ctrlKey || e.type !== 'keydown') return true;
+
+            if (e.key === '+' || e.key === '=') { zoom(1); return false; }
+            if (e.key === '-') { zoom(-1); return false; }
+            if (e.key === '0') { zoom(0); return false; }
+
+            return true;
+        });
+
+        term.element.addEventListener('wheel', e => {
+            if (!e.ctrlKey) return;
+            e.preventDefault();
+            zoom(e.deltaY < 0 ? 1 : -1);
+        }, { passive: false });
+
         host.addEventListener('message', event => {
             const message = JSON.parse(event.data);
 
@@ -62,11 +100,13 @@
                 // Font and colours of the PuTTY session the connection names, so the same
                 // connection looks the same whichever terminal opens it.
                 if (message.fontFamily) term.options.fontFamily = `"${message.fontFamily}", Consolas, monospace`;
-                if (message.fontSize) term.options.fontSize = message.fontSize;
                 if (message.bold) term.options.fontWeight = 'bold';
                 if (message.scrollback) term.options.scrollback = message.scrollback;
                 if (message.theme) term.options.theme = message.theme;
-                fitAndReport();
+
+                // The session gives the base size; the remembered zoom is applied on top of it.
+                if (message.fontSize) baseFontSize = message.fontSize;
+                applyFontSize();
             } else if (message.type === 'output') {
                 const binary = atob(message.data);
                 const bytes = new Uint8Array(binary.length);
