@@ -268,10 +268,25 @@ namespace mRemoteNG.Connection.Protocol.RDP
                 Runtime.MessageCollector.AddMessage(MessageClass.DebugMsg,
                     $"Calling UpdateSessionDisplaySettings({size.Width}, {size.Height}) for '{connectionInfo.Hostname}' (Control.Size={Control.Size}, InterfaceControl.Size={InterfaceControl.Size})");
 
+                if (size.Width <= 0 || size.Height <= 0) return;
+
                 UpdateSessionDisplaySettings((uint)size.Width, (uint)size.Height);
 
                 Runtime.MessageCollector.AddMessage(MessageClass.DebugMsg,
                     $"Successfully resized RDP session for '{connectionInfo.Hostname}' to {size.Width}x{size.Height}");
+
+                // The panel can change again while the call is in flight - the ActiveX resizes
+                // itself to the new session resolution, which lays the panel out once more, and a
+                // splitter drag over a maximised window produces a burst of those. Without this the
+                // session would keep whatever size happened to win the race, which is why the
+                // connection panel width only sometimes took effect.
+                Size settled = GetAvailableContentSize();
+                if (settled != size && settled.Width > 0 && settled.Height > 0)
+                {
+                    Runtime.MessageCollector.AddMessage(MessageClass.DebugMsg,
+                        $"Panel changed to {settled.Width}x{settled.Height} while resizing to {size.Width}x{size.Height}, scheduling another pass");
+                    ScheduleDebouncedResize();
+                }
             }
             catch (Exception ex)
             {
