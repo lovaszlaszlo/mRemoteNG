@@ -309,24 +309,11 @@ namespace mRemoteNG.Connection.Protocol.RDP
             // FitToWindow means the session follows the panel, so the control has to follow it too.
             // Clear the scroll range first: while it is set, ClientRectangle is shrunk by the
             // scrollbars and we would keep chasing a size that never fits.
+            // FitToWindow anchors the control to the panel at connect time (see
+            // RdpProtocol.SetResolution), so WinForms keeps it in step with the panel on its own.
+            // Assigning Size here is pointless - the ActiveX wrapper ignores it.
             if (InterfaceControl.Info.Resolution == RDPResolutions.FitToWindow)
-            {
-                if (!InterfaceControl.Info.AutomaticResize) return false;
-
-                InterfaceControl.AutoScrollMinSize = Size.Empty;
-
-                Size target = GetAvailableContentSize();
-                if (target.Width <= 0 || target.Height <= 0) return false;
-
-                Padding padding = InterfaceControl.Padding;
-                Control.Dock = DockStyle.None;
-                Control.Location = new Point(padding.Left, padding.Top);
-                Control.Size = target;
-
-                Runtime.MessageCollector?.AddMessage(MessageClass.DebugMsg,
-                    $"DoResizeControl - FitToWindow control resized to {target.Width}x{target.Height}");
-                return true;
-            }
+                return false;
 
             Runtime.MessageCollector?.AddMessage(MessageClass.DebugMsg,
                 $"DoResizeControl - Before: Control.Size={Control.Size}, InterfaceControl.Size={InterfaceControl.Size}, Control.Dock={Control.Dock}");

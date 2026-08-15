@@ -739,19 +739,23 @@ namespace mRemoteNG.Connection.Protocol.RDP
                 switch (InterfaceControl.Info.Resolution)
                 {
                     case RDPResolutions.FitToWindow:
-                        // Lock the RDP session to the current content area size.
-                        // The control is undocked so it keeps this fixed size;
-                        // AutoScroll on the parent panel provides scrollbars
-                        // when the panel shrinks below the session resolution.
-                        // Use DisplayRectangle to respect Padding (connection frame border).
+                        // The session follows the panel, so the control has to follow it too.
+                        // Anchor rather than Dock.Fill, and rather than assigning Size on every
+                        // resize: the ActiveX wrapper ignores those assignments - tracing a resize
+                        // showed the control sitting at its connect size of 3258x1979 while the
+                        // panel had already grown to 3511, so the session never filled the panel.
+                        // Anchoring makes WinForms move the window itself, which the control follows.
+                        // No AutoScroll either: there is nothing to scroll once the session is
+                        // resized to the panel, and the scrollbars only ate into the usable area.
                         var fitRect = InterfaceControl.DisplayRectangle;
                         _rdpClient.DesktopWidth = fitRect.Width;
                         _rdpClient.DesktopHeight = fitRect.Height;
                         Control.Dock = DockStyle.None;
                         Control.Location = fitRect.Location;
                         Control.Size = fitRect.Size;
-                        InterfaceControl.AutoScroll = true;
-                        InterfaceControl.AutoScrollMinSize = fitRect.Size;
+                        Control.Anchor = AnchorStyles.Top | AnchorStyles.Bottom | AnchorStyles.Left | AnchorStyles.Right;
+                        InterfaceControl.AutoScroll = false;
+                        InterfaceControl.AutoScrollMinSize = System.Drawing.Size.Empty;
                         break;
                     case RDPResolutions.SmartSize:
                         // Connect at the full screen resolution so the remote
