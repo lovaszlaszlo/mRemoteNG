@@ -73,6 +73,10 @@
             resizeTimer = setTimeout(fitAndReport, 100);
         });
 
+        // Temporary marker: PuTTY and this terminal are being compared side by side and look
+        // alike, so say which one this is. Remove once PuTTY is no longer in the picture.
+        term.writeln('\x1b[2m-- mRemoteNG native SSH (xterm.js + SSH.NET) --\x1b[0m');
+
         fitAndReport();
         term.focus();
         send({ type: 'ready' });
