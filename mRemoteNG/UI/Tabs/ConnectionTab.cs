@@ -62,6 +62,16 @@ namespace mRemoteNG.UI.Tabs
                         if (result == DialogResult.No)
                         {
                             e.Cancel = true;
+
+                            // The docking library selects the next tab before it asks this one
+                            // whether it may close, and it does not put the selection back when the
+                            // close is cancelled - so answering "No" left a different connection in
+                            // front. Deferred, because the selection is only settled once the close
+                            // handling has unwound.
+                            BeginInvoke(new Action(() =>
+                            {
+                                if (!IsDisposed && DockPanel != null) DockHandler.Activate();
+                            }));
                         }
                         else
                         {
