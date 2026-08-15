@@ -39,7 +39,6 @@ namespace mRemoteNG.Connection.Protocol.SSH
         private CancellationTokenSource _readCancellation;
         private uint _columns = DefaultColumns;
         private uint _rows = DefaultRows;
-        private bool _pageReady;
 
         public ProtocolSshNative(ConnectionInfo connectionInfo)
         {
@@ -327,8 +326,12 @@ namespace mRemoteNG.Connection.Protocol.SSH
                                                              MessageClass.WarningMsg, false);
             }
 
-            if (!cancellationToken.IsCancellationRequested)
-                Event_Disconnected(this, "The SSH session ended", null);
+            if (cancellationToken.IsCancellationRequested) return;
+
+            // Say so in the terminal as well: mRemoteNG may keep the tab open, and an empty
+            // console that silently stopped responding is the worst of both worlds.
+            WriteStatus("[2m-- the session ended --[0m");
+            Event_Disconnected(this, "The SSH session ended", null);
         }
 
         private void OnWebMessageReceived(object sender, CoreWebView2WebMessageReceivedEventArgs e)
@@ -341,7 +344,6 @@ namespace mRemoteNG.Connection.Protocol.SSH
                 switch (message.GetProperty("type").GetString())
                 {
                     case "ready":
-                        _pageReady = true;
                         break;
 
                     case "input":
@@ -396,10 +398,16 @@ namespace mRemoteNG.Connection.Protocol.SSH
             }
         }
 
-        private void WriteStatus(string text)
-        {
-            if (_pageReady) PostToPage(new { type = "status", text });
-        }
+        /// <summary>
+        /// Writes a line into the terminal itself, which is where the user is already looking when
+        /// something goes wrong.
+        /// </summary>
+        /// <remarks>
+        /// Not gated on the page having reported itself ready: the caller has already waited for
+        /// navigation to complete, and a connection that fails immediately would otherwise lose
+        /// its error message to that race.
+        /// </remarks>
+        private void WriteStatus(string text) => PostToPage(new { type = "status", text });
 
         public override void Focus()
         {
