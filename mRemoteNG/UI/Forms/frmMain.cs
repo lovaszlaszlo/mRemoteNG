@@ -635,6 +635,18 @@ namespace mRemoteNG.UI.Forms
                 {
                     case NativeMethods.WM_MOUSEACTIVATE:
                         _inMouseActivate = true;
+
+                        // A protocol window that cannot be activated by a click (PuTTY carries
+                        // WS_EX_NOACTIVATE) never gets the keyboard focus from Windows on its own.
+                        // The click still reaches this window as WM_MOUSEACTIVATE on its way up the
+                        // parent chain, so hand the focus over here. Deferred, so the click is
+                        // finished first, and driven by a real user gesture, never by a focus event.
+                        Control clickedControl = FromChildHandle(NativeMethods.WindowFromPoint(MousePosition));
+                        if (clickedControl is InterfaceControl clickedConnection)
+                        {
+                            BeginInvoke(new Action(() => clickedConnection.Protocol?.Focus()));
+                        }
+
                         break;
                     case NativeMethods.WM_ACTIVATEAPP:
                         bool appIsActivating = m.WParam != IntPtr.Zero;
