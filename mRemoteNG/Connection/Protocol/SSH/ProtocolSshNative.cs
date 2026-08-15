@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Runtime.Versioning;
 using System.Text;
@@ -124,6 +125,7 @@ namespace mRemoteNG.Connection.Protocol.SSH
             Renci.SshNet.ConnectionInfo sshConnectionInfo = BuildSshConnectionInfo();
 
             _sshClient = new SshClient(sshConnectionInfo);
+            _sshClient.HostKeyReceived += OnHostKeyReceived;
             _sshClient.Connect();
 
             _shellStream = _sshClient.CreateShellStream("xterm-256color", _columns, _rows, 0, 0, 8192);
@@ -141,12 +143,142 @@ namespace mRemoteNG.Connection.Protocol.SSH
             string username = string.IsNullOrEmpty(_connectionInfo.Username)
                 ? Environment.UserName
                 : _connectionInfo.Username;
+            string password = _connectionInfo.Password ?? string.Empty;
 
-            // Prototype: password authentication only. Key files, agent forwarding and the
-            // external credential providers are still to be wired up.
-            return new Renci.SshNet.ConnectionInfo(host, port, username,
-                new PasswordAuthenticationMethod(username, _connectionInfo.Password ?? string.Empty));
+            List<AuthenticationMethod> methods = new();
+
+            // A key wins over the password when one is configured, but keep the password as a
+            // fallback: servers commonly accept either, and the key may be the wrong one.
+            string keyFile = ResolvePrivateKeyFile();
+            if (keyFile != null)
+            {
+                // The connection password doubles as the passphrase - an encrypted key needs one,
+                // and there is nowhere else to put it without changing the connection file format.
+                PrivateKeyFile key = string.IsNullOrEmpty(password)
+                    ? new PrivateKeyFile(keyFile)
+                    : new PrivateKeyFile(keyFile, password);
+
+                methods.Add(new PrivateKeyAuthenticationMethod(username, key));
+            }
+
+            if (!string.IsNullOrEmpty(password))
+                methods.Add(new PasswordAuthenticationMethod(username, password));
+
+            // Servers that ask for the password over keyboard-interactive rather than the password
+            // method - common with PAM - would otherwise refuse a perfectly good password.
+            if (!string.IsNullOrEmpty(password))
+            {
+                KeyboardInteractiveAuthenticationMethod interactive = new(username);
+                interactive.AuthenticationPrompt += (_, e) =>
+                {
+                    foreach (Renci.SshNet.Common.AuthenticationPrompt prompt in e.Prompts)
+                        prompt.Response = password;
+                };
+                methods.Add(interactive);
+            }
+
+            if (methods.Count == 0)
+                throw new InvalidOperationException(
+                    "No password and no private key are configured for this connection.");
+
+            return new Renci.SshNet.ConnectionInfo(host, port, username, methods.ToArray());
         }
+
+        /// <summary>
+        /// Private key to authenticate with, or null when there is none.
+        /// </summary>
+        /// <remarks>
+        /// Read from the existing SSH options property rather than a new one, so the connection
+        /// file format is untouched: either "-i &lt;path&gt;" as OpenSSH spells it, or a bare path.
+        /// When nothing is configured, the usual keys under %USERPROFILE%\.ssh are tried.
+        /// </remarks>
+        private string ResolvePrivateKeyFile()
+        {
+            string options = _connectionInfo.SSHOptions?.Trim();
+
+            if (!string.IsNullOrEmpty(options))
+            {
+                string candidate = options;
+
+                int flag = options.IndexOf("-i", StringComparison.OrdinalIgnoreCase);
+                if (flag >= 0)
+                    candidate = options[(flag + 2)..].Trim().Trim('"');
+
+                if (File.Exists(candidate)) return candidate;
+
+                Runtime.MessageCollector.AddMessage(MessageClass.WarningMsg,
+                    $"The private key configured for '{_connectionInfo.Name}' was not found: {candidate}");
+            }
+
+            string sshFolder = Path.Combine(
+                Environment.GetFolderPath(Environment.SpecialFolder.UserProfile), ".ssh");
+
+            foreach (string name in new[] { "id_ed25519", "id_ecdsa", "id_rsa" })
+            {
+                string path = Path.Combine(sshFolder, name);
+                if (File.Exists(path)) return path;
+            }
+
+            return null;
+        }
+
+        private void OnHostKeyReceived(object sender, Renci.SshNet.Common.HostKeyEventArgs e)
+        {
+            string host = _connectionInfo.Hostname;
+            int port = _connectionInfo.Port > 0 ? _connectionInfo.Port : 22;
+            string fingerprint = e.FingerPrintSHA256;
+
+            SshKnownHosts.Verdict verdict = SshKnownHosts.Check(host, port, fingerprint, out string stored);
+
+            if (verdict == SshKnownHosts.Verdict.Known)
+            {
+                e.CanTrust = true;
+                return;
+            }
+
+            // The read happens on a background thread, so ask on the UI thread and wait for it.
+            bool accepted = AskAboutHostKey(verdict, host, port, e.HostKeyName, fingerprint, stored);
+
+            e.CanTrust = accepted;
+            if (accepted) SshKnownHosts.Remember(host, port, fingerprint);
+        }
+
+        private bool AskAboutHostKey(SshKnownHosts.Verdict verdict, string host, int port,
+                                     string keyType, string fingerprint, string storedFingerprint)
+        {
+            string caption = verdict == SshKnownHosts.Verdict.Changed
+                ? "SSH host key CHANGED"
+                : "Unknown SSH host key";
+
+            string text = verdict == SshKnownHosts.Verdict.Changed
+                ? $"The host key of {host}:{port} is not the one accepted earlier.\r\n\r\n" +
+                  $"Key type: {keyType}\r\n" +
+                  $"Now:      SHA256:{fingerprint}\r\n" +
+                  $"Earlier:  SHA256:{storedFingerprint}\r\n\r\n" +
+                  "This happens after a server is rebuilt - but it is also what an intercepted " +
+                  "connection looks like. Only continue if you know why the key changed.\r\n\r\n" +
+                  "Trust this key from now on?"
+                : $"{host}:{port} has not been connected to before.\r\n\r\n" +
+                  $"Key type: {keyType}\r\n" +
+                  $"SHA256:{fingerprint}\r\n\r\n" +
+                  "Trust this key from now on?";
+
+            MessageBoxIcon icon = verdict == SshKnownHosts.Verdict.Changed
+                ? MessageBoxIcon.Warning
+                : MessageBoxIcon.Question;
+
+            Control uiThread = _webView;
+            if (uiThread == null || uiThread.IsDisposed) return false;
+
+            if (uiThread.InvokeRequired)
+                return (bool)uiThread.Invoke(new Func<bool>(() => Ask(text, caption, icon)));
+
+            return Ask(text, caption, icon);
+        }
+
+        private static bool Ask(string text, string caption, MessageBoxIcon icon) =>
+            MessageBox.Show(text, caption, MessageBoxButtons.YesNo, icon, MessageBoxDefaultButton.Button2)
+            == DialogResult.Yes;
 
         private async Task PumpOutputAsync(CancellationToken cancellationToken)
         {

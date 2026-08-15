@@ -417,7 +417,9 @@ namespace mRemoteNG.Connection
         [LocalizedAttributes.LocalizedCategory(nameof(Language.Protocol), 3),
          LocalizedAttributes.LocalizedDisplayName(nameof(Language.SshOptions)),
          LocalizedAttributes.LocalizedDescription(nameof(Language.PropertyDescriptionSshOptions)),
-         AttributeUsedInProtocol(ProtocolType.SSH1, ProtocolType.SSH2)]
+         // The native SSH protocol reads the private key from here, as "-i <path>" or a bare path,
+         // rather than adding a property the connection file format would have to carry.
+         AttributeUsedInProtocol(ProtocolType.SSH1, ProtocolType.SSH2, ProtocolType.SSHNative)]
         public virtual string SSHOptions
         {
             get => GetPropertyValue("SSHOptions", _sshOptions);
