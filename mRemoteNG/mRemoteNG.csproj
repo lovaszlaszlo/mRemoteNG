@@ -113,6 +113,13 @@
     <None Remove="UI\Font\HandelGotDBol.ttf" />
   </ItemGroup>
   <ItemGroup>
+    <!-- The xterm.js terminal page, served to WebView2 from the output folder over a virtual
+         host name so nothing is fetched from the network. -->
+    <Content Include="Resources\Terminal\**">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+  </ItemGroup>
+  <ItemGroup>
     <COMReference Include="MSTSCLib">
       <WrapperTool>aximp</WrapperTool>
       <VersionMinor>0</VersionMinor>

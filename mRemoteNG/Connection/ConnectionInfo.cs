@@ -262,6 +262,7 @@ namespace mRemoteNG.Connection
                     case ProtocolType.SSH1:
                         return (int)ProtocolSSH1.Defaults.Port;
                     case ProtocolType.SSH2:
+                    case ProtocolType.SSHNative:
                         return (int)ProtocolSSH2.Defaults.Port;
                     case ProtocolType.Telnet:
                         return (int)ProtocolTelnet.Defaults.Port;

@@ -47,6 +47,15 @@ namespace mRemoteNG.Connection.Protocol
         [LocalizedAttributes.LocalizedDescription(nameof(Language.AnyDesk))]
         AnyDesk = 14,
 
+        /// <summary>
+        /// SSH rendered inside mRemoteNG (xterm.js in WebView2) rather than by an embedded PuTTY
+        /// window. Offered next to SSH1/SSH2 rather than replacing them, so both can be compared
+        /// and PuTTY stays available for the features it brings with it (saved sessions, agent
+        /// forwarding, tunnels).
+        /// </summary>
+        [System.ComponentModel.Description("SSH (native)")]
+        SSHNative = 15,
+
         [LocalizedAttributes.LocalizedDescription(nameof(Language.ExternalTool))]
         IntApp = 20
     }

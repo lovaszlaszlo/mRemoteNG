@@ -1,0 +1,81 @@
+<!doctype html>
+<html>
+<head>
+    <meta charset="utf-8" />
+    <link rel="stylesheet" href="xterm.css" />
+    <style>
+        html, body { height: 100%; margin: 0; background: #1e1e1e; overflow: hidden; }
+        #terminal { height: 100%; width: 100%; }
+    </style>
+</head>
+<body>
+    <div id="terminal"></div>
+
+    <script src="xterm.js"></script>
+    <script src="addon-fit.js"></script>
+    <script>
+        // Bridge between xterm.js and the hosting protocol class.
+        //
+        // host -> page : { type: 'output', data: <base64 of the raw bytes from the server> }
+        //                { type: 'status', text: <message to show in the terminal> }
+        // page -> host : { type: 'input',  data: <the text the user typed> }
+        //                { type: 'resize', cols: n, rows: n }
+        //                { type: 'ready' }
+        //
+        // Server output travels as base64 rather than text: it is a byte stream that can be cut
+        // in the middle of a UTF-8 sequence, and xterm.js reassembles those itself when it is
+        // handed a Uint8Array.
+
+        const term = new Terminal({
+            cursorBlink: true,
+            fontFamily: 'Consolas, "Cascadia Mono", monospace',
+            fontSize: 14,
+            scrollback: 10000,
+            theme: { background: '#1e1e1e', foreground: '#e8ebee' }
+        });
+
+        const fitAddon = new FitAddon.FitAddon();
+        term.loadAddon(fitAddon);
+        term.open(document.getElementById('terminal'));
+
+        const host = window.chrome.webview;
+
+        function send(message) { host.postMessage(JSON.stringify(message)); }
+
+        function fitAndReport() {
+            try {
+                fitAddon.fit();
+                send({ type: 'resize', cols: term.cols, rows: term.rows });
+            } catch (e) {
+                // the page can be laid out before it has a size, nothing to report yet
+            }
+        }
+
+        term.onData(data => send({ type: 'input', data: data }));
+
+        host.addEventListener('message', event => {
+            const message = JSON.parse(event.data);
+
+            if (message.type === 'output') {
+                const binary = atob(message.data);
+                const bytes = new Uint8Array(binary.length);
+                for (let i = 0; i < binary.length; i++) bytes[i] = binary.charCodeAt(i);
+                term.write(bytes);
+            } else if (message.type === 'status') {
+                term.writeln(message.text);
+            }
+        });
+
+        // The panel drives the size, so refit whenever the window changes and once at startup.
+        let resizeTimer = null;
+        window.addEventListener('resize', () => {
+            clearTimeout(resizeTimer);
+            resizeTimer = setTimeout(fitAndReport, 100);
+        });
+
+        fitAndReport();
+        term.focus();
+        send({ type: 'ready' });
+    </script>
+</body>
+</html>
