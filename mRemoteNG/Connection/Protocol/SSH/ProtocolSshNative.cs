@@ -118,6 +118,28 @@ namespace mRemoteNG.Connection.Protocol.SSH
             core.NavigationCompleted += OnNavigationCompleted;
             core.Navigate($"https://{VirtualHost}/terminal.html");
             await navigated.Task;
+
+            ApplyPuttySessionAppearance();
+        }
+
+        /// <summary>
+        /// Takes the font and colours from the PuTTY session the connection names, so it looks the
+        /// same whether it is opened with this protocol or the PuTTY based one.
+        /// </summary>
+        private void ApplyPuttySessionAppearance()
+        {
+            PuttySessionAppearance appearance = PuttySessionAppearance.Load(_connectionInfo.PuttySession);
+            if (appearance == null) return;
+
+            PostToPage(new
+            {
+                type = "appearance",
+                fontFamily = appearance.FontFamily,
+                fontSize = appearance.FontSize,
+                bold = appearance.Bold,
+                scrollback = appearance.Scrollback,
+                theme = appearance.Theme
+            });
         }
 
         private void ConnectSsh()

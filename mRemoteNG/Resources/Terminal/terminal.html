@@ -56,7 +56,16 @@
         host.addEventListener('message', event => {
             const message = JSON.parse(event.data);
 
-            if (message.type === 'output') {
+            if (message.type === 'appearance') {
+                // Font and colours of the PuTTY session the connection names, so the same
+                // connection looks the same whichever terminal opens it.
+                if (message.fontFamily) term.options.fontFamily = `"${message.fontFamily}", Consolas, monospace`;
+                if (message.fontSize) term.options.fontSize = message.fontSize;
+                if (message.bold) term.options.fontWeight = 'bold';
+                if (message.scrollback) term.options.scrollback = message.scrollback;
+                if (message.theme) term.options.theme = message.theme;
+                fitAndReport();
+            } else if (message.type === 'output') {
                 const binary = atob(message.data);
                 const bytes = new Uint8Array(binary.length);
                 for (let i = 0; i < binary.length; i++) bytes[i] = binary.charCodeAt(i);

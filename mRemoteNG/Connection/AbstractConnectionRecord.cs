@@ -406,8 +406,10 @@ namespace mRemoteNG.Connection
          LocalizedAttributes.LocalizedDisplayName(nameof(Language.PuttySession)),
          LocalizedAttributes.LocalizedDescription(nameof(Language.PropertyDescriptionPuttySession)),
          TypeConverter(typeof(Config.Putty.PuttySessionsManager.SessionList)),
+         // The native SSH protocol reads the font and colours of the named session too, so the
+         // same connection looks the same whichever terminal opens it.
          AttributeUsedInProtocol(ProtocolType.SSH1, ProtocolType.SSH2, ProtocolType.Telnet,
-            ProtocolType.RAW, ProtocolType.Rlogin)]
+            ProtocolType.RAW, ProtocolType.Rlogin, ProtocolType.SSHNative)]
         public virtual string PuttySession
         {
             get => GetPropertyValue("PuttySession", _puttySession);
