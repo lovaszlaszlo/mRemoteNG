@@ -20,11 +20,14 @@ namespace mRemoteNG.Config.DataProviders
 
                 PathValidator.ValidatePathOrThrow(fileName, nameof(fileName));
 
-                string backupFileName =
-                    string.Format(Properties.OptionsBackupPage.Default.BackupFileNameFormat, fileName, DateTime.Now);
-                
+                // Asks BackupPath rather than formatting the name here, so the pruner looks for
+                // exactly the files this writes - in the folder the user configured.
+                string backupFileName = Path.Combine(
+                    BackupPath.DirectoryFor(fileName),
+                    BackupPath.BackupFileNameFor(fileName, DateTime.Now));
+
                 PathValidator.ValidatePathOrThrow(backupFileName, nameof(backupFileName));
-                
+
                 File.Copy(fileName, backupFileName);
             }
             catch (Exception ex)
