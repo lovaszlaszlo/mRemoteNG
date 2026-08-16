@@ -30,6 +30,12 @@ namespace mRemoteNG.Connection.Protocol.RDP
             return new AxMsRdpClient9NotSafeForScripting();
         }
 
+        /// <summary>
+        /// From RDP 9 the session can be told about a new size over the display control channel,
+        /// so resizing no longer means reconnecting.
+        /// </summary>
+        protected override bool SupportsDynamicResize => true;
+
         protected override void UpdateSessionDisplaySettings(uint width, uint height)
         {
             try

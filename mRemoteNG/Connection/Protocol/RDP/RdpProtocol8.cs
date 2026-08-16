@@ -255,6 +255,17 @@ namespace mRemoteNG.Connection.Protocol.RDP
                 return;
             }
 
+            // On RDP 8 the only way to reach a new size is to reconnect, which drops the session.
+            // That was tolerable while this ran for Fullscreen alone, but FitToWindow resizes on
+            // every window and panel change - losing the session each time is far worse than
+            // keeping the resolution it connected with.
+            if (!SupportsDynamicResize && InterfaceControl.Info.Resolution == RDPResolutions.FitToWindow)
+            {
+                Runtime.MessageCollector.AddMessage(MessageClass.DebugMsg,
+                    $"Resize skipped for '{connectionInfo.Hostname}': RDP 8 would have to reconnect the session to resize it");
+                return;
+            }
+
             Runtime.MessageCollector.AddMessage(MessageClass.DebugMsg,
                 $"Resizing RDP connection to host '{connectionInfo.Hostname}'");
 
@@ -358,6 +369,13 @@ namespace mRemoteNG.Connection.Protocol.RDP
 
             return true;
         }
+
+        /// <summary>
+        /// False when resizing the session means reconnecting it rather than telling the server
+        /// about the new size. RDP 8 has no display control channel, so <see cref="UpdateSessionDisplaySettings"/>
+        /// can only reach the requested size by dropping and re-establishing the session.
+        /// </summary>
+        protected virtual bool SupportsDynamicResize => false;
 
         protected virtual void UpdateSessionDisplaySettings(uint width, uint height)
         {
