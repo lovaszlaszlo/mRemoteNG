@@ -425,11 +425,46 @@ namespace mRemoteNG.UI.Window
             if (ic?.Info == null) return;
             FrmMain.Default.SelectedConnection = ic.Info;
 
-            // Do NOT focus the protocol from here. The PuTTY window is reparented into the tab
-            // without the WS_CHILD style, so whenever it takes the focus no docked content holds
-            // the WinForms focus any more and this event fires again - focusing the active document
-            // then took the focus back off PuTTY, which fired the event once more. With an RDP and
-            // an SSH tab open that oscillated about twice a second and made the tabs unusable.
+            // Switching tabs leaves the focus on the ConnectionTab itself and never passes it on to
+            // the connection, so an RDP session had to be clicked before it took the keyboard.
+            // Alt+Tab did not suffer from this because WM_ACTIVATEAPP calls ActivateConnection(),
+            // which focuses the protocol explicitly.
+            //
+            // This event also fires while the application is activated or deactivated with the same
+            // tab still in front, so only a real change of the active document is acted on.
+            IDockContent activeDocument = connDock.ActiveDocument;
+            if (activeDocument == null || ReferenceEquals(activeDocument, _lastFocusedDocument)) return;
+            _lastFocusedDocument = activeDocument;
+
+            FocusActiveConnection(activeDocument);
+        }
+
+        private IDockContent _lastFocusedDocument;
+
+        /// <summary>
+        /// Hands the keyboard to the connection in the tab that just became active.
+        /// </summary>
+        /// <remarks>
+        /// Two earlier attempts at this had to be reverted, and the reason is now known: PuTTY is
+        /// embedded without the WS_CHILD style, so focusing it also activates it and drags the tab
+        /// selection back - the handler then fed itself. PuTTY is therefore left alone here and
+        /// still needs a click; the RDP client and the native SSH terminal are ordinary controls
+        /// and have no such behaviour.
+        /// </remarks>
+        private void FocusActiveConnection(IDockContent expectedDocument)
+        {
+            if (!IsHandleCreated || IsDisposed) return;
+
+            BeginInvoke(new Action(() =>
+            {
+                if (!ReferenceEquals(connDock.ActiveDocument, expectedDocument)) return;
+                if (!FrmMain.ApplicationIsInForeground()) return;
+
+                ProtocolBase protocol = GetInterfaceControl()?.Protocol;
+                if (protocol == null || protocol is PuttyBase) return;
+
+                protocol.Focus();
+            }));
         }
 
         #endregion
