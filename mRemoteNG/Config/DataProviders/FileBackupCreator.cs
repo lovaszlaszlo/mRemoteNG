@@ -20,15 +20,23 @@ namespace mRemoteNG.Config.DataProviders
 
                 PathValidator.ValidatePathOrThrow(fileName, nameof(fileName));
 
+                DateTime takenAt = DateTime.Now;
+
                 // Asks BackupPath rather than formatting the name here, so the pruner looks for
                 // exactly the files this writes - in the folder the user configured.
                 string backupFileName = Path.Combine(
                     BackupPath.DirectoryFor(fileName),
-                    BackupPath.BackupFileNameFor(fileName, DateTime.Now));
+                    BackupPath.BackupFileNameFor(fileName, takenAt));
 
                 PathValidator.ValidatePathOrThrow(backupFileName, nameof(backupFileName));
 
                 File.Copy(fileName, backupFileName);
+
+                // File.Copy carries the source timestamp over, and the source is the state from
+                // the *previous* save - so a backup folder sorted by date showed the newest
+                // backup as the oldest file. Stamp it with when the backup was taken, which is
+                // what the name says and what anyone reading the folder means by the date.
+                File.SetLastWriteTime(backupFileName, takenAt);
             }
             catch (Exception ex)
             {
