@@ -178,7 +178,9 @@ namespace mRemoteNG.UI.Forms.OptionsPages
             // 
             numMaxBackups.Location = new System.Drawing.Point(274, 120);
             numMaxBackups.Name = "numMaxBackups";
-            numMaxBackups.Size = new System.Drawing.Size(34, 22);
+            // Wide enough for a three digit count plus the spin buttons; at 34 the number had
+            // about ten pixels and was unreadable.
+            numMaxBackups.Size = new System.Drawing.Size(60, 22);
             numMaxBackups.TabIndex = 1;
             numMaxBackups.TextAlign = System.Windows.Forms.HorizontalAlignment.Center;
             // 
@@ -506,7 +508,9 @@ namespace mRemoteNG.UI.Forms.OptionsPages
             // cbMakeBackupOnSave
             // 
             cbMakeBackupOnSave.AutoSize = true;
-            cbMakeBackupOnSave.Location = new System.Drawing.Point(141, 3);
+            // Spread out to leave room for languages whose words are longer than the English ones;
+            // these are AutoSize, so a fixed 66 pixel pitch made them overlap.
+            cbMakeBackupOnSave.Location = new System.Drawing.Point(158, 3);
             cbMakeBackupOnSave.Name = "cbMakeBackupOnSave";
             cbMakeBackupOnSave.Size = new System.Drawing.Size(67, 17);
             cbMakeBackupOnSave.TabIndex = 2;
@@ -516,7 +520,7 @@ namespace mRemoteNG.UI.Forms.OptionsPages
             // cbMakeBackupOnEdit
             // 
             cbMakeBackupOnEdit.AutoSize = true;
-            cbMakeBackupOnEdit.Location = new System.Drawing.Point(70, 3);
+            cbMakeBackupOnEdit.Location = new System.Drawing.Point(66, 3);
             cbMakeBackupOnEdit.Name = "cbMakeBackupOnEdit";
             cbMakeBackupOnEdit.Size = new System.Drawing.Size(65, 17);
             cbMakeBackupOnEdit.TabIndex = 1;

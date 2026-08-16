@@ -647,7 +647,7 @@
   <data name="Delete" xml:space="preserve"><value>Törlés</value></data>
   <data name="DeleteAll" xml:space="preserve"><value>Összes törlése</value></data>
   <data name="DeleteExternalTool" xml:space="preserve"><value>Külső eszköz törlése...</value></data>
-  <data name="Disable" xml:space="preserve"><value>Kikapcsolás</value></data>
+  <data name="Disable" xml:space="preserve"><value>Nem</value></data>
   <data name="DisableRefocus" xml:space="preserve"><value>Újrafókuszálás kikapcsolása</value></data>
   <data name="DisconnectOthers" xml:space="preserve"><value>Az összes többi bontása</value></data>
   <data name="DisconnectOthersRight" xml:space="preserve"><value>A jobbra lévő fülek bontása</value></data>
@@ -661,7 +661,7 @@
   <data name="Element" xml:space="preserve"><value>Elem</value></data>
   <data name="EmptyPasswordContinue" xml:space="preserve"><value>Folytatod jelszó nélkül?</value></data>
   <data name="EmptyUsernamePasswordDomainFields" xml:space="preserve"><value>Üres felhasználónév, jelszó vagy tartomány mezőkhöz használja:</value></data>
-  <data name="Enable" xml:space="preserve"><value>Bekapcsolás</value></data>
+  <data name="Enable" xml:space="preserve"><value>Igen</value></data>
   <data name="EnableAlwaysEncrypted" xml:space="preserve"><value>Always Encrypted bekapcsolása:</value></data>
   <data name="EnableMARS" xml:space="preserve"><value>MARS bekapcsolása:</value></data>
   <data name="EnableSecureEnclaves" xml:space="preserve"><value>Biztonságos enklávék bekapcsolása:</value></data>
@@ -758,9 +758,9 @@
   <data name="NoCachedRdpCredentialFound" xml:space="preserve"><value>Nincs gyorsítótárazott RDP hitelesítő adat a(z) {0} géphez. Nincs mit törölni.</value></data>
   <data name="None" xml:space="preserve"><value>Nincs</value></data>
   <data name="NoUpdateAvailable" xml:space="preserve"><value>Nincs elérhető frissítés</value></data>
-  <data name="OnEdit" xml:space="preserve"><value>Szerkesztéskor</value></data>
-  <data name="OnExit" xml:space="preserve"><value>Kilépéskor</value></data>
-  <data name="OnSave" xml:space="preserve"><value>Mentéskor</value></data>
+  <data name="OnEdit" xml:space="preserve"><value>Szerkesztés</value></data>
+  <data name="OnExit" xml:space="preserve"><value>Kilépés</value></data>
+  <data name="OnSave" xml:space="preserve"><value>Mentés</value></data>
   <data name="OpenFile" xml:space="preserve"><value>Fájl megnyitása</value></data>
   <data name="OpenNewTabRight" xml:space="preserve"><value>Új fül a jelenleg kijelölt fültől jobbra nyíljon</value></data>
   <data name="OpenPorts" xml:space="preserve"><value>Nyitott portok</value></data>

@@ -56,20 +56,77 @@ namespace mRemoteNG.UI.Controls
             Up = new MrngButton
             {
                 Text = "\u25B2",
-                Font = new Font(Font.FontFamily, 5f)
+                Font = new Font(Font.FontFamily, 5f * ScaleFactor)
             };
-            Up.SetBounds(Controls.Owner.Width - 17, 2, 16, Controls.Owner.Height / 2 - 1);
             Up.Click += Up_Click;
             Down = new MrngButton
             {
                 Text = "\u25BC",
-                Font = new Font(Font.FontFamily, 5f)
+                Font = new Font(Font.FontFamily, 5f * ScaleFactor)
             };
-            Down.SetBounds(Controls.Owner.Width - 17, Controls.Owner.Height / 2 + 1, 16, Controls.Owner.Height / 2 - 1);
             Down.Click += Down_Click;
             Controls.Add(Up);
             Controls.Add(Down);
+            LayOutButtons();
             Invalidate();
+        }
+
+        /// <summary>How much larger everything is than at the 96 DPI these sizes were written for.</summary>
+        private float ScaleFactor => DeviceDpi / 96f;
+
+        /// <summary>
+        /// Puts the replacement spin buttons against the right edge and stretches the number field
+        /// up to them.
+        /// </summary>
+        /// <remarks>
+        /// Removing the native spin buttons does not give their space back: the base class still
+        /// lays the text box out as if they were there. The replacement buttons went to a hard
+        /// coded offset instead, which left a strip of bare control between the number and the
+        /// arrows where the borders met - visible as an unreadable sliver. Sizing from the actual
+        /// client area closes it, and gives the number the space back as well.
+        /// </remarks>
+        private void LayOutButtons()
+        {
+            if (Up == null || Down == null || ClientSize.Width <= 0) return;
+
+            // Start where the text box ends rather than at a fixed offset. Widening the text box
+            // instead does not work: the base class lays it out again on every layout pass and
+            // puts it straight back.
+            int left = ClientSize.Width - (int)Math.Round(17 * ScaleFactor);
+            foreach (Control child in Controls)
+            {
+                if (child is MrngButton) continue;
+                left = child.Right;
+                break;
+            }
+
+            int width = ClientSize.Width - left - 1;
+            if (width <= 0) return;
+
+            int half = (ClientSize.Height - 2) / 2;
+            Up.SetBounds(left, 1, width, half);
+            Down.SetBounds(left, 1 + half, width, half);
+        }
+
+        protected override void OnLayout(LayoutEventArgs e)
+        {
+            base.OnLayout(e);
+
+            // The base class moves its text box during layout, so the buttons have to follow it
+            // afterwards or the gap reappears.
+            LayOutButtons();
+        }
+
+        protected override void OnSizeChanged(EventArgs e)
+        {
+            base.OnSizeChanged(e);
+            LayOutButtons();
+        }
+
+        protected override void OnDpiChangedAfterParent(EventArgs e)
+        {
+            base.OnDpiChangedAfterParent(e);
+            LayOutButtons();
         }
 
         private void Down_Click(object sender, EventArgs e)
