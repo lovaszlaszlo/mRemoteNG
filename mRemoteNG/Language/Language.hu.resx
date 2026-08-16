@@ -136,7 +136,7 @@
     <value>Automatikus frissítés beállításai</value>
   </data>
   <data name="AutoSaveEvery" xml:space="preserve">
-    <value>Automatikus mentés minden:</value>
+    <value>Automatikus mentés percenként (0 = kikapcsolva)</value>
   </data>
   <data name="AvailableVersion" xml:space="preserve">
     <value>Aktuális verzió</value>
@@ -800,8 +800,8 @@
   <data name="RadioCloseWarnMultiple" xml:space="preserve"><value>Csak &amp;több kapcsolat bezárásakor figyelmeztessen</value></data>
   <data name="RadioCloseWarnNever" xml:space="preserve"><value>&amp;Ne figyelmeztessen kapcsolatok bezárásakor</value></data>
   <data name="RdpErrorUnknown" xml:space="preserve"><value>Ismeretlen hiba történt.</value></data>
-  <data name="RdpOverallConnectionTimeout" xml:space="preserve"><value>RDP-kapcsolat időkorlátja</value></data>
-  <data name="RdpReconnectCount" xml:space="preserve"><value>RDP újracsatlakozások száma:</value></data>
+  <data name="RdpOverallConnectionTimeout" xml:space="preserve"><value>RDP-kapcsolat időkorlátja (mp)</value></data>
+  <data name="RdpReconnectCount" xml:space="preserve"><value>RDP újracsatlakozások száma</value></data>
   <data name="ReadOnly" xml:space="preserve"><value>Csak olvasható:</value></data>
   <data name="ReconnectAllConnections" xml:space="preserve"><value>Összes kapcsolat újracsatlakoztatása</value></data>
   <data name="ReconnectAtStartup" xml:space="preserve"><value>Induláskor csatlakozzon a korábban nyitott munkamenetekhez</value></data>
