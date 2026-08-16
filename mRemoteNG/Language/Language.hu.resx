@@ -370,4 +370,169 @@
   <data name="VaultOpenbaoSecretEngineSSHOTP" xml:space="preserve">
     <value></value>
   </data>
+
+  <data name="AudioCapture" xml:space="preserve"><value>Hangrögzítés</value></data>
+  <data name="AuthenticationLevel" xml:space="preserve"><value>Kiszolgáló-hitelesítés</value></data>
+  <data name="AuthenticationMode" xml:space="preserve"><value>Hitelesítési mód</value></data>
+  <data name="AutomaticResize" xml:space="preserve"><value>Automatikus átméretezés</value></data>
+  <data name="CacheBitmaps" xml:space="preserve"><value>Bittérképek gyorsítótárazása</value></data>
+  <data name="Clipboard" xml:space="preserve"><value>Vágólap</value></data>
+  <data name="Color" xml:space="preserve"><value>Szín</value></data>
+  <data name="Colors" xml:space="preserve"><value>Színek</value></data>
+  <data name="Compression" xml:space="preserve"><value>Tömörítés</value></data>
+  <data name="ConnectionFrameColor" xml:space="preserve"><value>Kapcsolatkeret színe</value></data>
+  <data name="Description" xml:space="preserve"><value>Leírás</value></data>
+  <data name="DisableCursorShadow" xml:space="preserve"><value>Kurzorárnyék kikapcsolása</value></data>
+  <data name="DisableFullWindowDrag" xml:space="preserve"><value>Teljes ablak húzásának kikapcsolása</value></data>
+  <data name="DisableMenuAnimations" xml:space="preserve"><value>Menüanimációk kikapcsolása</value></data>
+  <data name="DiskDrives" xml:space="preserve"><value>Lemezmeghajtók</value></data>
+  <data name="DisplayThemes" xml:space="preserve"><value>Témák megjelenítése</value></data>
+  <data name="DisplayWallpaper" xml:space="preserve"><value>Háttérkép megjelenítése</value></data>
+  <data name="EC2InstanceId" xml:space="preserve"><value>EC2 példányazonosító</value></data>
+  <data name="EC2Region" xml:space="preserve"><value>EC2 régió</value></data>
+  <data name="EnableDesktopComposition" xml:space="preserve"><value>Asztalkompozíció</value></data>
+  <data name="Encoding" xml:space="preserve"><value>Kódolás</value></data>
+  <data name="EnvironmentTags" xml:space="preserve"><value>Környezeti címkék</value></data>
+  <data name="ExternalAddressProvider" xml:space="preserve"><value>Külső címszolgáltató</value></data>
+  <data name="ExternalCredentialProvider" xml:space="preserve"><value>Külső hitelesítőadat-szolgáltató</value></data>
+  <data name="ExternalTool" xml:space="preserve"><value>Külső eszköz</value></data>
+  <data name="ExternalToolAfter" xml:space="preserve"><value>Külső eszköz utána</value></data>
+  <data name="ExternalToolBefore" xml:space="preserve"><value>Külső eszköz előtte</value></data>
+  <data name="Favorite" xml:space="preserve"><value>Kedvenc</value></data>
+  <data name="FontSmoothing" xml:space="preserve"><value>Betűsimítás</value></data>
+  <data name="HostnameIp" xml:space="preserve"><value>Gépnév/IP</value></data>
+  <data name="LoadBalanceInfo" xml:space="preserve"><value>Terheléselosztási adat</value></data>
+  <data name="MacAddress" xml:space="preserve"><value>MAC-cím</value></data>
+  <data name="MinutesToIdleTimeout" xml:space="preserve"><value>Tétlenségi percek</value></data>
+  <data name="Name" xml:space="preserve"><value>Név</value></data>
+  <data name="OpeningCommand" xml:space="preserve"><value>Indító parancs</value></data>
+  <data name="Panel" xml:space="preserve"><value>Panel</value></data>
+  <data name="Password" xml:space="preserve"><value>Jelszó</value></data>
+  <data name="Port" xml:space="preserve"><value>Port</value></data>
+  <data name="Ports" xml:space="preserve"><value>Portok</value></data>
+  <data name="Printers" xml:space="preserve"><value>Nyomtatók</value></data>
+  <data name="PropertyDescriptionAuthenticationLevel" xml:space="preserve"><value>Válaszd ki, milyen hitelesítési szintet használjon ez a kapcsolat.</value></data>
+  <data name="PropertyDescriptionAuthenticationMode" xml:space="preserve"><value>Válaszd ki, hogyan hitelesítsen a VNC-kiszolgálón.</value></data>
+  <data name="PropertyDescriptionAutomaticResize" xml:space="preserve"><value>Válaszd ki, hogy a kapcsolat automatikusan átméreteződjön-e az ablak átméretezésekor vagy teljes képernyős módra váltáskor. RDC 8.0 vagy újabb szükséges hozzá.</value></data>
+  <data name="PropertyDescriptionCacheBitmaps" xml:space="preserve"><value>Válaszd ki, hogy legyen-e bittérkép-gyorsítótárazás.</value></data>
+  <data name="PropertyDescriptionColor" xml:space="preserve"><value>Beállítja a kapcsolat vagy mappa színét a kapcsolatfában. A kapcsolatok ezt a színt a szülőmappájuktól öröklik.</value></data>
+  <data name="PropertyDescriptionColors" xml:space="preserve"><value>Válaszd ki a használandó színmélységet.</value></data>
+  <data name="PropertyDescriptionCompression" xml:space="preserve"><value>Válaszd ki a használandó tömörítési szintet.</value></data>
+  <data name="PropertyDescriptionConnectionFrameColor" xml:space="preserve"><value>Színes keretet rajzol a kapcsolat panelje köré, hogy a különböző környezetek (pl. éles, teszt, fejlesztői) ránézésre megkülönböztethetők legyenek.</value></data>
+  <data name="PropertyDescriptionDescription" xml:space="preserve"><value>Ide írhatod a géphez tartozó jegyzeteidet vagy leírást.</value></data>
+  <data name="PropertyDescriptionDisableCursorShadow" xml:space="preserve"><value>Meghatározza, hogy látszódjon-e az egérmutató árnyéka.</value></data>
+  <data name="PropertyDescriptionDisableFullWindowDrag" xml:space="preserve"><value>Meghatározza, hogy látszódjon-e az ablak tartalma, amikor új helyre húzod.</value></data>
+  <data name="PropertyDescriptionDisableMenuAnimations" xml:space="preserve"><value>Meghatározza, hogy a menük és ablakok animációval jelenhetnek-e meg a távoli munkamenetben.</value></data>
+  <data name="PropertyDescriptionDisplayThemes" xml:space="preserve"><value>Válaszd az igent, ha a távoli gép témája jelenjen meg.</value></data>
+  <data name="PropertyDescriptionDisplayWallpaper" xml:space="preserve"><value>Válaszd az igent, ha a távoli gép háttérképe jelenjen meg.</value></data>
+  <data name="PropertyDescriptionDomain" xml:space="preserve"><value>Add meg a tartományt.</value></data>
+  <data name="PropertyDescriptionEC2InstanceId" xml:space="preserve"><value>Ezzel a példányazonosítóval kéri le a nyilvános IP-t az AWS EC2 példánytól.</value></data>
+  <data name="PropertyDescriptionEC2Region" xml:space="preserve"><value>Az AWS-példány adatait ebből a régióból kéri le.</value></data>
+  <data name="PropertyDescriptionEnableDesktopComposition" xml:space="preserve"><value>Válaszd ki, hogy legyen-e asztalkompozíció.</value></data>
+  <data name="PropertyDescriptionEnableFontSmoothing" xml:space="preserve"><value>Válaszd ki, hogy legyen-e betűsimítás.</value></data>
+  <data name="PropertyDescriptionEncoding" xml:space="preserve"><value>Válaszd ki a használandó kódolási módot.</value></data>
+  <data name="PropertyDescriptionEnvironmentTags" xml:space="preserve"><value>Címkék a környezet besorolásához (pl. #ELES, #UAT, #TESZT, #BETA, #PENZUGY)</value></data>
+  <data name="PropertyDescriptionExternalAddressProvider" xml:space="preserve"><value>Külső szolgáltató, ahonnan a gép címe lekérhető.</value></data>
+  <data name="PropertyDescriptionExternalCredentialProvider" xml:space="preserve"><value>Külső hitelesítőadat-szolgáltató vagy széf, ahonnan a hitelesítő adatok származnak.</value></data>
+  <data name="PropertyDescriptionExternalTool" xml:space="preserve"><value>Válaszd ki az indítandó külső eszközt.</value></data>
+  <data name="PropertyDescriptionExternalToolAfter" xml:space="preserve"><value>Válassz külső eszközt, amely a távoli géppel való kapcsolat bontása után indul el.</value></data>
+  <data name="PropertyDescriptionExternalToolBefore" xml:space="preserve"><value>Válassz külső eszközt, amely a távoli géppel való kapcsolat felépítése előtt indul el.</value></data>
+  <data name="PropertyDescriptionFavorite" xml:space="preserve"><value>Ez a kapcsolat jelenjen meg a kedvencek menüben.</value></data>
+  <data name="PropertyDescriptionHostnameIp" xml:space="preserve"><value>Add meg a gépnevet vagy IP-címet, amelyhez csatlakozni szeretnél.</value></data>
+  <data name="PropertyDescriptionIcon" xml:space="preserve"><value>Válassz ikont, amely a géphez csatlakozva megjelenik.</value></data>
+  <data name="PropertyDescriptionLoadBalanceInfo" xml:space="preserve"><value>Megadja a terheléselosztási adatot, amely alapján az elosztó a legjobb kiszolgálót választja.</value></data>
+  <data name="PropertyDescriptionMACAddress" xml:space="preserve"><value>Add meg a távoli gép MAC-címét, ha külső eszközben szeretnéd használni.</value></data>
+  <data name="PropertyDescriptionName" xml:space="preserve"><value>Ez a név jelenik meg a kapcsolatfában.</value></data>
+  <data name="PropertyDescriptionOpeningCommand" xml:space="preserve"><value>A kapcsolat felépülése után elküldött parancs.</value></data>
+  <data name="PropertyDescriptionPanel" xml:space="preserve"><value>Beállítja, melyik panelen nyíljon meg a kapcsolat.</value></data>
+  <data name="PropertyDescriptionPassword" xml:space="preserve"><value>Add meg a jelszavadat.</value></data>
+  <data name="PropertyDescriptionPort" xml:space="preserve"><value>Add meg a portot, amelyen a kiválasztott protokoll figyel.</value></data>
+  <data name="PropertyDescriptionProtocol" xml:space="preserve"><value>Válaszd ki, milyen protokollal csatlakozzon az mRemoteNG a géphez.</value></data>
+  <data name="PropertyDescriptionPuttySession" xml:space="preserve"><value>Válaszd ki a csatlakozáskor használandó PuTTY-munkamenetet.</value></data>
+  <data name="PropertyDescriptionRDGatewayDomain" xml:space="preserve"><value>Megadja a tartománynevet, amellyel az RD-átjáróhoz csatlakozol.</value></data>
+  <data name="PropertyDescriptionRDGatewayHostname" xml:space="preserve"><value>Megadja a Távoli asztali átjáró kiszolgáló gépnevét.</value></data>
+  <data name="PropertyDescriptionRDGatewayUseConnectionCredentials" xml:space="preserve"><value>Megadja, hogy az átjáróra ugyanazzal a felhasználónévvel és jelszóval jelentkezzen-e be, mint a kapcsolat.</value></data>
+  <data name="PropertyDescriptionRDGatewayUsername" xml:space="preserve"><value>Megadja a felhasználónevet, amellyel az RD-átjáróhoz csatlakozol.</value></data>
+  <data name="PropertyDescriptionRDPAlertIdleTimeout" xml:space="preserve"><value>Válaszd ki, hogy kapj-e értesítést, ha az RDP-munkamenet tétlenség miatt bomlik.</value></data>
+  <data name="PropertyDescriptionRdpGatewayAccessToken" xml:space="preserve"><value>Megadja a Távoli asztali átjáró hozzáférési tokenjét.</value></data>
+  <data name="PropertyDescriptionRdpGatewayPassword" xml:space="preserve"><value>Megadja a Távoli asztali átjáró jelszavát.</value></data>
+  <data name="PropertyDescriptionRdpGatewayUsageMethod" xml:space="preserve"><value>Megadja, mikor használjon Távoli asztali átjárót (RD Gateway).</value></data>
+  <data name="PropertyDescriptionRDPMinutesToIdleTimeout" xml:space="preserve"><value>Hány percnyi tétlenség után bontsa automatikusan az RDP-munkamenetet (0 = nincs korlát).</value></data>
+  <data name="PropertyDescriptionRDPStartProgram" xml:space="preserve"><value>A távoli kiszolgálón csatlakozáskor elindítandó program.</value></data>
+  <data name="PropertyDescriptionRDPStartProgramWorkDir" xml:space="preserve"><value>Megadja az alternatív parancsértelmező munkakönyvtárát.</value></data>
+  <data name="PropertyDescriptionRdpVersion" xml:space="preserve"><value>Beállítja a kapcsolatok megnyitásához használt RDP-verziót.</value></data>
+  <data name="PropertyDescriptionRedirectAudioCapture" xml:space="preserve"><value>Válaszd ki, hogy a távoli gép alapértelmezett hangbemenete átirányítódjon-e erre a számítógépre.</value></data>
+  <data name="PropertyDescriptionRedirectClipboard" xml:space="preserve"><value>Válaszd ki, hogy megosztott legyen-e a vágólap.</value></data>
+  <data name="PropertyDescriptionRedirectDiskDrivesCustom" xml:space="preserve"><value>Add meg az átirányítandó meghajtókat: C,D,X</value></data>
+  <data name="PropertyDescriptionRedirectDrives" xml:space="preserve"><value>Válaszd ki, hogy a helyi lemezmeghajtók látszódjanak-e a távoli gépen.</value></data>
+  <data name="PropertyDescriptionRedirectKeys" xml:space="preserve"><value>Válaszd ki, hogy a billentyűkombinációk (pl. Alt-Tab) a távoli gépre irányuljanak-e.</value></data>
+  <data name="PropertyDescriptionRedirectPorts" xml:space="preserve"><value>Válaszd ki, hogy a helyi portok (pl. soros, párhuzamos) látszódjanak-e a távoli gépen.</value></data>
+  <data name="PropertyDescriptionRedirectPrinters" xml:space="preserve"><value>Válaszd ki, hogy a helyi nyomtatók látszódjanak-e a távoli gépen.</value></data>
+  <data name="PropertyDescriptionRedirectSmartCards" xml:space="preserve"><value>Válaszd ki, hogy a helyi intelligens kártyák elérhetők legyenek-e a távoli gépen.</value></data>
+  <data name="PropertyDescriptionRedirectSounds" xml:space="preserve"><value>Válaszd ki, hogyan irányítódjon át a távoli hang.</value></data>
+  <data name="PropertyDescriptionRenderingEngine" xml:space="preserve"><value>Válaszd ki a HTML megjelenítéséhez használt motort.</value></data>
+  <data name="PropertyDescriptionResolution" xml:space="preserve"><value>Válaszd ki a felbontást vagy módot, amelyben a kapcsolat megnyílik.</value></data>
+  <data name="PropertyDescriptionSmartSizeMode" xml:space="preserve"><value>Válaszd ki a használandó SmartSize módot.</value></data>
+  <data name="PropertyDescriptionSoundQuality" xml:space="preserve"><value>Válaszd ki a protokoll által nyújtott hangminőséget: dinamikus, közepes, magas.</value></data>
+  <data name="PropertyDescriptionSshOptions" xml:space="preserve"><value>Itt adhatsz meg további beállításokat az SSH-kapcsolathoz. Részletek a PuTTY dokumentációjában.</value></data>
+  <data name="PropertyDescriptionSshTunnel" xml:space="preserve"><value>SSH-alagúton (ugrógépen) át történő kapcsolathoz add meg az alagút felépítéséhez használt SSH-kapcsolatot.</value></data>
+  <data name="PropertyDescriptionTabColor" xml:space="preserve"><value>Beállítja a kapcsolat fülének színét. Hagyd üresen a téma alapértelmezett színéhez.</value></data>
+  <data name="PropertyDescriptionUseConsoleSession" xml:space="preserve"><value>Csatlakozás a távoli gép konzol-munkamenetéhez.</value></data>
+  <data name="PropertyDescriptionUseCredSsp" xml:space="preserve"><value>A CredSSP (Credential Security Support Provider) használata hitelesítéshez, ha elérhető.</value></data>
+  <data name="PropertyDescriptionUseEnhancedMode" xml:space="preserve"><value>Csatlakozás Hyper-V gazdagéphez kibővített módban.</value></data>
+  <data name="PropertyDescriptionUser1" xml:space="preserve"><value>Ide bármilyen információt beírhatsz, amire szükséged van.</value></data>
+  <data name="PropertyDescriptionUseRCG" xml:space="preserve"><value>A Remote Credential Guard használata, amely a célgépen történő hitelesítést az RDP-csatornán vezeti vissza a forrásgéphez.</value></data>
+  <data name="PropertyDescriptionUseRedirectionServerName" xml:space="preserve"><value>Az átirányítási kiszolgálónév használata a kapcsolat gépneve helyett RDP-kapcsolatoknál.</value></data>
+  <data name="PropertyDescriptionUseRestrictedAdmin" xml:space="preserve"><value>Korlátozott rendszergazda mód használata a célgépen (helyi rendszerkörnyezetben).</value></data>
+  <data name="PropertyDescriptionUsername" xml:space="preserve"><value>Add meg a felhasználónevedet.</value></data>
+  <data name="PropertyDescriptionUserViaAPI" xml:space="preserve"><value>Add meg a felhasználói adat azonosítóját a külső API-ban (pl. Secret Server). Ha ezt használod, hagyd üresen a felhasználónév, jelszó és tartomány mezőket.</value></data>
+  <data name="PropertyDescriptionUseVmId" xml:space="preserve"><value>VM-azonosító használata a Hyper-V alatt futó virtuális géphez való csatlakozáshoz.</value></data>
+  <data name="PropertyDescriptionViewOnly" xml:space="preserve"><value>Válaszd az igent, ha csak megtekintésre szolgáló kapcsolatot szeretnél a géphez.</value></data>
+  <data name="PropertyDescriptionVmId" xml:space="preserve"><value>A Hyper-V virtuális gép azonosítója, amelyhez csatlakozni szeretnél.</value></data>
+  <data name="PropertyDescriptionVNCProxyAddress" xml:space="preserve"><value>Add meg a használandó proxy címét.</value></data>
+  <data name="PropertyDescriptionVNCProxyPassword" xml:space="preserve"><value>Add meg a jelszavadat a proxyhoz való hitelesítéshez.</value></data>
+  <data name="PropertyDescriptionVNCProxyPort" xml:space="preserve"><value>Add meg a portot, amelyen a proxykiszolgáló figyel.</value></data>
+  <data name="PropertyDescriptionVNCProxyType" xml:space="preserve"><value>Ha proxyn keresztül alagutazod a VNC-kapcsolatokat, válaszd ki a típusát.</value></data>
+  <data name="PropertyDescriptionVNCProxyUsername" xml:space="preserve"><value>Add meg a felhasználónevedet a proxyhoz való hitelesítéshez.</value></data>
+  <data name="Proxy" xml:space="preserve"><value>Proxy</value></data>
+  <data name="ProxyAddress" xml:space="preserve"><value>Proxy címe</value></data>
+  <data name="ProxyPassword" xml:space="preserve"><value>Proxy jelszó</value></data>
+  <data name="ProxyPort" xml:space="preserve"><value>Proxy port</value></data>
+  <data name="ProxyType" xml:space="preserve"><value>Proxy típusa</value></data>
+  <data name="ProxyUsername" xml:space="preserve"><value>Proxy felhasználónév</value></data>
+  <data name="PuttySession" xml:space="preserve"><value>PuTTY munkamenet</value></data>
+  <data name="RDPGateway" xml:space="preserve"><value>RDP-átjáró</value></data>
+  <data name="RdpGatewayAccessToken" xml:space="preserve"><value>RDP-átjáró hozzáférési token</value></data>
+  <data name="RdpGatewayDomain" xml:space="preserve"><value>RDP-átjáró tartomány</value></data>
+  <data name="RdpGatewayHostname" xml:space="preserve"><value>RDP-átjáró gépnév</value></data>
+  <data name="RdpGatewayPassword" xml:space="preserve"><value>RDP-átjáró jelszó</value></data>
+  <data name="RdpGatewayUsageMethod" xml:space="preserve"><value>RDP-átjáró használata</value></data>
+  <data name="RdpGatewayUseConnectionCredentials" xml:space="preserve"><value>RDP-átjáró hitelesítő adatai</value></data>
+  <data name="RdpGatewayUsername" xml:space="preserve"><value>RDP-átjáró felhasználónév</value></data>
+  <data name="RDPStartProgram" xml:space="preserve"><value>Alternatív parancsértelmező</value></data>
+  <data name="RDPStartProgramWorkDir" xml:space="preserve"><value>Alternatív parancsértelmező munkakönyvtára</value></data>
+  <data name="RdpVersion" xml:space="preserve"><value>RDP-verzió</value></data>
+  <data name="RedirectDiskDrivesCustom" xml:space="preserve"><value>Egyéni meghajtók</value></data>
+  <data name="RedirectKeys" xml:space="preserve"><value>Billentyűkombinációk</value></data>
+  <data name="RenderingEngine" xml:space="preserve"><value>Megjelenítőmotor</value></data>
+  <data name="Resolution" xml:space="preserve"><value>Felbontás</value></data>
+  <data name="SmartCard" xml:space="preserve"><value>Intelligens kártya</value></data>
+  <data name="SmartSizeMode" xml:space="preserve"><value>SmartSize mód</value></data>
+  <data name="SoundQuality" xml:space="preserve"><value>Hangminőség</value></data>
+  <data name="Sounds" xml:space="preserve"><value>Hangok</value></data>
+  <data name="SshOptions" xml:space="preserve"><value>SSH-beállítások</value></data>
+  <data name="SshTunnel" xml:space="preserve"><value>SSH-alagút</value></data>
+  <data name="TabColor" xml:space="preserve"><value>Fül színe</value></data>
+  <data name="UseConsoleSession" xml:space="preserve"><value>Konzol-munkamenet használata</value></data>
+  <data name="UseCredSsp" xml:space="preserve"><value>CredSSP használata</value></data>
+  <data name="UseEnhancedMode" xml:space="preserve"><value>Kibővített mód használata</value></data>
+  <data name="UseRCG" xml:space="preserve"><value>Remote Credential Guard használata</value></data>
+  <data name="UseRedirectionServerName" xml:space="preserve"><value>Átirányítási kiszolgálónév használata</value></data>
+  <data name="UseRestrictedAdmin" xml:space="preserve"><value>Korlátozott rendszergazda mód</value></data>
+  <data name="UserField" xml:space="preserve"><value>Felhasználói mező</value></data>
+  <data name="Username" xml:space="preserve"><value>Felhasználónév</value></data>
+  <data name="UserViaAPI" xml:space="preserve"><value>API felhasználóazonosító</value></data>
+  <data name="UseVmId" xml:space="preserve"><value>VM-azonosító használata</value></data>
+  <data name="ViewOnly" xml:space="preserve"><value>Csak megtekintés</value></data>
+  <data name="VmId" xml:space="preserve"><value>VM-azonosító</value></data>
 </root>
