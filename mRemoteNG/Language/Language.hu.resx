@@ -535,4 +535,375 @@
   <data name="UseVmId" xml:space="preserve"><value>VM-azonosító használata</value></data>
   <data name="ViewOnly" xml:space="preserve"><value>Csak megtekintés</value></data>
   <data name="VmId" xml:space="preserve"><value>VM-azonosító</value></data>
+
+  <data name="_CloseWarnAll" xml:space="preserve"><value>Figyelmeztessen a kapcsolatok bezárásakor</value></data>
+  <data name="_Delete" xml:space="preserve"><value>&amp;Törlés</value></data>
+  <data name="_ExportToFile" xml:space="preserve"><value>&amp;Exportálás fájlba...</value></data>
+  <data name="_File" xml:space="preserve"><value>&amp;Fájl</value></data>
+  <data name="_Help" xml:space="preserve"><value>&amp;Súgó</value></data>
+  <data name="_Launch" xml:space="preserve"><value>&amp;Indítás</value></data>
+  <data name="_New" xml:space="preserve"><value>&amp;Új</value></data>
+  <data name="_Scan" xml:space="preserve"><value>&amp;Vizsgálat</value></data>
+  <data name="_Sessions" xml:space="preserve"><value>&amp;Munkamenetek</value></data>
+  <data name="_Stop" xml:space="preserve"><value>&amp;Leállítás</value></data>
+  <data name="_Tools" xml:space="preserve"><value>&amp;Eszközök</value></data>
+  <data name="_View" xml:space="preserve"><value>&amp;Nézet</value></data>
+  <data name="ACLPermissionsHidden" xml:space="preserve"><value>Rejtett</value></data>
+  <data name="ACLPermissionsReadOnly" xml:space="preserve"><value>Csak olvasható</value></data>
+  <data name="ACLPermissionsWriteAllow" xml:space="preserve"><value>Írás engedélyezve</value></data>
+  <data name="Add" xml:space="preserve"><value>Hozzáadás</value></data>
+  <data name="AddConnectionPanel" xml:space="preserve"><value>Kapcsolatpanel hozzáadása</value></data>
+  <data name="AddRoot" xml:space="preserve"><value>Gyökér hozzáadása</value></data>
+  <data name="Advanced" xml:space="preserve"><value>Speciális</value></data>
+  <data name="AdvancedExpand" xml:space="preserve"><value>Speciális &gt;&gt;</value></data>
+  <data name="AdvancedSecurityOptions" xml:space="preserve"><value>Speciális biztonsági beállítások</value></data>
+  <data name="AllowOnlySingleInstance" xml:space="preserve"><value>Csak egy példány futhat az alkalmazásból (az mRemoteNG újraindítása szükséges)</value></data>
+  <data name="AlwaysShowConnectionTabs" xml:space="preserve"><value>Kapcsolatfülek mindig látszanak</value></data>
+  <data name="AlwaysShowPanelSelection" xml:space="preserve"><value>Kapcsolat megnyitásakor mindig kérdezzen panelt</value></data>
+  <data name="AlwaysShowPanelTabs" xml:space="preserve"><value>Panelfülek mindig látszanak</value></data>
+  <data name="AlwaysShowSysTrayIcon" xml:space="preserve"><value>Az értesítési területen mindig legyen ikon</value></data>
+  <data name="Apply" xml:space="preserve"><value>Alkalmaz</value></data>
+  <data name="ApplyDefaultInheritance" xml:space="preserve"><value>Alapértelmezett öröklés alkalmazása</value></data>
+  <data name="ApplyInheritanceToChildren" xml:space="preserve"><value>Öröklés alkalmazása a gyermekekre</value></data>
+  <data name="Arguments" xml:space="preserve"><value>Argumentumok</value></data>
+  <data name="AskUpdatesCommandCustom" xml:space="preserve"><value>Beállítások testreszabása most</value></data>
+  <data name="AskUpdatesContent" xml:space="preserve"><value>A(z) {0} automatikusan kereshet frissítéseket, amelyek új funkciókat és hibajavításokat hozhatnak. Ajánlott engedélyezni a heti frissítéskeresést.</value></data>
+  <data name="AssignedCredential" xml:space="preserve"><value>Hozzárendelt hitelesítő adat</value></data>
+  <data name="BackupFolder" xml:space="preserve"><value>Mentési mappa</value></data>
+  <data name="BackupToDb" xml:space="preserve"><value>adatbázisba</value></data>
+  <data name="BackupToFile" xml:space="preserve"><value>fájlba</value></data>
+  <data name="BindConnectionsAndConfigPanels" xml:space="preserve"><value>A Kapcsolatok és a Beállítások panel együtt mozogjon automatikus elrejtéskor</value></data>
+  <data name="ButtonDefaultInheritance" xml:space="preserve"><value>Alapértelmezett öröklés</value></data>
+  <data name="ButtonDefaultProperties" xml:space="preserve"><value>Alapértelmezett tulajdonságok</value></data>
+  <data name="Changelog" xml:space="preserve"><value>Változásnapló</value></data>
+  <data name="CheckAgain" xml:space="preserve"><value>Ellenőrzés újra</value></data>
+  <data name="CheckboxAutomaticReconnect" xml:space="preserve"><value>Automatikus újracsatlakozás a kiszolgálóról való lekapcsolódáskor (csak RDP &amp;&amp; ICA)</value></data>
+  <data name="CheckboxProxyAuthentication" xml:space="preserve"><value>Ez a proxykiszolgáló hitelesítést igényel</value></data>
+  <data name="CheckboxPuttyPath" xml:space="preserve"><value>Egyéni PuTTY-útvonal használata:</value></data>
+  <data name="CheckboxUpdateUseProxy" xml:space="preserve"><value>Proxykiszolgáló használata a kapcsolódáshoz</value></data>
+  <data name="CheckForUpdatesOnStartup" xml:space="preserve"><value>Frissítések keresése induláskor</value></data>
+  <data name="CheckNow" xml:space="preserve"><value>Ellenőrzés most</value></data>
+  <data name="ChooseLogPath" xml:space="preserve"><value>Válaszd ki az mRemoteNG naplófájljának helyét</value></data>
+  <data name="ChoosePanelBeforeConnecting" xml:space="preserve"><value>Panel választása csatlakozás előtt</value></data>
+  <data name="ChoosePath" xml:space="preserve"><value>Útvonal választása</value></data>
+  <data name="ChooseSchema" xml:space="preserve"><value>Séma választása:</value></data>
+  <data name="ClearCachedRdpCredentials" xml:space="preserve"><value>Gyorsítótárazott RDP hitelesítő adatok törlése</value></data>
+  <data name="ClearedCachedRdpCredentials" xml:space="preserve"><value>A(z) {0} gyorsítótárazott RDP hitelesítő adatai törölve.</value></data>
+  <data name="ClearSearchString" xml:space="preserve"><value>Keresőszöveg törlése</value></data>
+  <data name="ClosedPorts" xml:space="preserve"><value>Zárt portok</value></data>
+  <data name="CloseToSysTray" xml:space="preserve"><value>Bezáráskor az értesítési területre</value></data>
+  <data name="ClosingConnections" xml:space="preserve"><value>Kapcsolatok bezárásakor:</value></data>
+  <data name="CollapseAllFolders" xml:space="preserve"><value>Összes mappa becsukása</value></data>
+  <data name="ColorName" xml:space="preserve"><value>Szín neve</value></data>
+  <data name="Config" xml:space="preserve"><value>Beállítások</value></data>
+  <data name="ConfigPropertyGridButtonIconClickFailed" xml:space="preserve"><value>btnIcon_Click sikertelen!</value></data>
+  <data name="ConfigPropertyGridHideItemsFailed" xml:space="preserve"><value>ShowHideGridItems sikertelen!</value></data>
+  <data name="ConfigPropertyGridMenuClickFailed" xml:space="preserve"><value>IconMenu_Click sikertelen!</value></data>
+  <data name="ConfigPropertyGridObjectFailed" xml:space="preserve"><value>A tulajdonságrács objektuma hibára futott!</value></data>
+  <data name="ConfigPropertyGridSetHostStatusFailed" xml:space="preserve"><value>SetHostStatus sikertelen!</value></data>
+  <data name="ConfigPropertyGridValueFailed" xml:space="preserve"><value>pGrid_PopertyValueChanged sikertelen!</value></data>
+  <data name="ConfigUiLoadFailed" xml:space="preserve"><value>A beállítási felület betöltése sikertelen!</value></data>
+  <data name="ConfirmCloseConnectionOthersInstruction" xml:space="preserve"><value>Biztosan bezárod az összes kapcsolatot a(z) „{0}" kivételével?</value></data>
+  <data name="ConfirmCloseConnectionPanelMainInstruction" xml:space="preserve"><value>Biztosan bezárod a(z) „{0}" panelt? A rajta lévő kapcsolatok is bezáródnak.</value></data>
+  <data name="ConfirmDeleteCachedRdpCredential" xml:space="preserve"><value>Törlöd a(z) {0} gyorsítótárazott hitelesítő adatát?</value></data>
+  <data name="ConfirmDeleteExternalTool" xml:space="preserve"><value>Biztosan törlöd a(z) „{0}" külső eszközt?</value></data>
+  <data name="ConfirmDeleteExternalToolMultiple" xml:space="preserve"><value>Biztosan törlöd a kijelölt {0} külső eszközt?</value></data>
+  <data name="ConfirmDisconnectConnection" xml:space="preserve"><value>Biztosan bontod a(z) „{0}" kapcsolatot?</value></data>
+  <data name="ConfirmExitMainInstruction" xml:space="preserve"><value>Bezárod az összes nyitott kapcsolatot?</value></data>
+  <data name="ConfirmResetLayout" xml:space="preserve"><value>Biztosan visszaállítod a paneleket az alapértelmezett elrendezésre?</value></data>
+  <data name="Connect" xml:space="preserve"><value>Csatlakozás</value></data>
+  <data name="ConnectInFullscreen" xml:space="preserve"><value>Csatlakozás teljes képernyős módban</value></data>
+  <data name="ConnectInViewOnlyMode" xml:space="preserve"><value>Csatlakozás csak megtekintés módban</value></data>
+  <data name="ConnectionOpenFailed" xml:space="preserve"><value>A kapcsolat megnyitása sikertelen!</value></data>
+  <data name="ConnectionPanels" xml:space="preserve"><value>Kapcsolatpanelek</value></data>
+  <data name="ConnectionProperties" xml:space="preserve"><value>Kapcsolat tulajdonságai</value></data>
+  <data name="ConnectionSuccessful" xml:space="preserve"><value>Sikeres kapcsolódás</value></data>
+  <data name="ConnectionTimeoutSeconds" xml:space="preserve"><value>Kapcsolat időkorlátja (mp):</value></data>
+  <data name="ConnectNoCredentials" xml:space="preserve"><value>Csatlakozás hitelesítő adatok nélkül</value></data>
+  <data name="ConnectToConsoleSession" xml:space="preserve"><value>Csatlakozás a konzol-munkamenethez</value></data>
+  <data name="ConnectWithOptions" xml:space="preserve"><value>Csatlakozás (beállításokkal)</value></data>
+  <data name="Copy" xml:space="preserve"><value>Másolás</value></data>
+  <data name="CopyAll" xml:space="preserve"><value>Összes másolása</value></data>
+  <data name="CopyHostname" xml:space="preserve"><value>Gépnév másolása</value></data>
+  <data name="CopyToClipboard" xml:space="preserve"><value>Másolás a vágólapra</value></data>
+  <data name="CouldNotFindToolStripInFilteredPropertyGrid" xml:space="preserve"><value>A ToolStrip vezérlő nem található a FilteredPropertyGrid-ben.</value></data>
+  <data name="CreateEmptyPanelOnStartUp" xml:space="preserve"><value>Üres panel létrehozása az mRemoteNG indulásakor</value></data>
+  <data name="CreateTableStructure" xml:space="preserve"><value>Táblaszerkezet létrehozása</value></data>
+  <data name="Credentials" xml:space="preserve"><value>Hitelesítő adatok</value></data>
+  <data name="CredentialsUserViaAPI" xml:space="preserve"><value>Felhasználó API-azonosítója:</value></data>
+  <data name="Credits" xml:space="preserve"><value>Közreműködők</value></data>
+  <data name="CtrlAltDel" xml:space="preserve"><value>Ctrl-Alt-Del</value></data>
+  <data name="CtrlEsc" xml:space="preserve"><value>Ctrl-Esc</value></data>
+  <data name="Daily" xml:space="preserve"><value>Naponta</value></data>
+  <data name="DatabaseConnectionManager" xml:space="preserve"><value>Adatbázis-kapcsolatkezelő</value></data>
+  <data name="DatabaseName" xml:space="preserve"><value>Adatbázis neve:</value></data>
+  <data name="DatabaseNotAvailable" xml:space="preserve"><value>A(z) „{0}" adatbázis nem érhető el.</value></data>
+  <data name="DatabasePlatform" xml:space="preserve"><value>Adatbázis-platform:</value></data>
+  <data name="DbAdminPassword" xml:space="preserve"><value>adatbázis-rendszergazda jelszava:</value></data>
+  <data name="DbAdminUser" xml:space="preserve"><value>adatbázis-rendszergazda:</value></data>
+  <data name="DbUser" xml:space="preserve"><value>adatbázis-felhasználó:</value></data>
+  <data name="DbUserPassword" xml:space="preserve"><value>adatbázis-felhasználó jelszava:</value></data>
+  <data name="Debug" xml:space="preserve"><value>Hibakeresés</value></data>
+  <data name="Delete" xml:space="preserve"><value>Törlés</value></data>
+  <data name="DeleteAll" xml:space="preserve"><value>Összes törlése</value></data>
+  <data name="DeleteExternalTool" xml:space="preserve"><value>Külső eszköz törlése...</value></data>
+  <data name="Disable" xml:space="preserve"><value>Kikapcsolás</value></data>
+  <data name="DisableRefocus" xml:space="preserve"><value>Újrafókuszálás kikapcsolása</value></data>
+  <data name="DisconnectOthers" xml:space="preserve"><value>Az összes többi bontása</value></data>
+  <data name="DisconnectOthersRight" xml:space="preserve"><value>A jobbra lévő fülek bontása</value></data>
+  <data name="DisplayReconnectionDialog" xml:space="preserve"><value>Újracsatlakozási ablak megjelenítése a kiszolgálóról való lekapcsolódáskor (csak RDP &amp;&amp; ICA)</value></data>
+  <data name="DoNotTrimUsername" xml:space="preserve"><value>Ne vágja le a szóközöket a felhasználónevekből</value></data>
+  <data name="DontConnectToConsoleSession" xml:space="preserve"><value>Ne csatlakozzon a konzol-munkamenethez</value></data>
+  <data name="Download" xml:space="preserve"><value>Letöltés</value></data>
+  <data name="DownloadAndInstall" xml:space="preserve"><value>Letöltés és telepítés</value></data>
+  <data name="Duplicate" xml:space="preserve"><value>Másolat</value></data>
+  <data name="DuplicateTab" xml:space="preserve"><value>Fül megkettőzése</value></data>
+  <data name="Element" xml:space="preserve"><value>Elem</value></data>
+  <data name="EmptyPasswordContinue" xml:space="preserve"><value>Folytatod jelszó nélkül?</value></data>
+  <data name="EmptyUsernamePasswordDomainFields" xml:space="preserve"><value>Üres felhasználónév, jelszó vagy tartomány mezőkhöz használja:</value></data>
+  <data name="Enable" xml:space="preserve"><value>Bekapcsolás</value></data>
+  <data name="EnableAlwaysEncrypted" xml:space="preserve"><value>Always Encrypted bekapcsolása:</value></data>
+  <data name="EnableMARS" xml:space="preserve"><value>MARS bekapcsolása:</value></data>
+  <data name="EnableSecureEnclaves" xml:space="preserve"><value>Biztonságos enklávék bekapcsolása:</value></data>
+  <data name="EnclaveAttestation" xml:space="preserve"><value>Enkláve-tanúsítás:</value></data>
+  <data name="EncryptCompleteConnectionFile" xml:space="preserve"><value>A kapcsolatfájl teljes titkosítása</value></data>
+  <data name="EncryptionBlockCipherMode" xml:space="preserve"><value>Blokktitkosítási mód</value></data>
+  <data name="EncryptionEngine" xml:space="preserve"><value>Titkosítási motor</value></data>
+  <data name="EncryptionKeyDerivationIterations" xml:space="preserve"><value>Kulcsszármaztatási iterációk száma</value></data>
+  <data name="EncryptionLabel" xml:space="preserve"><value>Titkosítás:</value></data>
+  <data name="EncryptionTest" xml:space="preserve"><value>Titkosítási teszt</value></data>
+  <data name="EncryptionTestResultMessage" xml:space="preserve"><value>{0} bejegyzés titkosítása {1}/{2} eljárással és {3} iterációval {4} másodpercig tartott.</value></data>
+  <data name="Environment" xml:space="preserve"><value>Környezet</value></data>
+  <data name="ErrorAddExternalToolsToToolBarFailed" xml:space="preserve"><value>AddExternalToolsToToolBar (frmMain) sikertelen. {0}</value></data>
+  <data name="ErrorAddFolderFailed" xml:space="preserve"><value>AddFolder (UI.Window.ConnectionTreeWindow) sikertelen. {0}</value></data>
+  <data name="ErrorCouldNotLaunchPutty" xml:space="preserve"><value>A PuTTY-t nem sikerült elindítani.</value></data>
+  <data name="Errors" xml:space="preserve"><value>Hibák</value></data>
+  <data name="ExceptionForcesmRemoteNGToClose" xml:space="preserve"><value>Ez a kivétel az mRemoteNG bezárását kényszeríti ki</value></data>
+  <data name="ExceptionMessage" xml:space="preserve"><value>Kivétel üzenete</value></data>
+  <data name="ExecutionTimeoutSeconds" xml:space="preserve"><value>Végrehajtás időkorlátja (mp):</value></data>
+  <data name="Exit" xml:space="preserve"><value>Kilépés</value></data>
+  <data name="ExpandAllFolders" xml:space="preserve"><value>Összes mappa kinyitása</value></data>
+  <data name="Export" xml:space="preserve"><value>Exportálás</value></data>
+  <data name="ExportEverything" xml:space="preserve"><value>Minden exportálása</value></data>
+  <data name="ExportFile" xml:space="preserve"><value>Exportálás fájlba</value></data>
+  <data name="ExportItems" xml:space="preserve"><value>Exportálandó elemek</value></data>
+  <data name="ExportProperties" xml:space="preserve"><value>Exportálandó tulajdonságok</value></data>
+  <data name="ExportSelectedConnection" xml:space="preserve"><value>A kijelölt kapcsolat exportálása</value></data>
+  <data name="ExportSelectedFolder" xml:space="preserve"><value>A kijelölt mappa exportálása</value></data>
+  <data name="ExternalToolDefaultName" xml:space="preserve"><value>Új külső eszköz</value></data>
+  <data name="ExternalToolProperties" xml:space="preserve"><value>Külső eszköz tulajdonságai</value></data>
+  <data name="ExternalToolsToolbar" xml:space="preserve"><value>Külső eszközök eszköztár</value></data>
+  <data name="FailedToClearCachedRdpCredential" xml:space="preserve"><value>A(z) {0} gyorsítótárazott RDP hitelesítő adatainak törlése sikertelen. A részletek az Értesítések panelen.</value></data>
+  <data name="Favorites" xml:space="preserve"><value>Kedvencek</value></data>
+  <data name="FileFormat" xml:space="preserve"><value>Fájl&amp;formátum:</value></data>
+  <data name="FileMenu" xml:space="preserve"><value>Fájl menü</value></data>
+  <data name="FileMenuWillBeHiddenNow" xml:space="preserve"><value>A Fájl menü mostantól rejtve van. Nyomd meg az Alt billentyűt az előhívásához.</value></data>
+  <data name="FilterAll" xml:space="preserve"><value>Minden fájl (*.*)</value></data>
+  <data name="FilterApplication" xml:space="preserve"><value>Alkalmazásfájlok (*.exe)</value></data>
+  <data name="FiltermRemoteCSV" xml:space="preserve"><value>mRemote CSV-fájlok (*.csv)</value></data>
+  <data name="FiltermRemoteXML" xml:space="preserve"><value>mRemote XML-fájlok (*.xml)</value></data>
+  <data name="FilterSearchMatchesInConnectionTree" xml:space="preserve"><value>Találatok szűrése a kapcsolatfában</value></data>
+  <data name="FirstIp" xml:space="preserve"><value>Első IP</value></data>
+  <data name="FirstPort" xml:space="preserve"><value>Első port</value></data>
+  <data name="Host" xml:space="preserve"><value>Gép</value></data>
+  <data name="HostNameInCertificate" xml:space="preserve"><value>Gépnév a tanúsítványban:</value></data>
+  <data name="IdentifyQuickConnectTabs" xml:space="preserve"><value>A gyorskapcsolat-fülek jelölése „Quick:" előtaggal</value></data>
+  <data name="ImportAD" xml:space="preserve"><value>Importálás Active Directoryból</value></data>
+  <data name="ImportFromFile" xml:space="preserve"><value>Importálás &amp;fájlból...</value></data>
+  <data name="ImportPortScan" xml:space="preserve"><value>Importálás portvizsgálatból</value></data>
+  <data name="ImportSubOUs" xml:space="preserve"><value>Al-szervezeti egységek importálása</value></data>
+  <data name="Informations" xml:space="preserve"><value>Információk</value></data>
+  <data name="Inheritance" xml:space="preserve"><value>Öröklés</value></data>
+  <data name="JumpToSession" xml:space="preserve"><value>Ugrás a(z) {0} munkamenetre</value></data>
+  <data name="LanguageRestartRequired" xml:space="preserve"><value>A(z) {0} újraindítása szükséges, hogy a nyelvi beállítás érvénybe lépjen.</value></data>
+  <data name="LastIp" xml:space="preserve"><value>Utolsó IP</value></data>
+  <data name="LastPort" xml:space="preserve"><value>Utolsó port</value></data>
+  <data name="lblACL" xml:space="preserve"><value>Hozzáférési lista a felhasználóhoz</value></data>
+  <data name="lblBackupEnable" xml:space="preserve"><value>Kapcsolati adatok mentése</value></data>
+  <data name="lblBackupNameFormat" xml:space="preserve"><value>Mentési fájlnév formátuma</value></data>
+  <data name="lblBackupType" xml:space="preserve"><value>Mentés típusa</value></data>
+  <data name="lblConnectionsBackupMaxCount" xml:space="preserve"><value>Mentések maximális száma</value></data>
+  <data name="lblConnectionsBackupPath" xml:space="preserve"><value>Válaszd ki a kapcsolati adatok mentési mappáját</value></data>
+  <data name="License" xml:space="preserve"><value>Licenc</value></data>
+  <data name="LoadBalanceInfoUseUtf8" xml:space="preserve"><value>UTF-8 kódolás használata az RDP „Load Balance Info" tulajdonságához</value></data>
+  <data name="LocalFile" xml:space="preserve"><value>Helyi fájl</value></data>
+  <data name="LocalFileDoesNotExist" xml:space="preserve"><value>A helyi fájl nem létezik!</value></data>
+  <data name="LockToolbars" xml:space="preserve"><value>Eszköztárak rögzítése</value></data>
+  <data name="LogFilePath" xml:space="preserve"><value>Naplófájl útvonala</value></data>
+  <data name="Logging" xml:space="preserve"><value>Naplózás</value></data>
+  <data name="LoginFailedForUser" xml:space="preserve"><value>A(z) „{0}" felhasználó bejelentkezése sikertelen.</value></data>
+  <data name="LogTheseMessageTypes" xml:space="preserve"><value>Ezeket az üzenettípusokat naplózza</value></data>
+  <data name="LogToAppDir" xml:space="preserve"><value>Naplózás az alkalmazás könyvtárába</value></data>
+  <data name="MakeABackup" xml:space="preserve"><value>Mentés készítése</value></data>
+  <data name="MenuItem_Chat" xml:space="preserve"><value>mR Chat</value></data>
+  <data name="MenuItem_Community" xml:space="preserve"><value>Közösség</value></data>
+  <data name="MenuItem_Donate" xml:space="preserve"><value>Támogatás</value></data>
+  <data name="MenuItem_HelpContents" xml:space="preserve"><value>mRemoteNG súgó</value></data>
+  <data name="MenuItem_SupportForum" xml:space="preserve"><value>Támogatói fórum</value></data>
+  <data name="MinimizeToSysTray" xml:space="preserve"><value>Kicsinyítéskor az értesítési területre</value></data>
+  <data name="Monthly" xml:space="preserve"><value>Havonta</value></data>
+  <data name="MoveDown" xml:space="preserve"><value>Mozgatás lefelé</value></data>
+  <data name="MoveUp" xml:space="preserve"><value>Mozgatás felfelé</value></data>
+  <data name="MremoteNgCsv" xml:space="preserve"><value>mRemoteNG CSV</value></data>
+  <data name="mRemoteNGUnhandledException" xml:space="preserve"><value>Kezeletlen mRemoteNG-kivétel</value></data>
+  <data name="MremoteNgXml" xml:space="preserve"><value>mRemoteNG XML</value></data>
+  <data name="MultiSsh" xml:space="preserve"><value>Több SSH:</value></data>
+  <data name="MultiSshToolbar" xml:space="preserve"><value>Több SSH eszköztár</value></data>
+  <data name="MultiSshToolTip" xml:space="preserve"><value>Küldéshez nyomj ENTER-t. A Ctrl+C azonnal elmegy.</value></data>
+  <data name="MustBeBetween0And255" xml:space="preserve"><value>0 és 255 közé kell esnie</value></data>
+  <data name="MyCurrentWindowsCreds" xml:space="preserve"><value>A jelenlegi hitelesítő adataim (Windows-bejelentkezés)</value></data>
+  <data name="NetworkPacketSize" xml:space="preserve"><value>Hálózati csomagméret (bájt):</value></data>
+  <data name="NetworkProtocol" xml:space="preserve"><value>Hálózati protokoll:</value></data>
+  <data name="NextSession" xml:space="preserve"><value>Következő munkamenet</value></data>
+  <data name="NoCachedRdpCredentialFound" xml:space="preserve"><value>Nincs gyorsítótárazott RDP hitelesítő adat a(z) {0} géphez. Nincs mit törölni.</value></data>
+  <data name="None" xml:space="preserve"><value>Nincs</value></data>
+  <data name="NoUpdateAvailable" xml:space="preserve"><value>Nincs elérhető frissítés</value></data>
+  <data name="OnEdit" xml:space="preserve"><value>Szerkesztéskor</value></data>
+  <data name="OnExit" xml:space="preserve"><value>Kilépéskor</value></data>
+  <data name="OnSave" xml:space="preserve"><value>Mentéskor</value></data>
+  <data name="OpenFile" xml:space="preserve"><value>Fájl megnyitása</value></data>
+  <data name="OpenNewTabRight" xml:space="preserve"><value>Új fül a jelenleg kijelölt fültől jobbra nyíljon</value></data>
+  <data name="OpenPorts" xml:space="preserve"><value>Nyitott portok</value></data>
+  <data name="OptionsCompanyPolicyMessage" xml:space="preserve"><value>*Egyes beállításokat a céged határoz meg. További információért fordulj a rendszergazdádhoz.</value></data>
+  <data name="OptionsPageTitle" xml:space="preserve"><value>mRemoteNG beállítások</value></data>
+  <data name="OptionsProxyTesting" xml:space="preserve"><value>Tesztelés...</value></data>
+  <data name="OptionsThemeChangeWarning" xml:space="preserve"><value>Figyelem: a témabeállítások érvényesítéséhez újraindítás szükséges.</value></data>
+  <data name="OptionsThemeDeleteConfirmation" xml:space="preserve"><value>Biztosan törlöd a témát?</value></data>
+  <data name="OptionsThemeNewThemeCaption" xml:space="preserve"><value>Új téma neve</value></data>
+  <data name="OptionsThemeNewThemeError" xml:space="preserve"><value>A téma nem hozható létre: a név már létezik, vagy speciális karaktert tartalmaz</value></data>
+  <data name="OptionsThemeNewThemeText" xml:space="preserve"><value>Írd be az új téma nevét</value></data>
+  <data name="OutOfRange" xml:space="preserve"><value>Tartományon kívül</value></data>
+  <data name="PageControlInOptionsMenu" xml:space="preserve"><value>Lapvezérlő a Beállítások menüben</value></data>
+  <data name="PanelName" xml:space="preserve"><value>Panel neve</value></data>
+  <data name="PasswdGenDescription" xml:space="preserve"><value>Titkosított jelszó előállítása, amely alkalmas beállításjegyzék-bejegyzésekhez.</value></data>
+  <data name="PasswordStatusMustMatch" xml:space="preserve"><value>A két jelszónak egyeznie kell.</value></data>
+  <data name="PasswordStatusTooShort" xml:space="preserve"><value>A jelszónak legalább 3 karakter hosszúnak kell lennie.</value></data>
+  <data name="PlaceSearchBarAboveConnectionTree" xml:space="preserve"><value>Keresősáv a kapcsolatfa fölé</value></data>
+  <data name="PleaseFillAllFields" xml:space="preserve"><value>Töltsd ki az összes mezőt</value></data>
+  <data name="Popups" xml:space="preserve"><value>Felugró ablakok</value></data>
+  <data name="PortScan" xml:space="preserve"><value>Portvizsgálat</value></data>
+  <data name="PortScanComplete" xml:space="preserve"><value>A portvizsgálat befejeződött.</value></data>
+  <data name="PortScanCouldNotLoadPanel" xml:space="preserve"><value>A portvizsgálati panel nem tölthető be!</value></data>
+  <data name="PreviousSession" xml:space="preserve"><value>Előző munkamenet</value></data>
+  <data name="PropertyDescriptionClearCachedRdpCredentials" xml:space="preserve"><value>Ha egy RDP-kapcsolat hitelesítési hibával bukik el, a Windows elavult, gyorsítótárazott hitelesítő adatot használhat a kapcsolathoz beállított helyett. Ezzel a művelettel törölheted a TERMSRV/&lt;gépnév&gt; bejegyzést a Windows Hitelesítőadat-kezelőjéből, így a következő próbálkozáskor a kapcsolat saját adatai mennek ki.</value></data>
+  <data name="ProtocolLabel" xml:space="preserve"><value>Protokoll:</value></data>
+  <data name="ProtocolToImport" xml:space="preserve"><value>Importálandó protokoll</value></data>
+  <data name="ProxyTestFailed" xml:space="preserve"><value>A proxyteszt sikertelen!</value></data>
+  <data name="ProxyTestSucceeded" xml:space="preserve"><value>A proxyteszt sikeres!</value></data>
+  <data name="PuttySessionsConfig" xml:space="preserve"><value>A PuTTY-munkamenetek beállításához kattints erre a gombra:</value></data>
+  <data name="PuttySettings" xml:space="preserve"><value>PuTTY-beállítások</value></data>
+  <data name="PuttyTimeout" xml:space="preserve"><value>A PuTTY és az integrált külső eszközök maximális várakozási ideje:</value></data>
+  <data name="QuickConnect" xml:space="preserve"><value>Gyorskapcsolat</value></data>
+  <data name="QuickConnectAddFailed" xml:space="preserve"><value>A gyorskapcsolat hozzáadása sikertelen!</value></data>
+  <data name="QuickConnectToolbar" xml:space="preserve"><value>Gyorskapcsolat eszköztár</value></data>
+  <data name="RadioCloseWarnExit" xml:space="preserve"><value>Csak az mRemoteNG-ből &amp;kilépéskor figyelmeztessen</value></data>
+  <data name="RadioCloseWarnMultiple" xml:space="preserve"><value>Csak &amp;több kapcsolat bezárásakor figyelmeztessen</value></data>
+  <data name="RadioCloseWarnNever" xml:space="preserve"><value>&amp;Ne figyelmeztessen kapcsolatok bezárásakor</value></data>
+  <data name="RdpErrorUnknown" xml:space="preserve"><value>Ismeretlen hiba történt.</value></data>
+  <data name="RdpOverallConnectionTimeout" xml:space="preserve"><value>RDP-kapcsolat időkorlátja</value></data>
+  <data name="RdpReconnectCount" xml:space="preserve"><value>RDP újracsatlakozások száma:</value></data>
+  <data name="ReadOnly" xml:space="preserve"><value>Csak olvasható:</value></data>
+  <data name="ReconnectAllConnections" xml:space="preserve"><value>Összes kapcsolat újracsatlakoztatása</value></data>
+  <data name="ReconnectAtStartup" xml:space="preserve"><value>Induláskor csatlakozzon a korábban nyitott munkamenetekhez</value></data>
+  <data name="RefreshScreen" xml:space="preserve"><value>Képernyő frissítése (VNC)</value></data>
+  <data name="ReleaseChannel" xml:space="preserve"><value>Kiadási csatorna</value></data>
+  <data name="ReleaseChannelExplanation" xml:space="preserve"><value>A Stabil csatorna csak végleges kiadásokat tartalmaz. | Az Előzetes csatorna bétákat és kiadásjelölteket is. | Az Éjszakai csatorna alfákat, bétákat és kiadásjelölteket is.</value></data>
+  <data name="ReleasedUnderGPL" xml:space="preserve"><value>A GNU General Public License (GPL) alatt kiadva</value></data>
+  <data name="RemoteFile" xml:space="preserve"><value>Távoli fájl</value></data>
+  <data name="Rename" xml:space="preserve"><value>Átnevezés</value></data>
+  <data name="RunElevated" xml:space="preserve"><value>Futtatás emelt jogosultsággal</value></data>
+  <data name="Save" xml:space="preserve"><value>Mentés</value></data>
+  <data name="SaveConnectionsFileBeforeOpeningAnother" xml:space="preserve"><value>Mented a jelenlegi kapcsolatfájlt, mielőtt másikat töltesz be?</value></data>
+  <data name="SaveOptionsBeforeClosing" xml:space="preserve"><value>Mented a beállításokon végzett módosításokat?</value></data>
+  <data name="Screen" xml:space="preserve"><value>Képernyő</value></data>
+  <data name="SearchPrompt" xml:space="preserve"><value>Keresés</value></data>
+  <data name="Seconds" xml:space="preserve"><value>Másodperc</value></data>
+  <data name="SecureKeyGenerator" xml:space="preserve"><value>Biztonságos kulcsgenerátor</value></data>
+  <data name="SelectPanel" xml:space="preserve"><value>Válassz panelt az alábbi listából, vagy kattints az Új gombra egy új hozzáadásához. A folytatáshoz kattints az OK gombra.</value></data>
+  <data name="SendSpecialKeys" xml:space="preserve"><value>Speciális billentyűk küldése (VNC)</value></data>
+  <data name="SendTo" xml:space="preserve"><value>Küldés...</value></data>
+  <data name="ServerAndCredentials" xml:space="preserve"><value>Kiszolgáló és hitelesítő adatok</value></data>
+  <data name="ServerNameOrIp" xml:space="preserve"><value>Kiszolgáló neve vagy IP-címe:</value></data>
+  <data name="ServerNotAccessible" xml:space="preserve"><value>A(z) „{0}" kiszolgáló nem érhető el.</value></data>
+  <data name="SetHostnameLikeDisplayName" xml:space="preserve"><value>Kapcsolat létrehozásakor és átnevezésekor a gépnév egyezzen a megjelenített névvel</value></data>
+  <data name="ShowDescriptionTooltips" xml:space="preserve"><value>Leírás buboréksúgóként a kapcsolatfában</value></data>
+  <data name="ShowForUser" xml:space="preserve"><value>Megjelenítés a felhasználónak</value></data>
+  <data name="ShowFullConsFilePath" xml:space="preserve"><value>A kapcsolatfájl teljes útvonala az ablak címsorában</value></data>
+  <data name="ShowHelpText" xml:space="preserve"><value>&amp;Súgószöveg megjelenítése</value></data>
+  <data name="ShowHideMenu" xml:space="preserve"><value>Menüsor megjelenítése/elrejtése</value></data>
+  <data name="ShowLogonInfoOnTabs" xml:space="preserve"><value>Bejelentkezési adatok a fülek nevében</value></data>
+  <data name="ShowOnToolbar" xml:space="preserve"><value>Megjelenítés az eszköztáron</value></data>
+  <data name="ShowOnToolbarColumnHeader" xml:space="preserve"><value>Eszköztáron látszik oszlop</value></data>
+  <data name="ShowProtocolOnTabs" xml:space="preserve"><value>Protokoll a fülek nevében</value></data>
+  <data name="ShowText" xml:space="preserve"><value>Szöveg megjelenítése</value></data>
+  <data name="ShowTheseMessageTypes" xml:space="preserve"><value>Ezeket az üzenettípusokat jelenítse meg</value></data>
+  <data name="SingleClickOnConnectionOpensIt" xml:space="preserve"><value>Egy kattintás megnyitja a kapcsolatot</value></data>
+  <data name="SingleClickOnOpenConnectionSwitchesToIt" xml:space="preserve"><value>Egy kattintás a már nyitott kapcsolatra a kapcsolatfában átvált annak fülére</value></data>
+  <data name="SlowClickRenameEnabled" xml:space="preserve"><value>Átnevezés lassú dupla kattintással (Explorer-stílus)</value></data>
+  <data name="SmartSize" xml:space="preserve"><value>SmartSize (RDP/VNC)</value></data>
+  <data name="Sort" xml:space="preserve"><value>Rendezés</value></data>
+  <data name="SortAsc" xml:space="preserve"><value>Növekvő (A-Z)</value></data>
+  <data name="SortDesc" xml:space="preserve"><value>Csökkenő (Z-A)</value></data>
+  <data name="SqlAuthentication" xml:space="preserve"><value>Hitelesítés:</value></data>
+  <data name="SQLInfo" xml:space="preserve"><value>További információért lásd: Súgó – Első lépések – SQL-beállítás!</value></data>
+  <data name="SQLServer" xml:space="preserve"><value>SQL Server</value></data>
+  <data name="SshBackgroundTransferFailed" xml:space="preserve"><value>Az SSH háttérátvitel sikertelen!</value></data>
+  <data name="SshFileTransfer" xml:space="preserve"><value>SSH fájlátvitel</value></data>
+  <data name="SshTransferFailed" xml:space="preserve"><value>Az SSH-átvitel sikertelen.</value></data>
+  <data name="StackTrace" xml:space="preserve"><value>Hívási verem</value></data>
+  <data name="StartChat" xml:space="preserve"><value>Csevegés indítása (VNC)</value></data>
+  <data name="StartFullScreen" xml:space="preserve"><value>Indítás teljes képernyőn</value></data>
+  <data name="StartMinimized" xml:space="preserve"><value>Indítás kicsinyítve</value></data>
+  <data name="StartupExit" xml:space="preserve"><value>Indítás/Kilépés</value></data>
+  <data name="Status" xml:space="preserve"><value>Állapot</value></data>
+  <data name="strBackup" xml:space="preserve"><value>Mentés</value></data>
+  <data name="strBrowse" xml:space="preserve"><value>Tallózás...</value></data>
+  <data name="strConnectionBackupFrequency" xml:space="preserve"><value>Kapcsolatok mentésének gyakorisága</value></data>
+  <data name="strConnectionsBackupMaxCount" xml:space="preserve"><value>Mentések maximális száma</value></data>
+  <data name="strConnectionsBackupPath" xml:space="preserve"><value>A kapcsolatfájl mentésének helye</value></data>
+  <data name="SwitchToErrorsAndInfos" xml:space="preserve"><value>Váltás az Értesítések panelre ekkor:</value></data>
+  <data name="TabsAndPanels" xml:space="preserve"><value>Fülek &amp;&amp; panelek</value></data>
+  <data name="TabSecurity" xml:space="preserve"><value>Biztonság</value></data>
+  <data name="TabSetup" xml:space="preserve"><value>Beállítás</value></data>
+  <data name="TestConnection" xml:space="preserve"><value>Kapcsolat tesztelése</value></data>
+  <data name="TestingConnection" xml:space="preserve"><value>Kapcsolat tesztelése folyamatban</value></data>
+  <data name="TestProxy" xml:space="preserve"><value>Proxy tesztelése</value></data>
+  <data name="TestSettings" xml:space="preserve"><value>Beállítások tesztelése</value></data>
+  <data name="TheFollowing" xml:space="preserve"><value>A következő:</value></data>
+  <data name="Theme" xml:space="preserve"><value>Téma</value></data>
+  <data name="TimeoutInSeconds" xml:space="preserve"><value>Időkorlát [másodperc]</value></data>
+  <data name="Title" xml:space="preserve"><value>Cím</value></data>
+  <data name="TitlePassword" xml:space="preserve"><value>mRemoteNG jelszó</value></data>
+  <data name="TitlePasswordWithName" xml:space="preserve"><value>mRemoteNG jelszó ehhez: {0}</value></data>
+  <data name="TitleSelectPanel" xml:space="preserve"><value>Panel választása</value></data>
+  <data name="TrackActiveConnectionInConnectionTree" xml:space="preserve"><value>Az aktív kapcsolat követése a kapcsolatfában</value></data>
+  <data name="Transfer" xml:space="preserve"><value>Átvitel</value></data>
+  <data name="TransferFile" xml:space="preserve"><value>Fájlátvitel (SSH)</value></data>
+  <data name="TrustServerCertificate" xml:space="preserve"><value>Kiszolgálói tanúsítvány megbízhatónak tekintése:</value></data>
+  <data name="TryToIntegrate" xml:space="preserve"><value>Integrálás megkísérlése</value></data>
+  <data name="UltraVNCSCListeningPort" xml:space="preserve"><value>UltraVNC SingleClick port:</value></data>
+  <data name="UltraVNCSingleClick" xml:space="preserve"><value>UltraVNC SingleClick</value></data>
+  <data name="UncheckProperties" xml:space="preserve"><value>Vedd ki a pipát azoknál a tulajdonságoknál, amelyeket nem szeretnél menteni!</value></data>
+  <data name="UnhandledExceptionOccured" xml:space="preserve"><value>Kezeletlen kivétel történt</value></data>
+  <data name="UpdateAvailable" xml:space="preserve"><value>Elérhető mRemoteNG</value></data>
+  <data name="UpdateCheck" xml:space="preserve"><value>Az mRemoteNG rendszeresen csatlakozhat az mRemoteNG webhelyéhez, hogy frissítéseket keressen.</value></data>
+  <data name="UpdateCheckCompleteFailed" xml:space="preserve"><value>A frissítési információt nem sikerült letölteni.</value></data>
+  <data name="UpdateDownloadComplete" xml:space="preserve"><value>A letöltés befejeződött! | Az mRemoteNG most kilép, és megkezdi a telepítést.</value></data>
+  <data name="UpdateDownloadCompleteFailed" xml:space="preserve"><value>A frissítést nem sikerült letölteni.</value></data>
+  <data name="UpdateDownloadFailed" xml:space="preserve"><value>A frissítés letöltését nem sikerült elindítani.</value></data>
+  <data name="UpdateFrequencyCustom" xml:space="preserve"><value>{0} naponta</value></data>
+  <data name="UpdateGetChangeLogFailed" xml:space="preserve"><value>A változásnaplót nem sikerült letölteni.</value></data>
+  <data name="UpdatePortableDownloadComplete" xml:space="preserve"><value>A letöltés befejeződött!</value></data>
+  <data name="Updates" xml:space="preserve"><value>Frissítések</value></data>
+  <data name="UrlLabel" xml:space="preserve"><value>URL:</value></data>
+  <data name="UseDefault" xml:space="preserve"><value>Alapértelmezett használata</value></data>
+  <data name="User" xml:space="preserve"><value>Felhasználó</value></data>
+  <data name="UsernameLabel" xml:space="preserve"><value>Felhasználónév:</value></data>
+  <data name="VerifyTableStructure" xml:space="preserve"><value>Táblaszerkezet ellenőrzése</value></data>
+  <data name="Version" xml:space="preserve"><value>Jelenlegi verzió</value></data>
+  <data name="WaitForExit" xml:space="preserve"><value>Várakozás a kilépésre</value></data>
+  <data name="Warnings" xml:space="preserve"><value>Figyelmeztetések</value></data>
+  <data name="Weekly" xml:space="preserve"><value>Hetente</value></data>
+  <data name="WorkingDirColumnHeader" xml:space="preserve"><value>Munkakönyvtár</value></data>
+  <data name="WorkingDirectory" xml:space="preserve"><value>Munkakönyvtár:</value></data>
 </root>
