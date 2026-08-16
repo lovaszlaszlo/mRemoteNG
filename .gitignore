@@ -287,3 +287,9 @@ InstallerProjects/Installer/Resources/License.rtf
 **/mRemoteNG/Properties/AssemblyInfo.tt
 **/mRemoteNG/Properties/AssemblyInfo.cs
 /.cr/personal/FavoritesList
+
+# Connection backups. The backup folder on the options page can be pointed
+# anywhere, including inside this working copy - and a connection file carries
+# credentials, so it must never be committed to a fork that is public.
+/SaveConfig/
+*.backup
