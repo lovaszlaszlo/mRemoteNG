@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Drawing;
 using System.IO;
 using System.Runtime.Versioning;
 using System.Text;
@@ -33,6 +34,7 @@ namespace mRemoteNG.Connection.Protocol.SSH
         private const int DefaultRows = 24;
 
         private readonly ConnectionInfo _connectionInfo;
+        private Panel _host;
         private WebView2 _webView;
         private SshClient _sshClient;
         private ShellStream _shellStream;
@@ -50,7 +52,13 @@ namespace mRemoteNG.Connection.Protocol.SSH
             try
             {
                 _webView = new WebView2 { Dock = DockStyle.Fill };
-                Control = _webView;
+
+                // The WebView2 sits in a plain panel rather than being the connection control
+                // itself, so that ShowFallbackMessage has somewhere to put its label when the
+                // page never comes up - which is exactly when there is something to say.
+                _host = new Panel { Dock = DockStyle.Fill, BackColor = Color.Black };
+                _host.Controls.Add(_webView);
+                Control = _host;
                 return base.Initialize();
             }
             catch (Exception ex)
@@ -80,6 +88,12 @@ namespace mRemoteNG.Connection.Protocol.SSH
                 // terminal itself.
                 Runtime.MessageCollector.AddExceptionMessage($"SSH connection to '{_connectionInfo.Hostname}' failed", ex);
                 WriteStatus($"[31m{ex.Message}[0m");
+
+                // WriteStatus needs a loaded page to write into. When the failure was the page
+                // itself - most often a machine with no WebView2 runtime - it reaches nothing and
+                // the tab just sits there empty, which is what this fallback is for.
+                ShowFallbackMessage(ex.Message);
+
                 Event_Disconnected(this, ex.Message, null);
             }
         }
@@ -91,6 +105,23 @@ namespace mRemoteNG.Connection.Protocol.SSH
                 Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData),
                 "mRemoteNG", "WebView2");
             Directory.CreateDirectory(userDataFolder);
+
+            // Asked before CreateAsync only so the failure can say what to do about it. The
+            // runtime ships with Windows 11 and with Edge, so it is present on a developer
+            // machine and easy to forget - but it is a separate install, and a machine without it
+            // gets a control that renders nothing at all.
+            try
+            {
+                CoreWebView2Environment.GetAvailableBrowserVersionString();
+            }
+            catch (WebView2RuntimeNotFoundException ex)
+            {
+                throw new InvalidOperationException(
+                    "The WebView2 runtime is not installed on this machine, and the SSH (native) " +
+                    "terminal is drawn by it. Install the 'Evergreen Standalone Installer' from " +
+                    "https://developer.microsoft.com/microsoft-edge/webview2/ - or use the SSH " +
+                    "(PuTTY) protocol, which does not need it.", ex);
+            }
 
             CoreWebView2Environment environment =
                 await CoreWebView2Environment.CreateAsync(userDataFolder: userDataFolder);
@@ -381,6 +412,44 @@ namespace mRemoteNG.Connection.Protocol.SSH
             byte[] bytes = Encoding.UTF8.GetBytes(text);
             _shellStream.Write(bytes, 0, bytes.Length);
             _shellStream.Flush();
+        }
+
+        /// <summary>
+        /// Puts <paramref name="text"/> on the tab as a plain label, for the case where the
+        /// terminal page is not there to write it into.
+        /// </summary>
+        /// <remarks>
+        /// Does nothing once the page is up: there the message belongs in the terminal, in the
+        /// scrollback with everything else. This only covers the tab that would otherwise be
+        /// blank.
+        /// </remarks>
+        private void ShowFallbackMessage(string text)
+        {
+            if (_host == null || _host.IsDisposed) return;
+
+            if (_host.InvokeRequired)
+            {
+                _host.BeginInvoke(new Action(() => ShowFallbackMessage(text)));
+                return;
+            }
+
+            if (_webView?.CoreWebView2 != null) return;
+
+            if (_webView != null)
+                _webView.Visible = false;
+
+            Label message = new()
+            {
+                Dock = DockStyle.Fill,
+                Text = text,
+                ForeColor = Color.White,
+                BackColor = Color.Black,
+                Padding = new Padding(12),
+                AutoSize = false
+            };
+
+            _host.Controls.Add(message);
+            message.BringToFront();
         }
 
         private void PostToPage(object message)
