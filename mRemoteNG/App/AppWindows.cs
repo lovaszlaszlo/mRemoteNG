@@ -24,6 +24,17 @@ namespace mRemoteNG.App
             set => _treeForm = value;
         }
 
+        /// <summary>
+        /// The connection tree window if one has been built, and null rather than a new one if not.
+        /// </summary>
+        /// <remarks>
+        /// <see cref="TreeForm"/> builds a window as a side effect of being read, which is fine
+        /// where the caller wants the window and wrong everywhere else - a caller that only wants
+        /// to tell the tree something, from a focus or a message handler, has no business
+        /// constructing a window while it does so.
+        /// </remarks>
+        internal static ConnectionTreeWindow? TreeFormIfBuilt => _treeForm;
+
         internal static ConfigWindow ConfigForm { get; set; } = new ConfigWindow();
         internal static ErrorAndInfoWindow ErrorsForm { get; set; } = new ErrorAndInfoWindow();
         internal static UpdateWindow UpdateForm { get; set; } = new UpdateWindow();

@@ -53,6 +53,11 @@
 
         term.onData(data => send({ type: 'input', data: data }));
 
+        // A menu opened elsewhere in the application does not notice a click or a keystroke that
+        // lands in here: this page runs in the browser process, so its input never passes through
+        // the message loop the menus watch. Saying so is the only way they can find out.
+        term.element.addEventListener('pointerdown', () => send({ type: 'active' }));
+
         // Font size: the PuTTY session sets the base size, and this remembers an adjustment on
         // top of it. Kept in localStorage rather than in the connection file - the page is always
         // served from the same virtual host, so the value survives restarts, and the size is a

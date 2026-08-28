@@ -112,6 +112,34 @@ namespace mRemoteNG.UI.Controls.ConnectionTree
 
         #region ConnectionTree Setup
 
+        /// <summary>
+        /// Closes the tree's context menu if it is open.
+        /// </summary>
+        /// <remarks>
+        /// A menu normally closes itself as soon as the focus goes somewhere else, which it learns
+        /// from the application's own message loop. The native SSH terminal never reaches it: the
+        /// page runs in the browser process, and its WebView2 is an ordinary control that changes
+        /// no window activation, so neither the click nor the keystroke is anything the menu can
+        /// see. It stays open in front of the session being typed into, and the protocol has to
+        /// say so - which is what calls this.
+        ///
+        /// A PuTTY tab does not need it, tested on 2026-08-28: that window keeps its own top level
+        /// style, so clicking it really does activate it and the menu closes on the activation
+        /// change. The better behaved control is the one with the problem.
+        /// </remarks>
+        public void CloseContextMenu()
+        {
+            if (_contextMenu == null || !_contextMenu.Visible) return;
+
+            if (InvokeRequired)
+            {
+                BeginInvoke(new Action(CloseContextMenu));
+                return;
+            }
+
+            _contextMenu.Close(ToolStripDropDownCloseReason.AppFocusChange);
+        }
+
         private void SetupConnectionTreeView()
         {
             SetSmallImageList(_statusImageList.ImageList);

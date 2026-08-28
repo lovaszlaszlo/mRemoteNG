@@ -618,7 +618,12 @@ namespace mRemoteNG.Connection.Protocol.SSH
                     case "ready":
                         break;
 
+                    case "active":
+                        DismissMenusElsewhere();
+                        break;
+
                     case "input":
+                        DismissMenusElsewhere();
                         WriteToShell(message.GetProperty("data").GetString());
                         break;
 
@@ -628,6 +633,27 @@ namespace mRemoteNG.Connection.Protocol.SSH
                         TellShellTheSize();
                         break;
                 }
+            }
+        }
+
+        /// <summary>
+        /// Tells the connection tree that its context menu is in the way.
+        /// </summary>
+        /// <remarks>
+        /// Right-clicking the tree and then typing in here left the menu sitting in front of the
+        /// terminal: this page's input goes through the browser process, so the menu never sees
+        /// the click or the keystroke that would normally close it.
+        /// </remarks>
+        private static void DismissMenusElsewhere()
+        {
+            try
+            {
+                AppWindows.TreeFormIfBuilt?.ConnectionTree?.CloseContextMenu();
+            }
+            catch (Exception ex)
+            {
+                Runtime.MessageCollector.AddExceptionMessage("Could not close the connection tree's menu", ex,
+                                                             MessageClass.WarningMsg, false);
             }
         }
 

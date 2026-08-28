@@ -47,6 +47,62 @@ namespace mRemoteNG.Connection
             }
         }
 
+        /// <summary>
+        /// Sent to a parent window when a mouse button goes down in one of its child windows.
+        /// </summary>
+        private const int WM_PARENTNOTIFY = 0x0210;
+
+        private const int WM_LBUTTONDOWN = 0x0201;
+        private const int WM_RBUTTONDOWN = 0x0204;
+        private const int WM_MBUTTONDOWN = 0x0207;
+
+        /// <summary>
+        /// Closes a menu left open elsewhere in the application when this session is clicked into.
+        /// </summary>
+        /// <remarks>
+        /// A session is drawn by something that is not an ordinary WinForms control - an ActiveX
+        /// client for RDP, a WebView2 for the native SSH terminal - and a click that lands in one
+        /// of those is not the sort of event a ContextMenuStrip closes itself on. Right-clicking
+        /// the connection tree and then working in the session left the menu sitting on top of it.
+        ///
+        /// Both paths are here because neither covers the other reliably: OnEnter is the WinForms
+        /// account of the focus arriving, WM_PARENTNOTIFY the Win32 account of the click, and
+        /// which one a given host produces depends on the control.
+        /// </remarks>
+        protected override void OnEnter(EventArgs e)
+        {
+            base.OnEnter(e);
+            CloseMenusElsewhere();
+        }
+
+        protected override void WndProc(ref Message m)
+        {
+            if (m.Msg == WM_PARENTNOTIFY)
+            {
+                int notification = m.WParam.ToInt32() & 0xFFFF;
+
+                if (notification == WM_LBUTTONDOWN || notification == WM_RBUTTONDOWN ||
+                    notification == WM_MBUTTONDOWN)
+                    CloseMenusElsewhere();
+            }
+
+            base.WndProc(ref m);
+        }
+
+        private static void CloseMenusElsewhere()
+        {
+            try
+            {
+                AppWindows.TreeFormIfBuilt?.ConnectionTree?.CloseContextMenu();
+            }
+            catch (Exception ex)
+            {
+                Runtime.MessageCollector.AddMessage(Messages.MessageClass.WarningMsg,
+                                                    "Couldn't close the connection tree's menu" +
+                                                    Environment.NewLine + ex.Message, true);
+            }
+        }
+
         private void InterfaceControl_Paint(object sender, PaintEventArgs e)
         {
             // Draw colored border based on ConnectionFrameColor property

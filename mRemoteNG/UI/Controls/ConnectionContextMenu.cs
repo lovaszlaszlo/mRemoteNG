@@ -86,6 +86,63 @@ namespace mRemoteNG.UI.Controls
 
                 ShowHideMenuItems();
             };
+
+            _focusWatchdog.Tick += OnFocusWatchdogTick;
+            Opened += (sender, args) =>
+            {
+                _focusWhenOpened = NativeMethods.GetFocus();
+                _focusWatchdog.Start();
+            };
+            Closed += (sender, args) => _focusWatchdog.Stop();
+        }
+
+        /// <summary>
+        /// Watches where the keyboard focus went while the menu is open.
+        /// </summary>
+        /// <remarks>
+        /// A menu closes itself when the focus leaves, which it learns from the messages the
+        /// application dispatches. A session does not go through those: the RDP client is an
+        /// ActiveX with its own input window and the native SSH terminal is a WebView2, and a
+        /// click that lands in either is nothing the menu can see. Right-clicking the tree and
+        /// then working in the session left the menu sitting on top of it - reported twice, on
+        /// 2026-08-28, for RDP after the first attempt only covered SSH.
+        ///
+        /// Asking who has the focus is the one question that gets a straight answer whatever
+        /// draws the session, which is why it is asked here rather than at each protocol.
+        /// </remarks>
+        private readonly Timer _focusWatchdog = new() { Interval = 150 };
+
+        /// <summary>
+        /// Where the focus was when the menu opened, which is the thing that must not change.
+        /// </summary>
+        /// <remarks>
+        /// A baseline rather than a test against the menu's own handle: a ToolStripDropDown does
+        /// not necessarily take the focus when it opens, so "the menu does not have the focus"
+        /// would be true from the start and would close the menu the instant it appeared.
+        /// </remarks>
+        private IntPtr _focusWhenOpened;
+
+        private void OnFocusWatchdogTick(object sender, EventArgs e)
+        {
+            IntPtr focus = NativeMethods.GetFocus();
+
+            if (focus == _focusWhenOpened) return;
+
+            // A submenu of our own moving the focus about is not the focus leaving.
+            if (FromHandle(focus) is ToolStripDropDown) return;
+
+            Close(ToolStripDropDownCloseReason.AppFocusChange);
+        }
+
+        protected override void Dispose(bool disposing)
+        {
+            if (disposing)
+            {
+                _focusWatchdog.Tick -= OnFocusWatchdogTick;
+                _focusWatchdog.Dispose();
+            }
+
+            base.Dispose(disposing);
         }
 
         private void InitializeComponent()
