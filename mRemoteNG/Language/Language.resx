@@ -265,7 +265,7 @@
     <value>Check failed!</value>
   </data>
   <data name="CheckboxAutomaticReconnect" xml:space="preserve">
-    <value>Automatically try to reconnect when disconnected from server (RDP &amp;&amp; ICA only)</value>
+    <value>Automatically try to reconnect when disconnected from server (RDP, ICA &amp;&amp; native SSH)</value>
   </data>
   <data name="CheckboxDoNotShowThisMessageAgain" xml:space="preserve">
     <value>Do not show this message again.</value>
@@ -2757,7 +2757,7 @@ Nightly Channel includes Alphas, Betas &amp; Release Candidates.</value>
     <value>Bind Connections and Config panels together when auto-hidden</value>
   </data>
   <data name="DisplayReconnectionDialog" xml:space="preserve">
-    <value>Display reconnection dialog when disconnected from server (RDP &amp;&amp; ICA only)</value>
+    <value>Display reconnection dialog when disconnected from server (RDP, ICA &amp;&amp; native SSH)</value>
   </data>
   <data name="OptionsManagement" xml:space="preserve">
     <value>Options Management (Dev)</value>

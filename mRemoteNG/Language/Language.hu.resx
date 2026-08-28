@@ -577,7 +577,7 @@
   <data name="ButtonDefaultProperties" xml:space="preserve"><value>Alapértelmezett tulajdonságok</value></data>
   <data name="Changelog" xml:space="preserve"><value>Változásnapló</value></data>
   <data name="CheckAgain" xml:space="preserve"><value>Ellenőrzés újra</value></data>
-  <data name="CheckboxAutomaticReconnect" xml:space="preserve"><value>Automatikus újracsatlakozás a kiszolgálóról való lekapcsolódáskor (csak RDP &amp;&amp; ICA)</value></data>
+  <data name="CheckboxAutomaticReconnect" xml:space="preserve"><value>Automatikus újracsatlakozás a kiszolgálóról való lekapcsolódáskor (RDP, ICA &amp;&amp; natív SSH)</value></data>
   <data name="CheckboxProxyAuthentication" xml:space="preserve"><value>Ez a proxykiszolgáló hitelesítést igényel</value></data>
   <data name="CheckboxPuttyPath" xml:space="preserve"><value>Egyéni PuTTY-útvonal használata:</value></data>
   <data name="CheckboxUpdateUseProxy" xml:space="preserve"><value>Proxykiszolgáló használata a kapcsolódáshoz</value></data>
@@ -651,7 +651,7 @@
   <data name="DisableRefocus" xml:space="preserve"><value>Újrafókuszálás kikapcsolása</value></data>
   <data name="DisconnectOthers" xml:space="preserve"><value>Az összes többi bontása</value></data>
   <data name="DisconnectOthersRight" xml:space="preserve"><value>A jobbra lévő fülek bontása</value></data>
-  <data name="DisplayReconnectionDialog" xml:space="preserve"><value>Újracsatlakozási ablak megjelenítése a kiszolgálóról való lekapcsolódáskor (csak RDP &amp;&amp; ICA)</value></data>
+  <data name="DisplayReconnectionDialog" xml:space="preserve"><value>Újracsatlakozási ablak megjelenítése a kiszolgálóról való lekapcsolódáskor (RDP, ICA &amp;&amp; natív SSH)</value></data>
   <data name="DoNotTrimUsername" xml:space="preserve"><value>Ne vágja le a szóközöket a felhasználónevekből</value></data>
   <data name="DontConnectToConsoleSession" xml:space="preserve"><value>Ne csatlakozzon a konzol-munkamenethez</value></data>
   <data name="Download" xml:space="preserve"><value>Letöltés</value></data>
