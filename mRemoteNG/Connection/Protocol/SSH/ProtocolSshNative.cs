@@ -7,11 +7,15 @@ using System.Text;
 using System.Text.Json;
 using System.Threading;
 using System.Threading.Tasks;
+using System.Timers;
 using System.Windows.Forms;
 using Microsoft.Web.WebView2.Core;
 using Microsoft.Web.WebView2.WinForms;
+using Microsoft.Win32;
 using mRemoteNG.App;
 using mRemoteNG.Messages;
+using mRemoteNG.Resources.Language;
+using mRemoteNG.Tools;
 using Renci.SshNet;
 
 namespace mRemoteNG.Connection.Protocol.SSH
@@ -42,6 +46,28 @@ namespace mRemoteNG.Connection.Protocol.SSH
         private uint _columns = DefaultColumns;
         private uint _rows = DefaultRows;
 
+        /// <summary>
+        /// 1 once the loss of the link has been acted on, so that the read loop finishing, the
+        /// keepalive failing and the machine waking up do not each act on the same death.
+        /// </summary>
+        private int _linkLost;
+
+        /// <summary>
+        /// Asks the client whether it is still connected, because it will not always say so
+        /// unprompted.
+        /// </summary>
+        /// <remarks>
+        /// On 2026-08-28 a session sat in a tab all day after the network dropped: the client knew
+        /// perfectly well it was disconnected - every keystroke came back "Client not connected" -
+        /// but no ErrorOccurred ever reached us and the read loop stayed blocked in ReadAsync, so
+        /// nothing was ever told. Neither of the other two paths covers this: the resume check
+        /// needs a standby that never happened, and the keepalive only helps if SSH.NET raises the
+        /// failure rather than swallowing it.
+        /// </remarks>
+        private System.Threading.Timer _livenessTimer;
+
+        private static readonly TimeSpan LivenessInterval = TimeSpan.FromSeconds(10);
+
         public ProtocolSshNative(ConnectionInfo connectionInfo)
         {
             _connectionInfo = connectionInfo;
@@ -59,6 +85,14 @@ namespace mRemoteNG.Connection.Protocol.SSH
                 _host = new Panel { Dock = DockStyle.Fill, BackColor = Color.Black };
                 _host.Controls.Add(_webView);
                 Control = _host;
+
+                tmrReconnect.Elapsed += OnReconnectTimerElapsed;
+
+                // Hibernating breaks the TCP connection under the session, and nothing on the wire
+                // says so: the next read simply never returns. Waking up is the moment to go and
+                // look, rather than waiting for a keepalive to time out.
+                SystemEvents.PowerModeChanged += OnPowerModeChanged;
+
                 return base.Initialize();
             }
             catch (Exception ex)
@@ -181,12 +215,25 @@ namespace mRemoteNG.Connection.Protocol.SSH
 
             _sshClient = new SshClient(sshConnectionInfo);
             _sshClient.HostKeyReceived += OnHostKeyReceived;
+
+            // Without this nothing is ever written to an idle session, so a link that has died
+            // quietly - a hibernated laptop, a dropped VPN - is not noticed until someone types
+            // into it. The keepalive turns that into an ErrorOccurred within the interval.
+            _sshClient.KeepAliveInterval = TimeSpan.FromSeconds(30);
+            _sshClient.ErrorOccurred += OnSshErrorOccurred;
+
             _sshClient.Connect();
 
             _shellStream = _sshClient.CreateShellStream("xterm-256color", _columns, _rows, 0, 0, 8192);
 
             _readCancellation = new CancellationTokenSource();
             _ = Task.Run(() => PumpOutputAsync(_readCancellation.Token));
+
+            // Armed only now: a session that is up is one that can be lost again.
+            Interlocked.Exchange(ref _linkLost, 0);
+
+            _livenessTimer = new System.Threading.Timer(_ => CheckLiveness(), null,
+                                                        LivenessInterval, LivenessInterval);
 
             Event_Connected(this);
 
@@ -366,20 +413,204 @@ namespace mRemoteNG.Connection.Protocol.SSH
 
             if (cancellationToken.IsCancellationRequested) return;
 
-            // Written for the case where the tab outlives the session; normally it is gone before
-            // this can be read.
-            WriteStatus("[2m-- the session ended --[0m");
+            // Logging out is not a link that failed, and it must not be offered a reconnect: the
+            // transport is still up underneath, it is the shell on top of it that finished. The
+            // two look identical from here except for exactly that.
+            bool loggedOut = _sshClient?.IsConnected == true;
 
-            // Tear the tab down, the way the PuTTY protocol does when its process exits. A tab
-            // holding a dead console is nothing but clutter.
-            Event_Closed(this);
+            HandleLinkLost(loggedOut ? "the session ended" : "the connection was lost",
+                           mayReconnect: !loggedOut);
+        }
+
+        /// <summary>
+        /// Acts once on a session that is no longer there, whether it was logged out of, timed out
+        /// on a keepalive, or found dead after the machine woke up.
+        /// </summary>
+        /// <remarks>
+        /// An SSH session cannot survive its TCP connection the way an RDP session survives one -
+        /// the shell on the far side is gone with everything that was running in it, so a
+        /// reconnect here means a new shell, not the old one continued. PuTTY behaves the same
+        /// way; only a multiplexer on the server (tmux, screen) actually keeps the work.
+        /// </remarks>
+        private void HandleLinkLost(string reason, bool mayReconnect = true)
+        {
+            // The read loop ending, the keepalive failing and the check after a resume can all be
+            // describing the same death, and they race.
+            if (Interlocked.Exchange(ref _linkLost, 1) == 1) return;
+
+            Runtime.MessageCollector.AddMessage(MessageClass.InformationMsg,
+                $"The SSH session to '{_connectionInfo.Hostname}' is gone: {reason}", true);
+
+            if (!mayReconnect || !Properties.OptionsAdvancedPage.Default.ReconnectOnDisconnect)
+            {
+                // Written for the case where the tab outlives the session; normally it is gone
+                // before this can be read. Tearing the tab down is what the PuTTY protocol does
+                // when its process exits - a tab holding a dead console is nothing but clutter.
+                WriteStatus($"[2m-- {reason} --[0m");
+                Event_Closed(this);
+                return;
+            }
+
+            WriteStatus($"[33m-- {reason}; waiting for {_connectionInfo.Hostname} to answer again --[0m");
+            Event_Disconnected(this, reason, null);
+            ShowReconnectGroup();
+        }
+
+        /// <summary>
+        /// Puts the same "waiting for the server" panel over the terminal that a dropped RDP
+        /// session gets, and starts polling the port behind it.
+        /// </summary>
+        private void ShowReconnectGroup()
+        {
+            if (_host == null || _host.IsDisposed) return;
+
+            if (_host.InvokeRequired)
+            {
+                _host.BeginInvoke(new Action(ShowReconnectGroup));
+                return;
+            }
+
+            ReconnectGroup = new ReconnectGroup();
+            ReconnectGroup.CloseClicked += Event_ReconnectGroupCloseClicked;
+            ReconnectGroup.Left = _host.Width / 2 - ReconnectGroup.Width / 2;
+            ReconnectGroup.Top = _host.Height / 2 - ReconnectGroup.Height / 2;
+            ReconnectGroup.Parent = _host;
+            ReconnectGroup.Show();
+            ReconnectGroup.BringToFront();
+
+            tmrReconnect.Enabled = true;
+        }
+
+        private void OnReconnectTimerElapsed(object sender, ElapsedEventArgs e)
+        {
+            try
+            {
+                if (ReconnectGroup == null) return;
+
+                int port = _connectionInfo.Port > 0 ? _connectionInfo.Port : 22;
+                bool serverReady = PortScanner.IsPortOpen(_connectionInfo.Hostname, port.ToString());
+
+                ReconnectGroup.ServerReady = serverReady;
+
+                if (!ReconnectGroup.ReconnectWhenReady || !serverReady) return;
+
+                tmrReconnect.Enabled = false;
+                Reconnect();
+            }
+            catch (Exception ex)
+            {
+                Runtime.MessageCollector.AddExceptionMessage(
+                    string.Format(Language.AutomaticReconnectError, _connectionInfo.Hostname),
+                    ex, MessageClass.WarningMsg, false);
+            }
+        }
+
+        /// <summary>
+        /// Drops what is left of the dead session and opens a new one into the same terminal, so
+        /// the scrollback of the old one is still there to read.
+        /// </summary>
+        private void Reconnect()
+        {
+            try
+            {
+                DisposeSshSession();
+
+                WriteStatus("[2m-- reconnecting --[0m");
+                ConnectSsh();
+
+                DisposeReconnectGroup();
+            }
+            catch (Exception ex)
+            {
+                Runtime.MessageCollector.AddExceptionMessage(
+                    string.Format(Language.AutomaticReconnectError, _connectionInfo.Hostname),
+                    ex, MessageClass.WarningMsg, false);
+
+                WriteStatus($"[31m{ex.Message}[0m");
+
+                // Back to waiting rather than giving up: the port answered but the session did not
+                // come up, and a server that is still finishing its boot is the ordinary reason.
+                Interlocked.Exchange(ref _linkLost, 1);
+                tmrReconnect.Enabled = true;
+            }
+        }
+
+        private void DisposeReconnectGroup()
+        {
+            // DisposeReconnectGroup marshals itself onto the UI thread, so the timer thread can
+            // call this directly.
+            ReconnectGroup?.DisposeReconnectGroup();
+            ReconnectGroup = null;
+        }
+
+        private void CheckLiveness()
+        {
+            try
+            {
+                SshClient client = _sshClient;
+                if (client == null || client.IsConnected) return;
+
+                HandleLinkLost("the connection was lost");
+            }
+            catch (Exception ex)
+            {
+                Runtime.MessageCollector.AddExceptionMessage("Could not check whether the SSH session is still up", ex,
+                                                             MessageClass.WarningMsg, false);
+            }
+        }
+
+        private void OnSshErrorOccurred(object sender, Renci.SshNet.Common.ExceptionEventArgs e)
+        {
+            // Only the link dying is interesting here; anything the session itself runs into is
+            // already reported by the read loop.
+            if (_sshClient == null || _sshClient.IsConnected) return;
+
+            HandleLinkLost(e.Exception?.Message ?? "the connection was lost");
+        }
+
+        private void OnPowerModeChanged(object sender, PowerModeChangedEventArgs e)
+        {
+            if (e.Mode != PowerModes.Resume) return;
+
+            // Off the caller's thread: this arrives on a system thread that Windows wants back
+            // promptly, and IsConnected can sit on a socket for a moment.
+            Task.Run(() =>
+            {
+                try
+                {
+                    if (_sshClient == null || _sshClient.IsConnected) return;
+
+                    HandleLinkLost("the connection did not survive standby");
+                }
+                catch (Exception ex)
+                {
+                    Runtime.MessageCollector.AddExceptionMessage(
+                        "Could not check the SSH session after the machine woke up", ex,
+                        MessageClass.WarningMsg, false);
+                }
+            });
         }
 
         private void OnWebMessageReceived(object sender, CoreWebView2WebMessageReceivedEventArgs e)
         {
+            JsonDocument document;
+
+            // Only the parsing is a "malformed message". What the message then asks for can fail
+            // for its own reasons, and saying that the page sent nonsense when the session simply
+            // died sends the next person looking in the wrong place entirely.
             try
             {
-                using JsonDocument document = JsonDocument.Parse(e.TryGetWebMessageAsString());
+                document = JsonDocument.Parse(e.TryGetWebMessageAsString());
+            }
+            catch (Exception ex)
+            {
+                Runtime.MessageCollector.AddExceptionMessage("Malformed message from the SSH terminal page", ex,
+                                                             MessageClass.WarningMsg, false);
+                return;
+            }
+
+            using (document)
+            {
                 JsonElement message = document.RootElement;
 
                 switch (message.GetProperty("type").GetString())
@@ -394,14 +625,9 @@ namespace mRemoteNG.Connection.Protocol.SSH
                     case "resize":
                         _columns = (uint)message.GetProperty("cols").GetInt32();
                         _rows = (uint)message.GetProperty("rows").GetInt32();
-                        _shellStream?.ChangeWindowSize(_columns, _rows, 0, 0);
+                        TellShellTheSize();
                         break;
                 }
-            }
-            catch (Exception ex)
-            {
-                Runtime.MessageCollector.AddExceptionMessage("Malformed message from the SSH terminal page", ex,
-                                                             MessageClass.WarningMsg, false);
             }
         }
 
@@ -410,8 +636,38 @@ namespace mRemoteNG.Connection.Protocol.SSH
             if (string.IsNullOrEmpty(text) || _shellStream == null) return;
 
             byte[] bytes = Encoding.UTF8.GetBytes(text);
-            _shellStream.Write(bytes, 0, bytes.Length);
-            _shellStream.Flush();
+
+            try
+            {
+                _shellStream.Write(bytes, 0, bytes.Length);
+                _shellStream.Flush();
+            }
+            catch (Exception ex)
+            {
+                // Typing into a session whose link is gone is the plainest evidence there is that
+                // it is gone, and it arrives at the one moment the user is certainly watching.
+                HandleLinkLost(ex.Message);
+            }
+        }
+
+        /// <summary>
+        /// Passes the new window size to the far side, and shrugs if it cannot.
+        /// </summary>
+        /// <remarks>
+        /// Not a reason to declare the session dead: this fires while panels are being dragged
+        /// about, and the liveness check is the thing that decides that question.
+        /// </remarks>
+        private void TellShellTheSize()
+        {
+            try
+            {
+                _shellStream?.ChangeWindowSize(_columns, _rows, 0, 0);
+            }
+            catch (Exception ex)
+            {
+                Runtime.MessageCollector.AddExceptionMessage("Could not tell the SSH session its new size", ex,
+                                                             MessageClass.WarningMsg, false);
+            }
         }
 
         /// <summary>
@@ -520,13 +776,35 @@ namespace mRemoteNG.Connection.Protocol.SSH
 
         public override void Close()
         {
+            // Before the session goes: the resume check must not find the client half torn down
+            // and call this a lost link, and the poll must not reconnect a tab that is closing.
+            SystemEvents.PowerModeChanged -= OnPowerModeChanged;
+            tmrReconnect.Enabled = false;
+            tmrReconnect.Elapsed -= OnReconnectTimerElapsed;
+            Interlocked.Exchange(ref _linkLost, 1);
+
+            // Closing the tab from the reconnect panel's own Close button lands here too.
+            DisposeReconnectGroup();
+
+            DisposeSshSession();
+            base.Close();
+        }
+
+        /// <summary>
+        /// Ends the SSH session and lets go of it, leaving the terminal page alone - a reconnect
+        /// opens a new session into the same page, so this cannot take the page with it.
+        /// </summary>
+        private void DisposeSshSession()
+        {
             try
             {
+                _livenessTimer?.Dispose();
                 _readCancellation?.Cancel();
                 _shellStream?.Dispose();
 
                 if (_sshClient != null)
                 {
+                    _sshClient.ErrorOccurred -= OnSshErrorOccurred;
                     if (_sshClient.IsConnected) _sshClient.Disconnect();
                     _sshClient.Dispose();
                 }
@@ -538,9 +816,10 @@ namespace mRemoteNG.Connection.Protocol.SSH
             }
             finally
             {
+                _livenessTimer = null;
+                _readCancellation = null;
                 _shellStream = null;
                 _sshClient = null;
-                base.Close();
             }
         }
     }
