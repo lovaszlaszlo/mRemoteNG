@@ -656,7 +656,7 @@
   <data name="DontConnectToConsoleSession" xml:space="preserve"><value>Ne csatlakozzon a konzol-munkamenethez</value></data>
   <data name="Download" xml:space="preserve"><value>Letöltés</value></data>
   <data name="DownloadAndInstall" xml:space="preserve"><value>Letöltés és telepítés</value></data>
-  <data name="Duplicate" xml:space="preserve"><value>Másolat</value></data>
+  <data name="Duplicate" xml:space="preserve"><value>Duplikálás</value></data>
   <data name="DuplicateTab" xml:space="preserve"><value>Fül megkettőzése</value></data>
   <data name="Element" xml:space="preserve"><value>Elem</value></data>
   <data name="EmptyPasswordContinue" xml:space="preserve"><value>Folytatod jelszó nélkül?</value></data>
