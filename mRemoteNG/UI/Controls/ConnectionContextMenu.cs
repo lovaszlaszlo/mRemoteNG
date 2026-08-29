@@ -141,6 +141,7 @@ namespace mRemoteNG.UI.Controls
             {
                 _focusWatchdog.Tick -= OnFocusWatchdogTick;
                 _focusWatchdog.Dispose();
+                _unavailableFont?.Dispose();
             }
 
             base.Dispose(disposing);
@@ -169,9 +170,19 @@ namespace mRemoteNG.UI.Controls
             if (item == null) return;
 
             item.Enabled = true;
-            item.ForeColor = SystemColors.GrayText;
             item.Tag = reason;
             item.ToolTipText = reason;
+
+            // Italics rather than a grey, tested on 2026-08-29. The theme renderer from
+            // DockPanelSuite paints menu text in its own colours and picks them from Enabled -
+            // and nothing here is ever disabled - so a ForeColor set on the item was simply
+            // discarded and the entry looked no different at all. The font it cannot discard: it
+            // has to measure and draw with the item's own, so the italic comes through whatever
+            // the theme does about colour.
+            //
+            // It also reads better than a grey. Grey says forbidden; italic says this one is not
+            // about the thing you have selected, which is what these actually mean.
+            item.Font = UnavailableFont;
 
             // Down into a submenu as well. Clicking a submenu parent only opens it, so a parent
             // marked on its own would lead to a list of entries that look perfectly usable and
@@ -180,6 +191,14 @@ namespace mRemoteNG.UI.Controls
                 foreach (ToolStripItem child in menuItem.DropDownItems)
                     Unavailable(child, reason);
         }
+
+        /// <summary>
+        /// The italic used for an entry that does not apply. Built once and kept: a font made per
+        /// call would be a new handle every time the menu opens.
+        /// </summary>
+        private Font _unavailableFont;
+
+        private Font UnavailableFont => _unavailableFont ??= new Font(Font, FontStyle.Italic);
 
         /// <summary>
         /// Shows why the clicked item does nothing here, and reports whether it was such an item.
@@ -909,8 +928,11 @@ namespace mRemoteNG.UI.Controls
         /// object reused for every node in the tree, so a reason left behind by the last node
         /// would be shown for the next one, about a rule that no longer applies.
         /// </remarks>
-        private static void EnableMenuItemsRecursive(ToolStripItemCollection items, bool enable = true)
+        private static void EnableMenuItemsRecursive(ToolStripItemCollection items, bool enable = true,
+                                                    Font ownerFont = null)
         {
+            ownerFont ??= items.Count > 0 ? items[0].Owner?.Font : null;
+
             foreach (ToolStripItem item in items)
             {
                 ToolStripMenuItem menuItem = item as ToolStripMenuItem;
@@ -922,11 +944,11 @@ namespace mRemoteNG.UI.Controls
                 menuItem.Enabled = enable;
                 menuItem.Tag = null;
                 menuItem.ToolTipText = null;
-                menuItem.ForeColor = Color.Empty;
+                menuItem.Font = ownerFont;
 
                 if (menuItem.HasDropDownItems)
                 {
-                    EnableMenuItemsRecursive(menuItem.DropDownItems, enable);
+                    EnableMenuItemsRecursive(menuItem.DropDownItems, enable, ownerFont);
                 }
             }
         }
