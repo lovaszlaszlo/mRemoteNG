@@ -11,28 +11,6 @@
 namespace mRemoteNG.Resources.Language {
     using System;
     
-        }
-        }
-        }
-        }
-        }
-        }
-        }
-        }
-        }
-        }
-        }
-        }
-        }
-        }
-        }
-        }
-        }
-        }
-        }
-        }
-        }
-        }
     
     /// <summary>
     ///   A strongly-typed resource class, for looking up localized strings, etc.
@@ -7949,132 +7927,13 @@ namespace mRemoteNG.Resources.Language {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to This node only lists the sessions PuTTY has saved for itself. They are read here and changed in PuTTY..
-        /// </summary>
-        internal static string MenuReasonPuttyRootNode {
-            get {
-                return ResourceManager.GetString("MenuReasonPuttyRootNode", resourceCulture);
-            }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to This is one of PuTTY's own saved sessions. mRemoteNG reads it; change it in PuTTY..
-        /// </summary>
-        internal static string MenuReasonPuttySession {
-            get {
-                return ResourceManager.GetString("MenuReasonPuttySession", resourceCulture);
-            }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to This is the root of the connection tree, not a connection..
-        /// </summary>
-        internal static string MenuReasonRootNode {
-            get {
-                return ResourceManager.GetString("MenuReasonRootNode", resourceCulture);
-            }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to The root of the tree cannot be deleted or moved. Everything else lives inside it..
-        /// </summary>
-        internal static string MenuReasonRootNodeImmovable {
-            get {
-                return ResourceManager.GetString("MenuReasonRootNodeImmovable", resourceCulture);
-            }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to This applies to a single session, and a folder is not one. Choose a connection inside it..
-        /// </summary>
-        internal static string MenuReasonSingleSessionOnly {
-            get {
-                return ResourceManager.GetString("MenuReasonSingleSessionOnly", resourceCulture);
-            }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Nothing to disconnect: no connection in this folder has a session open..
-        /// </summary>
-        internal static string MenuReasonFolderNothingOpen {
-            get {
-                return ResourceManager.GetString("MenuReasonFolderNothingOpen", resourceCulture);
-            }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Nothing to disconnect: this connection has no session open..
-        /// </summary>
-        internal static string MenuReasonNothingOpen {
-            get {
-                return ResourceManager.GetString("MenuReasonNothingOpen", resourceCulture);
-            }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to File transfer needs an SSH connection, and this one uses {0}. Note that it authenticates with a password, so a server that only accepts keys will refuse it..
-        /// </summary>
-        internal static string MenuReasonTransferNeedsSsh {
-            get {
-                return ResourceManager.GetString("MenuReasonTransferNeedsSsh", resourceCulture);
-            }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to This only means something for an RDP connection, and this one uses {0}..
-        /// </summary>
-        internal static string MenuReasonRdpOnly {
-            get {
-                return ResourceManager.GetString("MenuReasonRdpOnly", resourceCulture);
-            }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to This only means something for an RDP or VNC connection, and this one uses {0}..
-        /// </summary>
-        internal static string MenuReasonRdpVncOnly {
-            get {
-                return ResourceManager.GetString("MenuReasonRdpVncOnly", resourceCulture);
-            }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to An external application connection has no credentials of its own to leave out..
-        /// </summary>
-        internal static string MenuReasonNotForExternalApp {
-            get {
-                return ResourceManager.GetString("MenuReasonNotForExternalApp", resourceCulture);
-            }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to This applies to what a folder contains, and a connection contains nothing. Use it on the folder instead..
-        /// </summary>
-        internal static string MenuReasonNoChildren {
-            get {
-                return ResourceManager.GetString("MenuReasonNoChildren", resourceCulture);
-            }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Connect all {0} in this folder.
-        /// </summary>
-        internal static string ConnectAllInFolder {
-            get {
-                return ResourceManager.GetString("ConnectAllInFolder", resourceCulture);
-            }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Connect all in this folder (with options).
-        /// </summary>
-        internal static string ConnectAllInFolderWithOptions {
-            get {
-                return ResourceManager.GetString("ConnectAllInFolderWithOptions", resourceCulture);
-            }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Disconnect all in this folder.
-        /// </summary>
-        internal static string DisconnectAllInFolder {
-            get {
-                return ResourceManager.GetString("DisconnectAllInFolder", resourceCulture);
-            }
-        
-        /// <summary>
         ///   Looks up a localized string similar to This opens all {0} connections in "{1}", including the ones in folders inside it. Open them all?.
         /// </summary>
         internal static string ConfirmConnectAllInFolder {
             get {
                 return ResourceManager.GetString("ConfirmConnectAllInFolder", resourceCulture);
             }
+        }
         
         /// <summary>
         ///   Looks up a localized string similar to This closes all {0} open connections in "{1}", including the ones in folders inside it. Close them all?.
@@ -8083,38 +7942,142 @@ namespace mRemoteNG.Resources.Language {
             get {
                 return ResourceManager.GetString("ConfirmDisconnectAllInFolder", resourceCulture);
             }
+        }
         
         /// <summary>
-        ///   Looks up a localized string similar to Connecting....
+        ///   Looks up a localized string similar to Connect all {0} in this folder.
         /// </summary>
-        internal static string TransferStatusConnecting {
+        internal static string ConnectAllInFolder {
             get {
-                return ResourceManager.GetString("TransferStatusConnecting", resourceCulture);
+                return ResourceManager.GetString("ConnectAllInFolder", resourceCulture);
             }
+        }
         
         /// <summary>
-        ///   Looks up a localized string similar to Transferring... {0}%.
+        ///   Looks up a localized string similar to Connect all in this folder (with options).
         /// </summary>
-        internal static string TransferStatusTransferring {
+        internal static string ConnectAllInFolderWithOptions {
             get {
-                return ResourceManager.GetString("TransferStatusTransferring", resourceCulture);
+                return ResourceManager.GetString("ConnectAllInFolderWithOptions", resourceCulture);
             }
+        }
         
         /// <summary>
-        ///   Looks up a localized string similar to Done. {0} was copied to {1}..
+        ///   Looks up a localized string similar to Disconnect all in this folder.
         /// </summary>
-        internal static string TransferStatusCompleted {
+        internal static string DisconnectAllInFolder {
             get {
-                return ResourceManager.GetString("TransferStatusCompleted", resourceCulture);
+                return ResourceManager.GetString("DisconnectAllInFolder", resourceCulture);
             }
+        }
         
         /// <summary>
-        ///   Looks up a localized string similar to Failed: {0}.
+        ///   Looks up a localized string similar to Nothing to disconnect: no connection in this folder has a session open..
         /// </summary>
-        internal static string TransferStatusFailed {
+        internal static string MenuReasonFolderNothingOpen {
             get {
-                return ResourceManager.GetString("TransferStatusFailed", resourceCulture);
+                return ResourceManager.GetString("MenuReasonFolderNothingOpen", resourceCulture);
             }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to This applies to what a folder contains, and a connection contains nothing. Use it on the folder instead..
+        /// </summary>
+        internal static string MenuReasonNoChildren {
+            get {
+                return ResourceManager.GetString("MenuReasonNoChildren", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to An external application connection has no credentials of its own to leave out..
+        /// </summary>
+        internal static string MenuReasonNotForExternalApp {
+            get {
+                return ResourceManager.GetString("MenuReasonNotForExternalApp", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Nothing to disconnect: this connection has no session open..
+        /// </summary>
+        internal static string MenuReasonNothingOpen {
+            get {
+                return ResourceManager.GetString("MenuReasonNothingOpen", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to This node only lists the sessions PuTTY has saved for itself. They are read here and changed in PuTTY..
+        /// </summary>
+        internal static string MenuReasonPuttyRootNode {
+            get {
+                return ResourceManager.GetString("MenuReasonPuttyRootNode", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to This is one of PuTTY's own saved sessions. mRemoteNG reads it; change it in PuTTY..
+        /// </summary>
+        internal static string MenuReasonPuttySession {
+            get {
+                return ResourceManager.GetString("MenuReasonPuttySession", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to This only means something for an RDP connection, and this one uses {0}..
+        /// </summary>
+        internal static string MenuReasonRdpOnly {
+            get {
+                return ResourceManager.GetString("MenuReasonRdpOnly", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to This only means something for an RDP or VNC connection, and this one uses {0}..
+        /// </summary>
+        internal static string MenuReasonRdpVncOnly {
+            get {
+                return ResourceManager.GetString("MenuReasonRdpVncOnly", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to This is the root of the connection tree, not a connection..
+        /// </summary>
+        internal static string MenuReasonRootNode {
+            get {
+                return ResourceManager.GetString("MenuReasonRootNode", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The root of the tree cannot be deleted or moved. Everything else lives inside it..
+        /// </summary>
+        internal static string MenuReasonRootNodeImmovable {
+            get {
+                return ResourceManager.GetString("MenuReasonRootNodeImmovable", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to This applies to a single session, and a folder is not one. Choose a connection inside it..
+        /// </summary>
+        internal static string MenuReasonSingleSessionOnly {
+            get {
+                return ResourceManager.GetString("MenuReasonSingleSessionOnly", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to File transfer needs an SSH connection, and this one uses {0}. Note that it authenticates with a password, so a server that only accepts keys will refuse it..
+        /// </summary>
+        internal static string MenuReasonTransferNeedsSsh {
+            get {
+                return ResourceManager.GetString("MenuReasonTransferNeedsSsh", resourceCulture);
+            }
+        }
         
         /// <summary>
         ///   Looks up a localized string similar to Cancelled. A partly written file may be left on the server; it is not removed..
@@ -8123,5 +8086,42 @@ namespace mRemoteNG.Resources.Language {
             get {
                 return ResourceManager.GetString("TransferStatusCancelled", resourceCulture);
             }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Done. {0} was copied to {1}..
+        /// </summary>
+        internal static string TransferStatusCompleted {
+            get {
+                return ResourceManager.GetString("TransferStatusCompleted", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Connecting....
+        /// </summary>
+        internal static string TransferStatusConnecting {
+            get {
+                return ResourceManager.GetString("TransferStatusConnecting", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Failed: {0}.
+        /// </summary>
+        internal static string TransferStatusFailed {
+            get {
+                return ResourceManager.GetString("TransferStatusFailed", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Transferring... {0}%.
+        /// </summary>
+        internal static string TransferStatusTransferring {
+            get {
+                return ResourceManager.GetString("TransferStatusTransferring", resourceCulture);
+            }
+        }
     }
 }
