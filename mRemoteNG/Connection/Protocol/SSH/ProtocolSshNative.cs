@@ -80,6 +80,14 @@ namespace mRemoteNG.Connection.Protocol.SSH
         /// </summary>
         private volatile bool _startFailed;
 
+        /// <summary>
+        /// The transcript asked for with -sessionlog, and the lock that keeps the read loop from
+        /// writing to it while the session is being torn down.
+        /// </summary>
+        private FileStream _sessionLog;
+
+        private readonly object _sessionLogLock = new();
+
         /// <inheritdoc />
         /// <remarks>
         /// True while the client is still being built, because Connect returns before the session
@@ -249,6 +257,7 @@ namespace mRemoteNG.Connection.Protocol.SSH
 
             _sshClient.Connect();
 
+            OpenSessionLog();
             StartForwardedPorts();
 
             _shellStream = _sshClient.CreateShellStream("xterm-256color", _columns, _rows, 0, 0, 8192);
@@ -415,11 +424,11 @@ namespace mRemoteNG.Connection.Protocol.SSH
 
             Runtime.MessageCollector.AddMessage(MessageClass.WarningMsg,
                 $"Ignored in the SSH options of '{_connectionInfo.Name}': {ignored}. " +
-                "The native SSH protocol understands -i, -L, -R and -D; the SSH (PuTTY) protocol " +
-                "passes the whole field to PuTTY.", true);
+                "The native SSH protocol understands -i, -L, -R, -D and -sessionlog; the " +
+                "SSH (PuTTY) protocol passes the whole field to PuTTY.", true);
 
             WriteStatus($"[33m-- ignored in the SSH options: {ignored} " +
-                        "(this protocol understands -i, -L, -R and -D) --[0m");
+                        "(this protocol understands -i, -L, -R, -D and -sessionlog) --[0m");
         }
 
         /// <summary>
@@ -437,6 +446,128 @@ namespace mRemoteNG.Connection.Protocol.SSH
         /// The list is taken and emptied first, so that whatever becomes of a port, no later
         /// caller down the close path tries it a second time.
         /// </remarks>
+        /// <summary>
+        /// Opens the transcript asked for with -sessionlog, if one was.
+        /// </summary>
+        /// <remarks>
+        /// PuTTY's spelling and PuTTY's placeholders, so the same field means the same thing
+        /// whichever of the two protocols a connection uses. Appends rather than truncates: a log
+        /// is kept in order to look back at it, and a path reused by accident should not silently
+        /// destroy what is already there.
+        ///
+        /// What lands in the file is exactly what the server sent, escape sequences and all, which
+        /// is what PuTTY calls all session output. It is faithful rather than tidy - "less -R" or
+        /// "cat" in a terminal renders it; a text editor shows the control codes.
+        ///
+        /// A log that cannot be opened is reported and then let go. Refusing the session over it
+        /// would be the wrong trade: the session is what was asked for, the transcript is a note
+        /// taken alongside.
+        /// </remarks>
+        private void OpenSessionLog()
+        {
+            string configured = Options.SessionLogPath;
+
+            if (string.IsNullOrEmpty(configured)) return;
+
+            string path = ExpandLogPlaceholders(configured);
+
+            try
+            {
+                string folder = Path.GetDirectoryName(path);
+                if (!string.IsNullOrEmpty(folder)) Directory.CreateDirectory(folder);
+
+                FileStream stream = new(path, FileMode.Append, FileAccess.Write, FileShare.Read);
+
+                byte[] header = Encoding.UTF8.GetBytes(
+                    $"{Environment.NewLine}=== {DateTime.Now:yyyy-MM-dd HH:mm:ss} " +
+                    $"{_connectionInfo.Name} ({_connectionInfo.Hostname}) ==={Environment.NewLine}");
+                stream.Write(header, 0, header.Length);
+                stream.Flush();
+
+                lock (_sessionLogLock) _sessionLog = stream;
+
+                Runtime.MessageCollector.AddMessage(MessageClass.InformationMsg,
+                    $"Logging the session of '{_connectionInfo.Name}' to {path}", true);
+            }
+            catch (Exception ex)
+            {
+                Runtime.MessageCollector.AddExceptionMessage($"Could not open the session log {path}", ex,
+                                                             MessageClass.WarningMsg, false);
+                WriteStatus($"[33m-- the session log could not be opened: {ex.Message} --[0m");
+            }
+        }
+
+        /// <summary>
+        /// Fills in PuTTY's log file placeholders: &amp;Y &amp;M &amp;D for the date, &amp;T for
+        /// the time, &amp;H for the host.
+        /// </summary>
+        /// <remarks>
+        /// Worth having rather than just accepting a fixed name: without them two sessions open at
+        /// once write over each other, and a single path quietly becomes one enormous file.
+        /// </remarks>
+        private string ExpandLogPlaceholders(string path)
+        {
+            DateTime now = DateTime.Now;
+
+            return path
+                .Replace("&Y", now.ToString("yyyy"))
+                .Replace("&M", now.ToString("MM"))
+                .Replace("&D", now.ToString("dd"))
+                .Replace("&T", now.ToString("HHmmss"))
+                .Replace("&H", MakeFileNameSafe(_connectionInfo.Hostname));
+        }
+
+        private static string MakeFileNameSafe(string text)
+        {
+            if (string.IsNullOrEmpty(text)) return "host";
+
+            foreach (char invalid in Path.GetInvalidFileNameChars())
+                text = text.Replace(invalid, '_');
+
+            return text;
+        }
+
+        /// <summary>
+        /// Writes what the server just sent into the transcript.
+        /// </summary>
+        /// <remarks>
+        /// Flushed every time. A transcript that is lost because the session ended badly is no
+        /// transcript at all, and the traffic here is somebody typing - there is nothing to gain
+        /// by holding it back.
+        /// </remarks>
+        private void WriteSessionLog(byte[] buffer, int count)
+        {
+            lock (_sessionLogLock)
+            {
+                if (_sessionLog == null) return;
+
+                try
+                {
+                    _sessionLog.Write(buffer, 0, count);
+                    _sessionLog.Flush();
+                }
+                catch (Exception ex)
+                {
+                    Runtime.MessageCollector.AddExceptionMessage("Could not write to the session log", ex,
+                                                                 MessageClass.WarningMsg, false);
+
+                    // Given up on rather than retried for every byte that follows: the disk filled,
+                    // or the file went away, and neither improves by being told again.
+                    _sessionLog.Dispose();
+                    _sessionLog = null;
+                }
+            }
+        }
+
+        private void CloseSessionLog()
+        {
+            lock (_sessionLogLock)
+            {
+                _sessionLog?.Dispose();
+                _sessionLog = null;
+            }
+        }
+
         private void StopForwardedPorts()
         {
             if (_forwardedPorts.Count == 0) return;
@@ -560,6 +691,8 @@ namespace mRemoteNG.Connection.Protocol.SSH
                 {
                     int read = await _shellStream.ReadAsync(buffer.AsMemory(), cancellationToken);
                     if (read <= 0) break;
+
+                    WriteSessionLog(buffer, read);
 
                     string payload = Convert.ToBase64String(buffer, 0, read);
                     PostToPage(new { type = "output", data = payload });
@@ -1082,6 +1215,7 @@ namespace mRemoteNG.Connection.Protocol.SSH
             try
             {
                 _livenessTimer?.Dispose();
+                CloseSessionLog();
                 StopForwardedPorts();
                 _readCancellation?.Cancel();
                 _shellStream?.Dispose();

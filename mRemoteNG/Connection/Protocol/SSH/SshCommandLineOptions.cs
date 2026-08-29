@@ -59,6 +59,13 @@ namespace mRemoteNG.Connection.Protocol.SSH
         public List<PortForward> Forwards { get; } = new();
 
         /// <summary>
+        /// Where to write a transcript of the session, from -sessionlog. Null when none was asked
+        /// for. Still carries PuTTY's &amp;-placeholders: they need the host, which is not known
+        /// here.
+        /// </summary>
+        public string SessionLogPath { get; private set; }
+
+        /// <summary>
         /// Everything that was not understood, kept verbatim so it can be shown back to the user.
         /// </summary>
         public List<string> Unrecognised { get; } = new();
@@ -84,6 +91,14 @@ namespace mRemoteNG.Connection.Protocol.SSH
             for (int i = 0; i < tokens.Count; i++)
             {
                 string token = tokens[i];
+
+                // Before -i and the rest, so that the longer flag is not mistaken for a shorter
+                // one sharing its first letters.
+                if (TryTakeValue(token, "-sessionlog", tokens, ref i, out string logPath))
+                {
+                    parsed.SessionLogPath = logPath.Trim('"');
+                    continue;
+                }
 
                 if (TryTakeValue(token, "-i", tokens, ref i, out string keyFile))
                 {
