@@ -516,18 +516,19 @@ namespace mRemoteNG.UI.Forms
 
         private void FrmMain_FormClosing(object sender, FormClosingEventArgs e)
         {
-            if (Runtime.WindowList != null)
-            {
-                foreach (BaseWindow window in Runtime.WindowList)
-                {
-                    window.Close();
-                }
-            }
+            // Everything below is ordered so that nothing is taken apart before the user has said
+            // it may be. It used to run the other way round: the windows were closed first, then
+            // IsClosing was set, then the form was hidden, and only then was the question asked.
+            //
+            // That produced two questions for one action. Closing the connection windows while
+            // IsClosing was still false let each of them ask its own "close this panel?" - the
+            // very question they check IsClosing to avoid at exit - and the exit question then
+            // arrived afterwards, about panels that had already gone. Answering No to it set
+            // e.Cancel on a form that was already hidden, with its windows closed and IsClosing
+            // stuck true. The application stayed alive and gutted, which from the outside looks
+            // exactly like having exited anyway.
 
-            IsClosing = true;
-
-            Hide();
-
+            // The tray is not an exit at all: the window is going away, nothing is being closed.
             if (Properties.OptionsAppearancePage.Default.CloseToTray)
             {
                 Runtime.NotificationAreaIcon ??= new NotificationAreaIcon();
@@ -541,39 +542,53 @@ namespace mRemoteNG.UI.Forms
                 }
             }
 
-            if (!(Runtime.WindowList == null || Runtime.WindowList.Count == 0))
+            // Counted before anything closes, which is the only time the answer is true.
+            int openConnections = 0;
+            foreach (IDockContent dc in pnlDock.Contents)
             {
-                int openConnections = 0;
-                if (pnlDock.Contents.Count > 0)
+                if (dc is not ConnectionWindow cw) continue;
+                if (cw.Controls.Count < 1) continue;
+                if (cw.Controls[0] is not DockPanel dp) continue;
+                openConnections += dp.Contents.Count;
+            }
+
+            if (openConnections > 0 &&
+                (Properties.Settings.Default.ConfirmCloseConnection == (int)ConfirmCloseEnum.All |
+                 (Properties.Settings.Default.ConfirmCloseConnection == (int)ConfirmCloseEnum.Multiple &
+                  openConnections > 1) || Properties.Settings.Default.ConfirmCloseConnection == (int)ConfirmCloseEnum.Exit))
+            {
+                DialogResult result = CTaskDialog.MessageBox(this, Application.ProductName, Language.ConfirmExitMainInstruction, "", "", "", Language.CheckboxDoNotShowThisMessageAgain, ETaskDialogButtons.YesNo, ESysIcons.Question, ESysIcons.Question);
+                if (CTaskDialog.VerificationChecked)
                 {
-                    foreach (IDockContent dc in pnlDock.Contents)
-                    {
-                        if (dc is not ConnectionWindow cw) continue;
-                        if (cw.Controls.Count < 1) continue;
-                        if (cw.Controls[0] is not DockPanel dp) continue;
-                        if (dp.Contents.Count > 0)
-                            openConnections += dp.Contents.Count;
-                    }
+                    Properties.Settings.Default.ConfirmCloseConnection = (int)ConfirmCloseEnum.Never;
                 }
 
-                if (openConnections > 0 &&
-                    (Properties.Settings.Default.ConfirmCloseConnection == (int)ConfirmCloseEnum.All |
-                     (Properties.Settings.Default.ConfirmCloseConnection == (int)ConfirmCloseEnum.Multiple &
-                      openConnections > 1) || Properties.Settings.Default.ConfirmCloseConnection == (int)ConfirmCloseEnum.Exit))
+                if (result == DialogResult.No)
                 {
-                    DialogResult result = CTaskDialog.MessageBox(this, Application.ProductName, Language.ConfirmExitMainInstruction, "", "", "", Language.CheckboxDoNotShowThisMessageAgain, ETaskDialogButtons.YesNo, ESysIcons.Question, ESysIcons.Question);
-                    if (CTaskDialog.VerificationChecked)
-                    {
-                        Properties.Settings.Default.ConfirmCloseConnection = (int)ConfirmCloseEnum.Never;
-                    }
-
-                    if (result == DialogResult.No)
-                    {
-                        e.Cancel = true;
-                        return;
-                    }
+                    // Nothing has been touched yet, so No leaves the application exactly as it was.
+                    e.Cancel = true;
+                    return;
                 }
             }
+
+            // Set before the windows are closed, not after: this is what tells each of them that
+            // the closing is part of an exit the user has already agreed to, so they do not ask
+            // again one by one.
+            IsClosing = true;
+
+            if (Runtime.WindowList != null)
+            {
+                // Copied out first: closing a window takes it off this list, and WindowList is a
+                // CollectionBase being walked while it changes underneath.
+                List<BaseWindow> windows = new();
+                foreach (BaseWindow window in Runtime.WindowList)
+                    windows.Add(window);
+
+                foreach (BaseWindow window in windows)
+                    window.Close();
+            }
+
+            Hide();
 
             NativeMethods.ChangeClipboardChain(Handle, _fpChainedWindowHandle);
             SystemEvents.DisplaySettingsChanged -= _advancedWindowMenu.OnDisplayChanged;
