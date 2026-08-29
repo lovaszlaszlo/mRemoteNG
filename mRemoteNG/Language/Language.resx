@@ -2197,7 +2197,7 @@ Nightly Channel includes Alphas, Betas &amp; Release Candidates.</value>
     <value>SSH Tunnel connection configuration problem. Connection to: "{0}" via SSH Tunnel: "{1}" not possible. A connection with the name configured as SSH Tunnel and protocol SSH version 1 or SSH2 version 2 cannot be found in the connection tree. Clear SSH Tunnel configuration or specify existing SSH connection.</value>
   </data>
   <data name="SshTunnelIsNotPutty" xml:space="preserve">
-    <value>SSH tunnel configuration problem. Connection to: "{0}" via SSH Tunnel: "{1}" not possible. Connection configured as SSH Tunnel found in tree, but protocol is not derived from putty. Make sure connection configured as SSH Tunnel is using SSH protocol.</value>
+    <value>SSH tunnel configuration problem. Connection to: "{0}" via SSH Tunnel: "{1}" not possible. Connection configured as SSH Tunnel found in tree, but its protocol cannot provide a tunnel. Make sure it uses one of the SSH protocols.</value>
   </data>
   <data name="SshTunnelNotInitialized" xml:space="preserve">
     <value>SSH tunnel initialization problem. Connection to: "{0}" via SSH Tunnel: "{1}" not possible. SSH connection could not be initialized. Check for any problems with the connection configured as SSH Tunnel.</value>

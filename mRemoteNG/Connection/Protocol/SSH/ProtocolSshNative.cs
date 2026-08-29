@@ -31,7 +31,7 @@ namespace mRemoteNG.Connection.Protocol.SSH
     /// oddly - none of that can happen here.
     /// </remarks>
     [SupportedOSPlatform("windows")]
-    public class ProtocolSshNative : ProtocolBase
+    public class ProtocolSshNative : ProtocolBase, ISshTunnelProvider
     {
         private const string VirtualHost = "mremoteng.terminal";
         private const int DefaultColumns = 80;
@@ -73,6 +73,20 @@ namespace mRemoteNG.Connection.Protocol.SSH
         /// the session that carries them.
         /// </summary>
         private readonly List<ForwardedPort> _forwardedPorts = new();
+
+        /// <summary>
+        /// Set once this session is known not to be coming up, so that a connection waiting on a
+        /// tunnel we carry can stop waiting.
+        /// </summary>
+        private volatile bool _startFailed;
+
+        /// <inheritdoc />
+        /// <remarks>
+        /// True while the client is still being built, because Connect returns before the session
+        /// exists here - a caller polling this in that window must not read "not connected yet" as
+        /// "never going to".
+        /// </remarks>
+        public bool IsTunnelRunning => !_startFailed && (_sshClient == null || _sshClient.IsConnected);
 
         public ProtocolSshNative(ConnectionInfo connectionInfo)
         {
@@ -123,9 +137,15 @@ namespace mRemoteNG.Connection.Protocol.SSH
             }
             catch (Exception ex)
             {
+                // Set first: a connection waiting on a tunnel this session was meant to carry polls
+                // IsTunnelRunning, and would otherwise wait out its full minute for a session that
+                // is not coming.
+                _startFailed = true;
+
                 // Deliberately leaves the tab open, unlike a session that ended normally: the
                 // reason it could not connect is worth reading, and it is written into the
                 // terminal itself.
+
                 Runtime.MessageCollector.AddExceptionMessage($"SSH connection to '{_connectionInfo.Hostname}' failed", ex);
                 WriteStatus($"[31m{ex.Message}[0m");
 

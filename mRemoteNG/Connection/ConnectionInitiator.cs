@@ -140,7 +140,7 @@ namespace mRemoteNG.Connection
 
                     // connect the SSH connection to setup the tunnel
                     ProtocolBase protocolSshTunnel = protocolFactory.CreateProtocol(connectionInfoSshTunnel);
-                    if (!(protocolSshTunnel is PuttyBase puttyBaseSshTunnel))
+                    if (protocolSshTunnel is not ISshTunnelProvider tunnelProvider)
                     {
                         Runtime.MessageCollector.AddMessage(MessageClass.WarningMsg,
                             string.Format(Language.SshTunnelIsNotPutty, connectionInfoOriginal.Name, connectionInfoSshTunnel.Name));
@@ -182,7 +182,7 @@ namespace mRemoteNG.Connection
                         // else, if connection attempt fails, window remains open and putty process remains running, and we cannot know that connection is already doomed
                         // in this case the timeout will expire and the log message below will be created
                         // awkward for user as he has already acknowledged the putty popup some seconds again when the below notification comes....
-                        if (!puttyBaseSshTunnel.isRunning())
+                        if (!tunnelProvider.IsTunnelRunning)
                         {
                             protocolSshTunnel.Close();
                             Runtime.MessageCollector.AddMessage(MessageClass.WarningMsg,
@@ -266,7 +266,14 @@ namespace mRemoteNG.Connection
                 }
                 else
                 {
-                    if (node.Name == SSHTunnelConnectionName && (node.Protocol == ProtocolType.SSH1 || node.Protocol == ProtocolType.SSH2)) result = node;
+                    // SSHNative belongs in this test as much as the other two. Left out, the
+                    // connection named as the tunnel is reported as "not found in the tree" even
+                    // while it sits there in plain sight, and the whole attempt gives up quietly -
+                    // the warning goes to the notifications, so what the user sees is a connection
+                    // that does nothing at all.
+                    if (node.Name == SSHTunnelConnectionName &&
+                        node.Protocol is ProtocolType.SSH1 or ProtocolType.SSH2 or ProtocolType.SSHNative)
+                        result = node;
                 }
                 if (result != null) break;
             }

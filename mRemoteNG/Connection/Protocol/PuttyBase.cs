@@ -25,7 +25,7 @@ using System.Windows.Forms;
 namespace mRemoteNG.Connection.Protocol
 {
     [SupportedOSPlatform("windows")]
-    public class PuttyBase : ProtocolBase
+    public class PuttyBase : ProtocolBase, ISshTunnelProvider
     {
         private const int IDM_RECONF = 0x50; // PuTTY Settings Menu ID
         private bool _isPuttyNg;
@@ -62,6 +62,9 @@ namespace mRemoteNG.Connection.Protocol
         {
             return PuttyProcess?.HasExited == false;
         }
+
+        /// <inheritdoc />
+        public bool IsTunnelRunning => isRunning();
 
         public void CreatePipe(object oData)
         {
