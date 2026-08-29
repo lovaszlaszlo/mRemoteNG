@@ -68,6 +68,12 @@ namespace mRemoteNG.Connection.Protocol.SSH
 
         private static readonly TimeSpan LivenessInterval = TimeSpan.FromSeconds(10);
 
+        /// <summary>
+        /// The tunnels asked for in the connection's SSH options, held so they can be stopped with
+        /// the session that carries them.
+        /// </summary>
+        private readonly List<ForwardedPort> _forwardedPorts = new();
+
         public ProtocolSshNative(ConnectionInfo connectionInfo)
         {
             _connectionInfo = connectionInfo;
@@ -224,6 +230,8 @@ namespace mRemoteNG.Connection.Protocol.SSH
 
             _sshClient.Connect();
 
+            StartForwardedPorts();
+
             _shellStream = _sshClient.CreateShellStream("xterm-256color", _columns, _rows, 0, 0, 8192);
 
             _readCancellation = new CancellationTokenSource();
@@ -294,26 +302,20 @@ namespace mRemoteNG.Connection.Protocol.SSH
         /// Private key to authenticate with, or null when there is none.
         /// </summary>
         /// <remarks>
-        /// Read from the existing SSH options property rather than a new one, so the connection
-        /// file format is untouched: either "-i &lt;path&gt;" as OpenSSH spells it, or a bare path.
-        /// When nothing is configured, the usual keys under %USERPROFILE%\.ssh are tried.
+        /// Read from the existing SSH options property rather than a property of its own, so the
+        /// connection file format is untouched: either "-i &lt;path&gt;" as OpenSSH spells it, or a
+        /// bare path. When nothing is configured, the usual keys under %USERPROFILE%\.ssh are tried.
         /// </remarks>
         private string ResolvePrivateKeyFile()
         {
-            string options = _connectionInfo.SSHOptions?.Trim();
+            string configured = Options.KeyFile;
 
-            if (!string.IsNullOrEmpty(options))
+            if (!string.IsNullOrEmpty(configured))
             {
-                string candidate = options;
-
-                int flag = options.IndexOf("-i", StringComparison.OrdinalIgnoreCase);
-                if (flag >= 0)
-                    candidate = options[(flag + 2)..].Trim().Trim('"');
-
-                if (File.Exists(candidate)) return candidate;
+                if (File.Exists(configured)) return configured;
 
                 Runtime.MessageCollector.AddMessage(MessageClass.WarningMsg,
-                    $"The private key configured for '{_connectionInfo.Name}' was not found: {candidate}");
+                    $"The private key configured for '{_connectionInfo.Name}' was not found: {configured}");
             }
 
             string sshFolder = Path.Combine(
@@ -326,6 +328,129 @@ namespace mRemoteNG.Connection.Protocol.SSH
             }
 
             return null;
+        }
+
+        /// <summary>
+        /// The connection's SSH options field, parsed. Re-read on every connect so a reconnect
+        /// picks up whatever the field says now.
+        /// </summary>
+        private SshCommandLineOptions Options =>
+            SshCommandLineOptions.Parse(_connectionInfo.SSHOptions);
+
+        /// <summary>
+        /// Opens the tunnels asked for in the SSH options, and says plainly what it could not.
+        /// </summary>
+        /// <remarks>
+        /// PuTTY gets this field as a real command line, so anything typed there works for a
+        /// PuTTY based connection. Here it is interpreted, and only -i, -L, -R and -D are
+        /// understood - so anything else is written into the terminal rather than dropped. A
+        /// tunnel that silently never opened is the kind of thing that costs an afternoon.
+        ///
+        /// A forward that will not start does not fail the session: the shell behind it is still
+        /// worth having, and the reason is on screen.
+        /// </remarks>
+        private void StartForwardedPorts()
+        {
+            SshCommandLineOptions options = Options;
+
+            foreach (SshCommandLineOptions.PortForward forward in options.Forwards)
+            {
+                try
+                {
+                    ForwardedPort port = forward.Kind switch
+                    {
+                        SshCommandLineOptions.ForwardKind.Local =>
+                            new ForwardedPortLocal(forward.BoundHost, forward.BoundPort, forward.Host, forward.Port),
+                        SshCommandLineOptions.ForwardKind.Remote =>
+                            new ForwardedPortRemote(forward.BoundHost, forward.BoundPort, forward.Host, forward.Port),
+                        _ => new ForwardedPortDynamic(forward.BoundHost, forward.BoundPort)
+                    };
+
+                    // Raised while the tunnel is running, long after this method returned - a
+                    // refused connection through it, for instance. Worth the log, not the session.
+                    port.Exception += (_, e) =>
+                        Runtime.MessageCollector.AddExceptionMessage(
+                            $"SSH tunnel {forward} reported a problem", e.Exception,
+                            MessageClass.WarningMsg, false);
+
+                    _sshClient.AddForwardedPort(port);
+                    port.Start();
+                    _forwardedPorts.Add(port);
+
+                    Runtime.MessageCollector.AddMessage(MessageClass.InformationMsg,
+                        $"SSH tunnel {forward} is open for '{_connectionInfo.Name}'", true);
+                }
+                catch (Exception ex)
+                {
+                    Runtime.MessageCollector.AddExceptionMessage($"Could not open the SSH tunnel {forward}", ex,
+                                                                 MessageClass.WarningMsg, false);
+                    WriteStatus($"[31m-- {forward} could not be opened: {ex.Message} --[0m");
+                }
+            }
+
+            if (options.Unrecognised.Count == 0) return;
+
+            string ignored = string.Join(" ", options.Unrecognised);
+
+            Runtime.MessageCollector.AddMessage(MessageClass.WarningMsg,
+                $"Ignored in the SSH options of '{_connectionInfo.Name}': {ignored}. " +
+                "The native SSH protocol understands -i, -L, -R and -D; the SSH (PuTTY) protocol " +
+                "passes the whole field to PuTTY.", true);
+
+            WriteStatus($"[33m-- ignored in the SSH options: {ignored} " +
+                        "(this protocol understands -i, -L, -R and -D) --[0m");
+        }
+
+        /// <summary>
+        /// Closes the tunnels, on a deadline, and says what happened either way.
+        /// </summary>
+        /// <remarks>
+        /// On 2026-08-29 a forward outlived its session: the local port stayed bound until
+        /// mRemoteNG itself exited, and the log said nothing at all - the teardown either never
+        /// ran or sat inside it, and there was no way to tell which. Hence the messages.
+        ///
+        /// Stopping a forward whose transport has already gone can wait on a channel that will
+        /// never answer, and this runs on the path that closes the tab, so it gets a deadline
+        /// rather than the chance to wedge it.
+        ///
+        /// The list is taken and emptied first, so that whatever becomes of a port, no later
+        /// caller down the close path tries it a second time.
+        /// </remarks>
+        private void StopForwardedPorts()
+        {
+            if (_forwardedPorts.Count == 0) return;
+
+            List<ForwardedPort> ports = new(_forwardedPorts);
+            _forwardedPorts.Clear();
+
+            foreach (ForwardedPort port in ports)
+            {
+                // Dispose rather than Stop: it stops the port itself, and it is the call that
+                // actually lets go of the listening socket.
+                Task closing = Task.Run(() => port.Dispose());
+
+                try
+                {
+                    if (closing.Wait(TimeSpan.FromSeconds(3)))
+                    {
+                        Runtime.MessageCollector.AddMessage(MessageClass.InformationMsg,
+                            $"SSH tunnel closed for '{_connectionInfo.Name}'", true);
+                        continue;
+                    }
+
+                    // Left to run rather than waited on any longer: the socket goes with the
+                    // process at worst, and a hung teardown must not take the tab with it.
+                    Runtime.MessageCollector.AddMessage(MessageClass.WarningMsg,
+                        $"An SSH tunnel of '{_connectionInfo.Name}' did not close within three " +
+                        "seconds; its local port stays bound until mRemoteNG exits.", true);
+                }
+                catch (Exception ex)
+                {
+                    Runtime.MessageCollector.AddExceptionMessage(
+                        $"Could not close an SSH tunnel of '{_connectionInfo.Name}'", ex,
+                        MessageClass.WarningMsg, false);
+                }
+            }
         }
 
         private void OnHostKeyReceived(object sender, Renci.SshNet.Common.HostKeyEventArgs e)
@@ -440,6 +565,12 @@ namespace mRemoteNG.Connection.Protocol.SSH
 
             Runtime.MessageCollector.AddMessage(MessageClass.InformationMsg,
                 $"The SSH session to '{_connectionInfo.Hostname}' is gone: {reason}", true);
+
+            // Done here rather than left to the close path. A protocol that raises Event_Closed
+            // itself is not reliably asked to Close afterwards, and a tunnel that outlives its
+            // session keeps a local port bound with nothing behind it - which is exactly what
+            // happened on 2026-08-29.
+            StopForwardedPorts();
 
             if (!mayReconnect || !Properties.OptionsAdvancedPage.Default.ReconnectOnDisconnect)
             {
@@ -856,6 +987,11 @@ namespace mRemoteNG.Connection.Protocol.SSH
 
         public override void Close()
         {
+            // Logged because its absence was the whole difficulty on 2026-08-29: a tunnel was
+            // still bound after its tab had gone, and nothing said whether this had even run.
+            Runtime.MessageCollector.AddMessage(MessageClass.InformationMsg,
+                $"Closing the SSH session of '{_connectionInfo.Name}'", true);
+
             // Before the session goes: the resume check must not find the client half torn down
             // and call this a lost link, and the poll must not reconnect a tab that is closing.
             SystemEvents.PowerModeChanged -= OnPowerModeChanged;
@@ -879,6 +1015,7 @@ namespace mRemoteNG.Connection.Protocol.SSH
             try
             {
                 _livenessTimer?.Dispose();
+                StopForwardedPorts();
                 _readCancellation?.Cancel();
                 _shellStream?.Dispose();
 
