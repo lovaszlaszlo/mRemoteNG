@@ -90,6 +90,19 @@ namespace mRemoteNG.App
                         _ultravncscForm.Show(dockPanel);
                         break;
                 }
+
+                // The window just shown is a panel, not a connection, and the tab strip is only
+                // drawn when at least one of those is open - so this has to be recalculated now.
+                // It was not: ShowHidePanelTabs ran once at startup and again only if the user
+                // changed the setting that governs it. Open the SSH file transfer or the options
+                // on a docking area that held nothing but connections and the panel arrived with
+                // no tab, and therefore no close button and no way to get rid of it at all.
+                //
+                // Deferred for the reason TabsPanelsPage already gives for deferring its own call:
+                // changing the document style underneath a window that is in the middle of being
+                // shown corrupts it.
+                FrmMain.Default.BeginInvoke(
+                    new System.Windows.Forms.MethodInvoker(() => FrmMain.Default.ShowHidePanelTabs()));
             }
             catch (Exception ex)
             {
