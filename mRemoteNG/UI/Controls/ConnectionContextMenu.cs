@@ -1,5 +1,6 @@
 ﻿using System;
 using System.ComponentModel;
+using System.Drawing;
 using System.Linq;
 using System.Windows.Forms;
 using mRemoteNG.App;
@@ -145,6 +146,120 @@ namespace mRemoteNG.UI.Controls
             base.Dispose(disposing);
         }
 
+        #region Why a menu item is not applicable
+
+        /// <summary>
+        /// Marks a menu item as not applicable to the selected node, and says why.
+        /// </summary>
+        /// <remarks>
+        /// Nothing here is ever disabled. A greyed out menu item states that a rule exists and
+        /// refuses to say what it is; the rule then lives only in the developer's head, and the
+        /// only way to learn it is to ask one. That is what this replaces: the item stays
+        /// clickable, looks unavailable, and answers the question when asked - by hovering, or by
+        /// clicking it.
+        ///
+        /// It also puts the rule into the source in words rather than as a bare false. On
+        /// 2026-08-29 the file transfer item had been silently unavailable for every SSH
+        /// connection in the tree, because its condition listed SSH1 and SSH2 and the native
+        /// protocol had never been added to it. Nobody noticed for days. A condition that has to
+        /// be given a sentence is a condition somebody reads.
+        /// </remarks>
+        private void Unavailable(ToolStripItem item, string reason)
+        {
+            if (item == null) return;
+
+            item.Enabled = true;
+            item.ForeColor = SystemColors.GrayText;
+            item.Tag = reason;
+            item.ToolTipText = reason;
+
+            // Down into a submenu as well. Clicking a submenu parent only opens it, so a parent
+            // marked on its own would lead to a list of entries that look perfectly usable and
+            // are not - and there the explanation would never be reached at all.
+            if (item is ToolStripMenuItem menuItem && menuItem.HasDropDownItems)
+                foreach (ToolStripItem child in menuItem.DropDownItems)
+                    Unavailable(child, reason);
+        }
+
+        /// <summary>
+        /// Shows why the clicked item does nothing here, and reports whether it was such an item.
+        /// </summary>
+        private bool Explain(object sender)
+        {
+            if (sender is not ToolStripItem item || item.Tag is not string reason ||
+                string.IsNullOrEmpty(reason))
+                return false;
+
+            MessageBox.Show(reason, item.Text?.Replace("&", ""), MessageBoxButtons.OK,
+                            MessageBoxIcon.Information);
+            return true;
+        }
+
+        /// <summary>
+        /// Wraps a menu action so that an item marked unavailable explains itself instead of
+        /// running.
+        /// </summary>
+        /// <remarks>
+        /// Applied where the handlers are subscribed rather than written into each of the thirty
+        /// or so handler bodies. A guard that lives in the wiring cannot be forgotten when a
+        /// handler is added later; one that lives in the body can, and would be.
+        /// </remarks>
+        private EventHandler Guarded(EventHandler action) =>
+            (sender, args) =>
+            {
+                if (Explain(sender)) return;
+                if (!ConfirmBulkAction(sender)) return;
+                action(sender, args);
+            };
+
+        /// <summary>
+        /// Asks before an action on a folder reaches every connection inside it.
+        /// </summary>
+        /// <remarks>
+        /// Connecting a folder opens everything in it, subfolders included, and nothing used to
+        /// stand between a stray click and a dozen sessions. The count is in the question because
+        /// that is the part worth knowing before answering it - the name of the folder does not
+        /// tell you how much is in there.
+        ///
+        /// Asked here rather than in <c>ConnectionInitiator</c> deliberately. The initiator is
+        /// also what reopens the previous session at startup, and a confirmation placed there
+        /// would interrogate the user on every launch.
+        /// </remarks>
+        private bool ConfirmBulkAction(object sender)
+        {
+            if (_connectionTree.SelectedNode is not ContainerInfo container) return true;
+            if (sender is not ToolStripItem item) return true;
+
+            bool opens = item == _cMenTreeConnect || _cMenTreeConnectWithOptions.DropDownItems.Contains(item);
+            bool closes = item == _cMenTreeDisconnect;
+
+            if (!opens && !closes) return true;
+
+            int count = opens ? CountConnections(container) : CountOpenConnections(container);
+
+            // One is not a crowd: a folder holding a single connection behaves like the connection
+            // itself, and asking about it would only train the habit of dismissing the question.
+            if (count <= 1) return true;
+
+            string message = string.Format(
+                opens ? Language.ConfirmConnectAllInFolder : Language.ConfirmDisconnectAllInFolder,
+                count, container.Name);
+
+            return MessageBox.Show(message, GeneralAppInfo.ProductName, MessageBoxButtons.YesNo,
+                                   MessageBoxIcon.Question, MessageBoxDefaultButton.Button2)
+                   == DialogResult.Yes;
+        }
+
+        /// <summary>
+        /// How many connections in this folder, subfolders included, currently have a session open.
+        /// </summary>
+        internal static int CountOpenConnections(ContainerInfo container) =>
+            container.Children.Sum(child => child is ContainerInfo sub
+                                                ? CountOpenConnections(sub)
+                                                : child.OpenConnections.Count > 0 ? 1 : 0);
+
+        #endregion
+
         private void InitializeComponent()
         {
             _cMenTreeConnect = new ToolStripMenuItem();
@@ -230,7 +345,7 @@ namespace mRemoteNG.UI.Controls
             _cMenTreeConnect.Name = "_cMenTreeConnect";
             _cMenTreeConnect.Size = new System.Drawing.Size(199, 22);
             _cMenTreeConnect.Text = "Connect";
-            _cMenTreeConnect.Click += OnConnectClicked;
+            _cMenTreeConnect.Click += Guarded(OnConnectClicked);
             //
             // cMenTreeConnectWithOptions
             //
@@ -253,7 +368,7 @@ namespace mRemoteNG.UI.Controls
                 "_cMenTreeConnectWithOptionsConnectToConsoleSession";
             _cMenTreeConnectWithOptionsConnectToConsoleSession.Size = new System.Drawing.Size(245, 22);
             _cMenTreeConnectWithOptionsConnectToConsoleSession.Text = "Connect to console session";
-            _cMenTreeConnectWithOptionsConnectToConsoleSession.Click += OnConnectToConsoleSessionClicked;
+            _cMenTreeConnectWithOptionsConnectToConsoleSession.Click += Guarded(OnConnectToConsoleSessionClicked);
             //
             // cMenTreeConnectWithOptionsDontConnectToConsoleSession
             //
@@ -262,7 +377,7 @@ namespace mRemoteNG.UI.Controls
             _cMenTreeConnectWithOptionsDontConnectToConsoleSession.Size = new System.Drawing.Size(245, 22);
             _cMenTreeConnectWithOptionsDontConnectToConsoleSession.Text = "Don\'t connect to console session";
             _cMenTreeConnectWithOptionsDontConnectToConsoleSession.Visible = false;
-            _cMenTreeConnectWithOptionsDontConnectToConsoleSession.Click += OnDontConnectToConsoleSessionClicked;
+            _cMenTreeConnectWithOptionsDontConnectToConsoleSession.Click += Guarded(OnDontConnectToConsoleSessionClicked);
             //
             // cMenTreeConnectWithOptionsConnectInFullscreen
             //
@@ -270,7 +385,7 @@ namespace mRemoteNG.UI.Controls
             _cMenTreeConnectWithOptionsConnectInFullscreen.Name = "_cMenTreeConnectWithOptionsConnectInFullscreen";
             _cMenTreeConnectWithOptionsConnectInFullscreen.Size = new System.Drawing.Size(245, 22);
             _cMenTreeConnectWithOptionsConnectInFullscreen.Text = "Connect in fullscreen";
-            _cMenTreeConnectWithOptionsConnectInFullscreen.Click += OnConnectInFullscreenClicked;
+            _cMenTreeConnectWithOptionsConnectInFullscreen.Click += Guarded(OnConnectInFullscreenClicked);
             //
             // cMenTreeConnectWithOptionsNoCredentials
             //
@@ -278,7 +393,7 @@ namespace mRemoteNG.UI.Controls
             _cMenTreeConnectWithOptionsNoCredentials.Name = "_cMenTreeConnectWithOptionsNoCredentials";
             _cMenTreeConnectWithOptionsNoCredentials.Size = new System.Drawing.Size(245, 22);
             _cMenTreeConnectWithOptionsNoCredentials.Text = "Connect without credentials";
-            _cMenTreeConnectWithOptionsNoCredentials.Click += OnConnectWithNoCredentialsClick;
+            _cMenTreeConnectWithOptionsNoCredentials.Click += Guarded(OnConnectWithNoCredentialsClick);
             //
             // cMenTreeConnectWithOptionsChoosePanelBeforeConnecting
             //
@@ -287,7 +402,7 @@ namespace mRemoteNG.UI.Controls
                 "_cMenTreeConnectWithOptionsChoosePanelBeforeConnecting";
             _cMenTreeConnectWithOptionsChoosePanelBeforeConnecting.Size = new System.Drawing.Size(245, 22);
             _cMenTreeConnectWithOptionsChoosePanelBeforeConnecting.Text = "Choose panel before connecting";
-            _cMenTreeConnectWithOptionsChoosePanelBeforeConnecting.Click += OnChoosePanelBeforeConnectingClicked;
+            _cMenTreeConnectWithOptionsChoosePanelBeforeConnecting.Click += Guarded(OnChoosePanelBeforeConnectingClicked);
             //
             // cMenTreeConnectWithOptionsViewOnly
             //
@@ -296,7 +411,7 @@ namespace mRemoteNG.UI.Controls
                 "_cMenTreeConnectWithOptionsViewOnly";
             _cMenTreeConnectWithOptionsViewOnly.Size = new System.Drawing.Size(245, 22);
             _cMenTreeConnectWithOptionsViewOnly.Text = Language.ConnectInViewOnlyMode;
-            _cMenTreeConnectWithOptionsViewOnly.Click += ConnectWithOptionsViewOnlyOnClick;
+            _cMenTreeConnectWithOptionsViewOnly.Click += Guarded(ConnectWithOptionsViewOnlyOnClick);
             //
             // cMenTreeDisconnect
             //
@@ -304,7 +419,7 @@ namespace mRemoteNG.UI.Controls
             _cMenTreeDisconnect.Name = "_cMenTreeDisconnect";
             _cMenTreeDisconnect.Size = new System.Drawing.Size(199, 22);
             _cMenTreeDisconnect.Text = "Disconnect";
-            _cMenTreeDisconnect.Click += OnDisconnectClicked;
+            _cMenTreeDisconnect.Click += Guarded(OnDisconnectClicked);
             //
             // cMenTreeSep1
             //
@@ -324,7 +439,7 @@ namespace mRemoteNG.UI.Controls
             _cMenTreeToolsTransferFile.Name = "_cMenTreeToolsTransferFile";
             _cMenTreeToolsTransferFile.Size = new System.Drawing.Size(199, 22);
             _cMenTreeToolsTransferFile.Text = "Transfer File (SSH)";
-            _cMenTreeToolsTransferFile.Click += OnTransferFileClicked;
+            _cMenTreeToolsTransferFile.Click += Guarded(OnTransferFileClicked);
             //
             // cMenTreeSep2
             //
@@ -337,7 +452,7 @@ namespace mRemoteNG.UI.Controls
             _cMenTreeDuplicate.Name = "_cMenTreeDuplicate";
             _cMenTreeDuplicate.Size = new System.Drawing.Size(199, 22);
             _cMenTreeDuplicate.Text = "Duplicate";
-            _cMenTreeDuplicate.Click += OnDuplicateClicked;
+            _cMenTreeDuplicate.Click += Guarded(OnDuplicateClicked);
             //
             // cMenTreeRename
             //
@@ -345,7 +460,7 @@ namespace mRemoteNG.UI.Controls
             _cMenTreeRename.Name = "_cMenTreeRename";
             _cMenTreeRename.Size = new System.Drawing.Size(199, 22);
             _cMenTreeRename.Text = "Rename";
-            _cMenTreeRename.Click += OnRenameClicked;
+            _cMenTreeRename.Click += Guarded(OnRenameClicked);
             //
             // cMenTreeDelete
             //
@@ -353,14 +468,14 @@ namespace mRemoteNG.UI.Controls
             _cMenTreeDelete.Name = "_cMenTreeDelete";
             _cMenTreeDelete.Size = new System.Drawing.Size(199, 22);
             _cMenTreeDelete.Text = "Delete";
-            _cMenTreeDelete.Click += OnDeleteClicked;
+            _cMenTreeDelete.Click += Guarded(OnDeleteClicked);
             //
             // cMenTreeCopyHostname
             //
             _cMenTreeCopyHostname.Name = "_cMenTreeCopyHostname";
             _cMenTreeCopyHostname.Size = new System.Drawing.Size(199, 22);
             _cMenTreeCopyHostname.Text = "Copy Hostname";
-            _cMenTreeCopyHostname.Click += OnCopyHostnameClicked;
+            _cMenTreeCopyHostname.Click += Guarded(OnCopyHostnameClicked);
             //
             // cMenTreeClearCachedRdpCredentials
             //
@@ -372,7 +487,7 @@ namespace mRemoteNG.UI.Controls
                 "a stale cached credential. Use this to delete the TERMSRV/<hostname> entry from " +
                 "the Windows Credential Manager so the credentials configured on this connection " +
                 "are sent unchanged on the next attempt.";
-            _cMenTreeClearCachedRdpCredentials.Click += OnClearCachedRdpCredentialsClicked;
+            _cMenTreeClearCachedRdpCredentials.Click += Guarded(OnClearCachedRdpCredentialsClicked);
             //
             // cMenTreeSep3
             //
@@ -398,41 +513,41 @@ namespace mRemoteNG.UI.Controls
             _cMenTreeImportFile.Name = "_cMenTreeImportFile";
             _cMenTreeImportFile.Size = new System.Drawing.Size(226, 22);
             _cMenTreeImportFile.Text = "Import from &File...";
-            _cMenTreeImportFile.Click += OnImportFileClicked;
+            _cMenTreeImportFile.Click += Guarded(OnImportFileClicked);
 
             // cMenTreeImportFromRemoteDesktopManager
             _cMenTreeImportFromRemoteDesktopManager.Name = "_cMenTreeImportFromRemoteDesktopManager";
             _cMenTreeImportFromRemoteDesktopManager.Size = new System.Drawing.Size(226, 22);
             _cMenTreeImportFromRemoteDesktopManager.Text = "Import from &Remote Desktop Manager";
-            _cMenTreeImportFromRemoteDesktopManager.Click += OnImportRemoteDesktopManagerClicked;
+            _cMenTreeImportFromRemoteDesktopManager.Click += Guarded(OnImportRemoteDesktopManagerClicked);
             //
             // cMenTreeImportActiveDirectory
             //
             _cMenTreeImportActiveDirectory.Name = "_cMenTreeImportActiveDirectory";
             _cMenTreeImportActiveDirectory.Size = new System.Drawing.Size(226, 22);
             _cMenTreeImportActiveDirectory.Text = "Import from &Active Directory...";
-            _cMenTreeImportActiveDirectory.Click += OnImportActiveDirectoryClicked;
+            _cMenTreeImportActiveDirectory.Click += Guarded(OnImportActiveDirectoryClicked);
             //
             // cMenTreeImportPortScan
             //
             _cMenTreeImportPortScan.Name = "_cMenTreeImportPortScan";
             _cMenTreeImportPortScan.Size = new System.Drawing.Size(226, 22);
             _cMenTreeImportPortScan.Text = "Import from &Port Scan...";
-            _cMenTreeImportPortScan.Click += OnImportPortScanClicked;
+            _cMenTreeImportPortScan.Click += Guarded(OnImportPortScanClicked);
             //
             // cMenTreeImportPutty
             //
             _cMenTreeImportPutty.Name = "_cMenTreeImportPutty";
             _cMenTreeImportPutty.Size = new System.Drawing.Size(226, 22);
             _cMenTreeImportPutty.Text = "Import from &Putty...";
-            _cMenTreeImportPutty.Click += OnImportPuttyClicked;
+            _cMenTreeImportPutty.Click += Guarded(OnImportPuttyClicked);
             //
             // cMenTreeExportFile
             //
             _cMenTreeExportFile.Name = "_cMenTreeExportFile";
             _cMenTreeExportFile.Size = new System.Drawing.Size(199, 22);
             _cMenTreeExportFile.Text = "&Export to File...";
-            _cMenTreeExportFile.Click += OnExportFileClicked;
+            _cMenTreeExportFile.Click += Guarded(OnExportFileClicked);
             //
             // cMenTreeSep4
             //
@@ -445,7 +560,7 @@ namespace mRemoteNG.UI.Controls
             _cMenTreeAddConnection.Name = "_cMenTreeAddConnection";
             _cMenTreeAddConnection.Size = new System.Drawing.Size(199, 22);
             _cMenTreeAddConnection.Text = "New Connection";
-            _cMenTreeAddConnection.Click += OnAddConnectionClicked;
+            _cMenTreeAddConnection.Click += Guarded(OnAddConnectionClicked);
             //
             // cMenTreeAddFolder
             //
@@ -453,7 +568,7 @@ namespace mRemoteNG.UI.Controls
             _cMenTreeAddFolder.Name = "_cMenTreeAddFolder";
             _cMenTreeAddFolder.Size = new System.Drawing.Size(199, 22);
             _cMenTreeAddFolder.Text = "New Folder";
-            _cMenTreeAddFolder.Click += OnAddFolderClicked;
+            _cMenTreeAddFolder.Click += Guarded(OnAddFolderClicked);
             //
             // cMenTreeAddRoot
             //
@@ -461,7 +576,7 @@ namespace mRemoteNG.UI.Controls
             _cMenTreeAddRoot.Name = "_cMenTreeAddRoot";
             _cMenTreeAddRoot.Size = new System.Drawing.Size(199, 22);
             _cMenTreeAddRoot.Text = "Add Root";
-            _cMenTreeAddRoot.Click += OnAddRootClicked;
+            _cMenTreeAddRoot.Click += Guarded(OnAddRootClicked);
             //
             // ToolStripSeparator1
             //
@@ -485,7 +600,7 @@ namespace mRemoteNG.UI.Controls
             _cMenTreeToolsSortAscending.Name = "_cMenTreeToolsSortAscending";
             _cMenTreeToolsSortAscending.Size = new System.Drawing.Size(161, 22);
             _cMenTreeToolsSortAscending.Text = "Ascending (A-Z)";
-            _cMenTreeToolsSortAscending.Click += OnSortAscendingClicked;
+            _cMenTreeToolsSortAscending.Click += Guarded(OnSortAscendingClicked);
             //
             // cMenTreeToolsSortDescending
             //
@@ -493,7 +608,7 @@ namespace mRemoteNG.UI.Controls
             _cMenTreeToolsSortDescending.Name = "_cMenTreeToolsSortDescending";
             _cMenTreeToolsSortDescending.Size = new System.Drawing.Size(161, 22);
             _cMenTreeToolsSortDescending.Text = "Descending (Z-A)";
-            _cMenTreeToolsSortDescending.Click += OnSortDescendingClicked;
+            _cMenTreeToolsSortDescending.Click += Guarded(OnSortDescendingClicked);
             //
             // cMenTreeMoveUp
             //
@@ -501,7 +616,7 @@ namespace mRemoteNG.UI.Controls
             _cMenTreeMoveUp.Name = "_cMenTreeMoveUp";
             _cMenTreeMoveUp.Size = new System.Drawing.Size(199, 22);
             _cMenTreeMoveUp.Text = "Move up";
-            _cMenTreeMoveUp.Click += OnMoveUpClicked;
+            _cMenTreeMoveUp.Click += Guarded(OnMoveUpClicked);
             //
             // cMenTreeMoveDown
             //
@@ -509,7 +624,7 @@ namespace mRemoteNG.UI.Controls
             _cMenTreeMoveDown.Name = "_cMenTreeMoveDown";
             _cMenTreeMoveDown.Size = new System.Drawing.Size(199, 22);
             _cMenTreeMoveDown.Text = "Move down";
-            _cMenTreeMoveDown.Click += OnMoveDownClicked;
+            _cMenTreeMoveDown.Click += Guarded(OnMoveDownClicked);
             //
             // cMenEditSubMenu
             //
@@ -527,14 +642,14 @@ namespace mRemoteNG.UI.Controls
             _cMenTreeApplyInheritanceToChildren.Name = "_cMenTreeApplyInheritanceToChildren";
             _cMenTreeApplyInheritanceToChildren.Size = new System.Drawing.Size(199, 22);
             _cMenTreeApplyInheritanceToChildren.Text = "Apply inheritance to children";
-            _cMenTreeApplyInheritanceToChildren.Click += OnApplyInheritanceToChildrenClicked;
+            _cMenTreeApplyInheritanceToChildren.Click += Guarded(OnApplyInheritanceToChildrenClicked);
             //
             // _cMenTreeApplyDefaultInheritance
             //
             _cMenTreeApplyDefaultInheritance.Name = "_cMenTreeApplyDefaultInheritance";
             _cMenTreeApplyDefaultInheritance.Size = new System.Drawing.Size(199, 22);
             _cMenTreeApplyDefaultInheritance.Text = "Apply default inheritance";
-            _cMenTreeApplyDefaultInheritance.Click += OnApplyDefaultInheritanceClicked;
+            _cMenTreeApplyDefaultInheritance.Click += Guarded(OnApplyDefaultInheritanceClicked);
         }
 
 
@@ -587,6 +702,16 @@ namespace mRemoteNG.UI.Controls
             {
                 Enabled = true;
                 EnableMenuItemsRecursive(Items);
+
+                // Put back the labels and the one standing tooltip that the reset above clears.
+                // The folder branch changes these three to say that it acts on everything inside,
+                // and the next node selected must not inherit that wording.
+                _cMenTreeConnect.Text = Language.Connect;
+                _cMenTreeConnectWithOptions.Text = Language.ConnectWithOptions;
+                _cMenTreeDisconnect.Text = Language.Disconnect;
+                _cMenTreeClearCachedRdpCredentials.ToolTipText =
+                    Language.PropertyDescriptionClearCachedRdpCredentials;
+
                 if (_connectionTree.SelectedNode is RootPuttySessionsNodeInfo)
                 {
                     ShowHideMenuItemsForRootPuttyNode();
@@ -621,111 +746,139 @@ namespace mRemoteNG.UI.Controls
 
         internal void ShowHideMenuItemsForRootPuttyNode()
         {
-            _cMenTreeAddConnection.Enabled = false;
-            _cMenTreeAddFolder.Enabled = false;
-            _cMenTreeAddRoot.Enabled = false;
-            _cMenTreeConnect.Enabled = false;
-            _cMenTreeConnectWithOptions.Enabled = false;
-            _cMenTreeDisconnect.Enabled = false;
-            _cMenTreeToolsTransferFile.Enabled = false;
-            _cMenTreeConnectWithOptions.Enabled = false;
-            _cMenTreeToolsSort.Enabled = false;
-            _cMenTreeToolsExternalApps.Enabled = false;
-            _cMenTreeDuplicate.Enabled = false;
-            _cMenTreeImport.Enabled = false;
-            _cMenTreeExportFile.Enabled = false;
-            _cMenTreeRename.Enabled = false;
-            _cMenTreeDelete.Enabled = false;
-            _cMenTreeMoveUp.Enabled = false;
-            _cMenTreeMoveDown.Enabled = false;
-            _cMenTreeConnectWithOptionsViewOnly.Enabled = false;
-            _cMenTreeApplyInheritanceToChildren.Enabled = false;
-            _cMenTreeApplyDefaultInheritance.Enabled = false;
-            _cMenTreeCopyHostname.Enabled = false;
-            _cMenTreeClearCachedRdpCredentials.Enabled = false;
+            string reason = Language.MenuReasonPuttyRootNode;
+
+            foreach (ToolStripItem item in new ToolStripItem[]
+                     {
+                         _cMenTreeAddConnection, _cMenTreeAddFolder, _cMenTreeAddRoot,
+                         _cMenTreeConnect, _cMenTreeConnectWithOptions, _cMenTreeDisconnect,
+                         _cMenTreeToolsTransferFile, _cMenTreeToolsSort, _cMenTreeToolsExternalApps,
+                         _cMenTreeDuplicate, _cMenTreeImport, _cMenTreeExportFile, _cMenTreeRename,
+                         _cMenTreeDelete, _cMenTreeMoveUp, _cMenTreeMoveDown,
+                         _cMenTreeConnectWithOptionsViewOnly, _cMenTreeApplyInheritanceToChildren,
+                         _cMenTreeApplyDefaultInheritance, _cMenTreeCopyHostname,
+                         _cMenTreeClearCachedRdpCredentials
+                     })
+                Unavailable(item, reason);
         }
 
         internal void ShowHideMenuItemsForRootConnectionNode()
         {
-            _cMenTreeConnect.Enabled = false;
-            _cMenTreeConnectWithOptions.Enabled = false;
-            _cMenTreeConnectWithOptionsConnectInFullscreen.Enabled = false;
-            _cMenTreeConnectWithOptionsConnectToConsoleSession.Enabled = false;
-            _cMenTreeConnectWithOptionsChoosePanelBeforeConnecting.Enabled = false;
-            _cMenTreeDisconnect.Enabled = false;
-            _cMenTreeToolsTransferFile.Enabled = false;
-            _cMenTreeToolsExternalApps.Enabled = false;
-            _cMenTreeDuplicate.Enabled = false;
-            _cMenTreeDelete.Enabled = false;
-            _cMenTreeMoveUp.Enabled = false;
-            _cMenTreeMoveDown.Enabled = false;
-            _cMenTreeConnectWithOptionsViewOnly.Enabled = false;
-            _cMenTreeApplyInheritanceToChildren.Enabled = false;
-            _cMenTreeApplyDefaultInheritance.Enabled = false;
+            string notAConnection = Language.MenuReasonRootNode;
+
+            foreach (ToolStripItem item in new ToolStripItem[]
+                     {
+                         _cMenTreeConnect, _cMenTreeConnectWithOptions,
+                         _cMenTreeConnectWithOptionsConnectInFullscreen,
+                         _cMenTreeConnectWithOptionsConnectToConsoleSession,
+                         _cMenTreeConnectWithOptionsChoosePanelBeforeConnecting,
+                         _cMenTreeDisconnect, _cMenTreeToolsTransferFile,
+                         _cMenTreeToolsExternalApps, _cMenTreeDuplicate,
+                         _cMenTreeConnectWithOptionsViewOnly,
+                         _cMenTreeApplyInheritanceToChildren, _cMenTreeApplyDefaultInheritance
+                     })
+                Unavailable(item, notAConnection);
+
+            string immovable = Language.MenuReasonRootNodeImmovable;
+            Unavailable(_cMenTreeDelete, immovable);
+            Unavailable(_cMenTreeMoveUp, immovable);
+            Unavailable(_cMenTreeMoveDown, immovable);
         }
 
         internal void ShowHideMenuItemsForContainer(ContainerInfo containerInfo)
         {
-            _cMenTreeConnectWithOptionsConnectInFullscreen.Enabled = false;
-            _cMenTreeConnectWithOptionsConnectToConsoleSession.Enabled = false;
+            string singleSessionOnly = Language.MenuReasonSingleSessionOnly;
+
+            Unavailable(_cMenTreeConnectWithOptionsConnectInFullscreen, singleSessionOnly);
+            Unavailable(_cMenTreeConnectWithOptionsConnectToConsoleSession, singleSessionOnly);
+            Unavailable(_cMenTreeConnectWithOptionsViewOnly, singleSessionOnly);
+            Unavailable(_cMenTreeToolsTransferFile, singleSessionOnly);
 
             bool hasOpenConnections = containerInfo.Children.Any(child => child.OpenConnections.Count > 0);
-            _cMenTreeDisconnect.Enabled = hasOpenConnections;
+            if (!hasOpenConnections)
+                Unavailable(_cMenTreeDisconnect, Language.MenuReasonFolderNothingOpen);
 
-            _cMenTreeToolsTransferFile.Enabled = false;
-            _cMenTreeConnectWithOptionsViewOnly.Enabled = false;
+            // A folder connects and disconnects everything inside it, subfolders included. Leaving
+            // the label as plain "Connect" reads exactly as it does on a single connection, which
+            // is how one stray click opens a dozen sessions.
+            _cMenTreeConnect.Text = string.Format(Language.ConnectAllInFolder, CountConnections(containerInfo));
+            _cMenTreeConnectWithOptions.Text = Language.ConnectAllInFolderWithOptions;
+            _cMenTreeDisconnect.Text = Language.DisconnectAllInFolder;
         }
+
+        /// <summary>
+        /// How many connections a folder would open, counting the folders inside it too.
+        /// </summary>
+        internal static int CountConnections(ContainerInfo container) =>
+            container.Children.Sum(child => child is ContainerInfo sub ? CountConnections(sub) : 1);
 
         internal void ShowHideMenuItemsForPuttyNode(PuttySessionInfo connectionInfo)
         {
-            _cMenTreeAddConnection.Enabled = false;
-            _cMenTreeAddFolder.Enabled = false;
-            _cMenTreeAddRoot.Enabled = false;
+            string readOnly = Language.MenuReasonPuttySession;
+
+            foreach (ToolStripItem item in new ToolStripItem[]
+                     {
+                         _cMenTreeAddConnection, _cMenTreeAddFolder, _cMenTreeAddRoot,
+                         _cMenTreeToolsSort, _cMenTreeDuplicate, _cMenTreeRename, _cMenTreeDelete,
+                         _cMenTreeMoveUp, _cMenTreeMoveDown, _cMenTreeImport, _cMenTreeExportFile,
+                         _cMenTreeApplyInheritanceToChildren, _cMenTreeApplyDefaultInheritance
+                     })
+                Unavailable(item, readOnly);
 
             if (connectionInfo.OpenConnections.Count == 0)
-                _cMenTreeDisconnect.Enabled = false;
+                Unavailable(_cMenTreeDisconnect, Language.MenuReasonNothingOpen);
 
-            if (!(connectionInfo.Protocol == ProtocolType.SSH1 | connectionInfo.Protocol == ProtocolType.SSH2))
-                _cMenTreeToolsTransferFile.Enabled = false;
+            if (!SupportsFileTransfer(connectionInfo.Protocol))
+                Unavailable(_cMenTreeToolsTransferFile,
+                            string.Format(Language.MenuReasonTransferNeedsSsh, connectionInfo.Protocol));
 
-            _cMenTreeConnectWithOptionsConnectInFullscreen.Enabled = false;
-            _cMenTreeConnectWithOptionsConnectToConsoleSession.Enabled = false;
-            _cMenTreeToolsSort.Enabled = false;
-            _cMenTreeDuplicate.Enabled = false;
-            _cMenTreeRename.Enabled = false;
-            _cMenTreeDelete.Enabled = false;
-            _cMenTreeMoveUp.Enabled = false;
-            _cMenTreeMoveDown.Enabled = false;
-            _cMenTreeImport.Enabled = false;
-            _cMenTreeExportFile.Enabled = false;
-            _cMenTreeConnectWithOptionsViewOnly.Enabled = false;
-            _cMenTreeApplyInheritanceToChildren.Enabled = false;
-            _cMenTreeApplyDefaultInheritance.Enabled = false;
+            string rdpOnly = string.Format(Language.MenuReasonRdpOnly, connectionInfo.Protocol);
+            Unavailable(_cMenTreeConnectWithOptionsConnectInFullscreen, rdpOnly);
+            Unavailable(_cMenTreeConnectWithOptionsConnectToConsoleSession, rdpOnly);
+            Unavailable(_cMenTreeConnectWithOptionsViewOnly,
+                        string.Format(Language.MenuReasonRdpVncOnly, connectionInfo.Protocol));
         }
 
         internal void ShowHideMenuItemsForConnectionNode(ConnectionInfo connectionInfo)
         {
             if (connectionInfo.OpenConnections.Count == 0)
-                _cMenTreeDisconnect.Enabled = false;
+                Unavailable(_cMenTreeDisconnect, Language.MenuReasonNothingOpen);
 
-            if (!(connectionInfo.Protocol == ProtocolType.SSH1 | connectionInfo.Protocol == ProtocolType.SSH2))
-                _cMenTreeToolsTransferFile.Enabled = false;
+            if (!SupportsFileTransfer(connectionInfo.Protocol))
+                Unavailable(_cMenTreeToolsTransferFile,
+                            string.Format(Language.MenuReasonTransferNeedsSsh, connectionInfo.Protocol));
 
-            if (!(connectionInfo.Protocol == ProtocolType.RDP))
+            if (connectionInfo.Protocol != ProtocolType.RDP)
             {
-                _cMenTreeConnectWithOptionsConnectInFullscreen.Enabled = false;
-                _cMenTreeConnectWithOptionsConnectToConsoleSession.Enabled = false;
-                _cMenTreeClearCachedRdpCredentials.Enabled = false;
+                string rdpOnly = string.Format(Language.MenuReasonRdpOnly, connectionInfo.Protocol);
+                Unavailable(_cMenTreeConnectWithOptionsConnectInFullscreen, rdpOnly);
+                Unavailable(_cMenTreeConnectWithOptionsConnectToConsoleSession, rdpOnly);
+                Unavailable(_cMenTreeClearCachedRdpCredentials, rdpOnly);
             }
 
             if (connectionInfo.Protocol == ProtocolType.IntApp)
-                _cMenTreeConnectWithOptionsNoCredentials.Enabled = false;
+                Unavailable(_cMenTreeConnectWithOptionsNoCredentials,
+                            Language.MenuReasonNotForExternalApp);
 
             if (connectionInfo.Protocol != ProtocolType.RDP && connectionInfo.Protocol != ProtocolType.VNC)
-                _cMenTreeConnectWithOptionsViewOnly.Enabled = false;
+                Unavailable(_cMenTreeConnectWithOptionsViewOnly,
+                            string.Format(Language.MenuReasonRdpVncOnly, connectionInfo.Protocol));
 
-            _cMenTreeApplyInheritanceToChildren.Enabled = false;
+            Unavailable(_cMenTreeApplyInheritanceToChildren, Language.MenuReasonNoChildren);
         }
+
+        /// <summary>
+        /// Whether the file transfer window can serve this protocol.
+        /// </summary>
+        /// <remarks>
+        /// Every SSH protocol, the native one included - it was left off this test when SSHNative
+        /// was added, which quietly took file transfer away from every SSH connection in the tree
+        /// the moment they were moved over. The transfer does not care which protocol the tab
+        /// uses: SecureTransfer opens its own SSH.NET connection from host, port, user and
+        /// password.
+        /// </remarks>
+        private static bool SupportsFileTransfer(ProtocolType protocol) =>
+            protocol is ProtocolType.SSH1 or ProtocolType.SSH2 or ProtocolType.SSHNative;
 
         internal void DisableShortcutKeys()
         {
@@ -747,6 +900,15 @@ namespace mRemoteNG.UI.Controls
             _cMenTreeMoveDown.ShortcutKeys = Keys.Control | Keys.Down;
         }
 
+        /// <summary>
+        /// Returns every item to plain, applicable, unexplained - the state the per node rules
+        /// then depart from.
+        /// </summary>
+        /// <remarks>
+        /// The reason and the grey have to be cleared as well as the enabling. The menu is one
+        /// object reused for every node in the tree, so a reason left behind by the last node
+        /// would be shown for the next one, about a rule that no longer applies.
+        /// </remarks>
         private static void EnableMenuItemsRecursive(ToolStripItemCollection items, bool enable = true)
         {
             foreach (ToolStripItem item in items)
@@ -758,6 +920,10 @@ namespace mRemoteNG.UI.Controls
                 }
 
                 menuItem.Enabled = enable;
+                menuItem.Tag = null;
+                menuItem.ToolTipText = null;
+                menuItem.ForeColor = Color.Empty;
+
                 if (menuItem.HasDropDownItems)
                 {
                     EnableMenuItemsRecursive(menuItem.DropDownItems, enable);
@@ -780,7 +946,7 @@ namespace mRemoteNG.UI.Controls
                         Image = extA.Image
                     };
 
-                    menuItem.Click += OnExternalToolClicked;
+                    menuItem.Click += Guarded(OnExternalToolClicked);
                     _cMenTreeToolsExternalApps.DropDownItems.Add(menuItem);
                 }
             }

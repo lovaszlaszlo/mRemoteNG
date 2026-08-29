@@ -2828,4 +2828,63 @@ Nightly Channel includes Alphas, Betas &amp; Release Candidates.</value>
   <data name="OptionNotFound" xml:space="preserve">
     <value>Option not found.</value>
   </data>
+  <data name="MenuReasonPuttyRootNode" xml:space="preserve">
+    <value>This node only lists the sessions PuTTY has saved for itself. They are read here and changed in PuTTY.</value>
+  </data>
+  <data name="MenuReasonPuttySession" xml:space="preserve">
+    <value>This is one of PuTTY's own saved sessions. mRemoteNG reads it; change it in PuTTY.</value>
+  </data>
+  <data name="MenuReasonRootNode" xml:space="preserve">
+    <value>This is the root of the connection tree, not a connection.</value>
+  </data>
+  <data name="MenuReasonRootNodeImmovable" xml:space="preserve">
+    <value>The root of the tree cannot be deleted or moved. Everything else lives inside it.</value>
+  </data>
+  <data name="MenuReasonSingleSessionOnly" xml:space="preserve">
+    <value>This applies to a single session, and a folder is not one. Choose a connection inside it.</value>
+  </data>
+  <data name="MenuReasonFolderNothingOpen" xml:space="preserve">
+    <value>Nothing to disconnect: no connection in this folder has a session open.</value>
+  </data>
+  <data name="MenuReasonNothingOpen" xml:space="preserve">
+    <value>Nothing to disconnect: this connection has no session open.</value>
+  </data>
+  <data name="MenuReasonTransferNeedsSsh" xml:space="preserve">
+    <value>File transfer needs an SSH connection, and this one uses {0}. Note that it authenticates with a password, so a server that only accepts keys will refuse it.</value>
+  </data>
+  <data name="MenuReasonRdpOnly" xml:space="preserve">
+    <value>This only means something for an RDP connection, and this one uses {0}.</value>
+  </data>
+  <data name="MenuReasonRdpVncOnly" xml:space="preserve">
+    <value>This only means something for an RDP or VNC connection, and this one uses {0}.</value>
+  </data>
+  <data name="MenuReasonNotForExternalApp" xml:space="preserve">
+    <value>An external application connection has no credentials of its own to leave out.</value>
+  </data>
+  <data name="MenuReasonNoChildren" xml:space="preserve">
+    <value>This applies to what a folder contains, and a connection contains nothing. Use it on the folder instead.</value>
+  </data>
+  <data name="ConnectAllInFolder" xml:space="preserve">
+    <value>Connect all {0} in this folder</value>
+  </data>
+  <data name="ConnectAllInFolderWithOptions" xml:space="preserve">
+    <value>Connect all in this folder (with options)</value>
+  </data>
+  <data name="DisconnectAllInFolder" xml:space="preserve">
+    <value>Disconnect all in this folder</value>
+  </data>
+  <data name="ConfirmConnectAllInFolder" xml:space="preserve">
+    <value>This opens all {0} connections in &quot;{1}&quot;, including the ones in folders inside it.
+
+
+
+Open them all?</value>
+  </data>
+  <data name="ConfirmDisconnectAllInFolder" xml:space="preserve">
+    <value>This closes all {0} open connections in &quot;{1}&quot;, including the ones in folders inside it.
+
+
+
+Close them all?</value>
+  </data>
 </root>

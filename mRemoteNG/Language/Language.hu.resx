@@ -913,4 +913,29 @@
   <data name="ConfirmDeleteCredentialRecord" xml:space="preserve"><value>Biztosan törli a(z) {0} hitelesítő adatot?</value></data>
   <data name="ConfirmDeleteOption" xml:space="preserve"><value>Biztosan törli a(z) &apos;{0}&apos; beállítást?</value></data>
   <data name="WarnIfAuthFails" xml:space="preserve"><value>Figyelmeztetés sikertelen hitelesítéskor</value></data>
+  <data name="MenuReasonPuttyRootNode" xml:space="preserve"><value>Ez a csomópont csak felsorolja a PuTTY saját mentett munkameneteit. Itt olvashatók, módosítani a PuTTY-ban lehet őket.</value></data>
+  <data name="MenuReasonPuttySession" xml:space="preserve"><value>Ez a PuTTY egyik saját mentett munkamenete. Az mRemoteNG csak olvassa; módosítani a PuTTY-ban kell.</value></data>
+  <data name="MenuReasonRootNode" xml:space="preserve"><value>Ez a kapcsolatfa gyökere, nem egy kapcsolat.</value></data>
+  <data name="MenuReasonRootNodeImmovable" xml:space="preserve"><value>A fa gyökere nem törölhető és nem mozgatható — minden más benne lakik.</value></data>
+  <data name="MenuReasonSingleSessionOnly" xml:space="preserve"><value>Ez egyetlen munkamenetre vonatkozik, egy mappa pedig nem az. Válassz egy kapcsolatot a mappából.</value></data>
+  <data name="MenuReasonFolderNothingOpen" xml:space="preserve"><value>Nincs mit bontani: a mappában egyetlen kapcsolatnak sincs nyitott munkamenete.</value></data>
+  <data name="MenuReasonNothingOpen" xml:space="preserve"><value>Nincs mit bontani: ennek a kapcsolatnak nincs nyitott munkamenete.</value></data>
+  <data name="MenuReasonTransferNeedsSsh" xml:space="preserve"><value>A fájlátvitelhez SSH kapcsolat kell, ez pedig {0} protokollt használ. Megjegyzés: jelszóval hitelesít, tehát a csak kulcsot elfogadó szerver elutasítja.</value></data>
+  <data name="MenuReasonRdpOnly" xml:space="preserve"><value>Ez csak RDP kapcsolatnál értelmezhető, ez pedig {0} protokollt használ.</value></data>
+  <data name="MenuReasonRdpVncOnly" xml:space="preserve"><value>Ez csak RDP vagy VNC kapcsolatnál értelmezhető, ez pedig {0} protokollt használ.</value></data>
+  <data name="MenuReasonNotForExternalApp" xml:space="preserve"><value>Egy külső alkalmazás-kapcsolatnak nincs saját hitelesítő adata, amit el lehetne hagyni.</value></data>
+  <data name="MenuReasonNoChildren" xml:space="preserve"><value>Ez arra vonatkozik, amit egy mappa tartalmaz — egy kapcsolat pedig semmit. Használd a mappán.</value></data>
+  <data name="ConnectAllInFolder" xml:space="preserve"><value>Mind a(z) {0} kapcsolat megnyitása a mappából</value></data>
+  <data name="ConnectAllInFolderWithOptions" xml:space="preserve"><value>Az összes megnyitása a mappából (beállításokkal)</value></data>
+  <data name="DisconnectAllInFolder" xml:space="preserve"><value>Az összes kapcsolat bontása a mappában</value></data>
+  <data name="ConfirmConnectAllInFolder" xml:space="preserve"><value>Ez mind a(z) {0} kapcsolatot megnyitja a(z) &quot;{1}&quot; mappából, beleértve az almappákban lévőket is.
+
+
+
+Megnyitja mindet?</value></data>
+  <data name="ConfirmDisconnectAllInFolder" xml:space="preserve"><value>Ez mind a(z) {0} nyitott kapcsolatot bontja a(z) &quot;{1}&quot; mappában, beleértve az almappákban lévőket is.
+
+
+
+Bontja mindet?</value></data>
 </root>
