@@ -474,10 +474,28 @@ namespace mRemoteNG.Connection.Protocol.SSH
             }
         }
 
+        /// <summary>
+        /// The host and port a host key should be remembered against - the machine at the far end,
+        /// which is not always the one being dialled.
+        /// </summary>
+        /// <remarks>
+        /// A connection opened through an SSH tunnel has had its host and port rewritten to
+        /// localhost and a free local port, and that port is a different one on every connect.
+        /// Checked against those, the key of a perfectly familiar machine looks new every single
+        /// time: a prompt on each connect, and a known_hosts filling up with entries about a
+        /// local port that no longer exists.
+        ///
+        /// InterfaceControl.OriginalInfo is the connection as it was configured, before any of
+        /// that rewriting, and ConnectionInitiator sets it for every connection - tunnelled or
+        /// not - before the protocol is asked to connect.
+        /// </remarks>
+        private ConnectionInfo HostKeyIdentity => InterfaceControl?.OriginalInfo ?? _connectionInfo;
+
         private void OnHostKeyReceived(object sender, Renci.SshNet.Common.HostKeyEventArgs e)
         {
-            string host = _connectionInfo.Hostname;
-            int port = _connectionInfo.Port > 0 ? _connectionInfo.Port : 22;
+            ConnectionInfo identity = HostKeyIdentity;
+            string host = identity.Hostname;
+            int port = identity.Port > 0 ? identity.Port : 22;
             string fingerprint = e.FingerPrintSHA256;
 
             SshKnownHosts.Verdict verdict = SshKnownHosts.Check(host, port, fingerprint, out string stored);
