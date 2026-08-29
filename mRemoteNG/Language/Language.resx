@@ -2887,4 +2887,19 @@ Open them all?</value>
 
 Close them all?</value>
   </data>
+  <data name="TransferStatusConnecting" xml:space="preserve">
+    <value>Connecting...</value>
+  </data>
+  <data name="TransferStatusTransferring" xml:space="preserve">
+    <value>Transferring... {0}%</value>
+  </data>
+  <data name="TransferStatusCompleted" xml:space="preserve">
+    <value>Done. {0} was copied to {1}.</value>
+  </data>
+  <data name="TransferStatusFailed" xml:space="preserve">
+    <value>Failed: {0}</value>
+  </data>
+  <data name="TransferStatusCancelled" xml:space="preserve">
+    <value>Cancelled. A partly written file may be left on the server; it is not removed.</value>
+  </data>
 </root>

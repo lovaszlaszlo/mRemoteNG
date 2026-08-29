@@ -20,6 +20,8 @@ namespace mRemoteNG.UI.Window
 
         private MrngProgressBar pbStatus;
         private MrngButton btnTransfer;
+        private MrngButton btnCancel;
+        private MrngLabel lblStatus;
         private MrngTextBox txtUser;
         private MrngTextBox txtPassword;
         private MrngTextBox txtHost;
@@ -47,6 +49,8 @@ namespace mRemoteNG.UI.Window
             lblLocalFile = new MrngLabel();
             txtLocalFile = new MrngTextBox();
             btnTransfer = new MrngButton();
+            btnCancel = new MrngButton();
+            lblStatus = new MrngLabel();
             txtRemoteFile = new MrngTextBox();
             lblRemoteFile = new MrngLabel();
             btnBrowse = new MrngButton();
@@ -72,6 +76,7 @@ namespace mRemoteNG.UI.Window
             grpFiles.Controls.Add(lblLocalFile);
             grpFiles.Controls.Add(txtLocalFile);
             grpFiles.Controls.Add(btnTransfer);
+            grpFiles.Controls.Add(btnCancel);
             grpFiles.Controls.Add(txtRemoteFile);
             grpFiles.Controls.Add(lblRemoteFile);
             grpFiles.Controls.Add(btnBrowse);
@@ -115,6 +120,18 @@ namespace mRemoteNG.UI.Window
             btnTransfer.Text = "Transfer";
             btnTransfer.UseVisualStyleBackColor = true;
             btnTransfer.Click += new EventHandler(btnTransfer_Click);
+            //
+            // btnCancel
+            //
+            btnCancel._mice = MrngButton.MouseState.HOVER;
+            btnCancel.FlatStyle = FlatStyle.Flat;
+            btnCancel.Location = new System.Drawing.Point(456, 145);
+            btnCancel.Name = "btnCancel";
+            btnCancel.Size = new System.Drawing.Size(100, 24);
+            btnCancel.TabIndex = 10001;
+            btnCancel.Text = "Cancel";
+            btnCancel.UseVisualStyleBackColor = true;
+            btnCancel.Click += new EventHandler(btnCancel_Click);
             // 
             // txtRemoteFile
             // 
@@ -287,6 +304,15 @@ namespace mRemoteNG.UI.Window
             pbStatus.Size = new System.Drawing.Size(668, 23);
             pbStatus.Style = ProgressBarStyle.Continuous;
             pbStatus.TabIndex = 3000;
+            //
+            // lblStatus
+            //
+            lblStatus.AutoSize = false;
+            lblStatus.Location = new System.Drawing.Point(12, 380);
+            lblStatus.Name = "lblStatus";
+            lblStatus.Size = new System.Drawing.Size(668, 20);
+            lblStatus.TabIndex = 3001;
+            lblStatus.Text = "";
             // 
             // SSHTransferWindow
             // 
@@ -296,6 +322,7 @@ namespace mRemoteNG.UI.Window
             Controls.Add(grpFiles);
             Controls.Add(grpConnection);
             Controls.Add(pbStatus);
+            Controls.Add(lblStatus);
             Font = new System.Drawing.Font("Segoe UI", 8.25F, System.Drawing.FontStyle.Regular,
                                                 System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             Name = "SSHTransferWindow";
@@ -369,6 +396,7 @@ namespace mRemoteNG.UI.Window
             lblPort.Text = Language.Port;
             lblHost.Text = Language.Host + ":";
             btnTransfer.Text = Language.Transfer;
+            btnCancel.Text = Language._Cancel;
             TabText = Language.Transfer;
             Text = Language.Transfer;
         }
@@ -379,13 +407,81 @@ namespace mRemoteNG.UI.Window
 
         private SecureTransfer st;
 
+        /// <summary>
+        /// Whether a transfer is on the wire, which is what decides between the two things Cancel
+        /// can mean here.
+        /// </summary>
+        private volatile bool _transferring;
+
+        /// <summary>
+        /// Cancel stops the transfer if one is running, and otherwise closes the window.
+        /// </summary>
+        /// <remarks>
+        /// Both readings of the word are what someone means by it at the moment they press it:
+        /// there is nothing to cancel but the window when nothing is being sent. Closing it was
+        /// the harder half to arrange - until the panel tab was fixed there was no close button
+        /// anywhere, and this form has never had one of its own.
+        /// </remarks>
+        private void btnCancel_Click(object sender, EventArgs e)
+        {
+            if (_transferring)
+            {
+                AbortTransfer();
+                return;
+            }
+
+            Close();
+        }
+
+        /// <summary>
+        /// Stops a transfer in progress by taking the connection out from under it.
+        /// </summary>
+        /// <remarks>
+        /// There is nothing gentler available: SecureTransfer.Upload has no cancellation of its
+        /// own, and for SCP the call does not return until the file has gone. Disconnecting makes
+        /// it throw, which the background thread already catches and tidies up after.
+        ///
+        /// The remote file is left as it stands - a part of it will have arrived, and the far side
+        /// is where that has to be dealt with. Saying so is better than implying the transfer was
+        /// undone.
+        /// </remarks>
+        private void AbortTransfer()
+        {
+            Runtime.MessageCollector.AddMessage(MessageClass.InformationMsg,
+                "SSH file transfer cancelled; the partly written remote file is left as it is.",
+                true);
+
+            try
+            {
+                st?.Disconnect();
+            }
+            catch (Exception ex)
+            {
+                Runtime.MessageCollector.AddExceptionMessage(
+                    "Could not close the SSH file transfer connection cleanly", ex,
+                    MessageClass.WarningMsg, false);
+            }
+
+            _transferring = false;
+            ReportStatus(Language.TransferStatusCancelled);
+            EnableButtons();
+        }
+
         private void StartTransfer(SecureTransfer.SSHTransferProtocol Protocol)
         {
             if (AllFieldsSet() == false)
             {
                 Runtime.MessageCollector.AddMessage(MessageClass.ErrorMsg, Language.PleaseFillAllFields);
+                ReportStatus(Language.PleaseFillAllFields);
                 return;
             }
+
+            // Cleared here rather than at the end of the last run, so the previous result stays
+            // readable until a new transfer is actually asked for.
+            maxVal = 1;
+            curVal = 0;
+            SetStatus();
+            ReportStatus(Language.TransferStatusConnecting);
 
             if (File.Exists(txtLocalFile.Text) == false)
             {
@@ -411,6 +507,8 @@ namespace mRemoteNG.UI.Window
                         break;
                 }
 
+                _transferring = true;
+
                 Thread t = new(StartTransferBG);
                 t.SetApartmentState(ApartmentState.STA);
                 t.IsBackground = true;
@@ -419,8 +517,11 @@ namespace mRemoteNG.UI.Window
             catch (Exception ex)
             {
                 Runtime.MessageCollector.AddExceptionStackTrace(Language.SshTransferFailed, ex);
+                ReportStatus(string.Format(Language.TransferStatusFailed, ex.Message));
+                _transferring = false;
                 st?.Disconnect();
                 st?.Dispose();
+                EnableButtons();
             }
         }
 
@@ -469,16 +570,29 @@ namespace mRemoteNG.UI.Window
 
                 Runtime.MessageCollector.AddMessage(MessageClass.InformationMsg,
                                                     $"Transfer of {Path.GetFileName(st.SrcFile)} completed.", true);
+                ReportStatus(string.Format(Language.TransferStatusCompleted,
+                                           Path.GetFileName(st.SrcFile), st.DstFile));
                 st.Disconnect();
                 st.Dispose();
+                _transferring = false;
                 EnableButtons();
             }
             catch (Exception ex)
             {
                 Runtime.MessageCollector.AddExceptionStackTrace(Language.SshBackgroundTransferFailed, ex,
                                                                 MessageClass.ErrorMsg, false);
+
+                // Only shown when the user did not cause it: after Cancel the connection is pulled
+                // on purpose, and the exception that follows is the mechanism, not news.
+                if (_transferring)
+                    ReportStatus(string.Format(Language.TransferStatusFailed, ex.Message));
                 st?.Disconnect();
                 st?.Dispose();
+
+                // The buttons were left disabled here, so a transfer that failed - or one just
+                // cancelled - locked the form until it was closed and opened again.
+                _transferring = false;
+                EnableButtons();
             }
         }
 
@@ -515,6 +629,30 @@ namespace mRemoteNG.UI.Window
         private int curVal;
 
         private delegate void SetStatusCB();
+
+        private delegate void ReportStatusCB(string text);
+
+        /// <summary>
+        /// Says in words what the transfer is doing.
+        /// </summary>
+        /// <remarks>
+        /// The window used to report a transfer with nothing but a progress bar, which on a small
+        /// file fills and empties faster than the eye catches. A file went across twice in under a
+        /// second each and the window looked exactly as it had before pressing the button - the
+        /// only place anything was said was the log. A transfer either happened or it did not, and
+        /// the window that was asked to do it is where that belongs.
+        /// </remarks>
+        private void ReportStatus(string text)
+        {
+            if (lblStatus.InvokeRequired)
+            {
+                ReportStatusCB d = ReportStatus;
+                lblStatus.Invoke(d, text);
+                return;
+            }
+
+            lblStatus.Text = text;
+        }
 
         private void SetStatus()
         {
@@ -566,6 +704,8 @@ namespace mRemoteNG.UI.Window
             curVal = transferredBytes;
 
             SetStatus();
+            ReportStatus(string.Format(Language.TransferStatusTransferring,
+                                       totalBytes > 0 ? transferredBytes * 100L / totalBytes : 0));
         }
 
         #endregion

@@ -8083,5 +8083,45 @@ namespace mRemoteNG.Resources.Language {
             get {
                 return ResourceManager.GetString("ConfirmDisconnectAllInFolder", resourceCulture);
             }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Connecting....
+        /// </summary>
+        internal static string TransferStatusConnecting {
+            get {
+                return ResourceManager.GetString("TransferStatusConnecting", resourceCulture);
+            }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Transferring... {0}%.
+        /// </summary>
+        internal static string TransferStatusTransferring {
+            get {
+                return ResourceManager.GetString("TransferStatusTransferring", resourceCulture);
+            }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Done. {0} was copied to {1}..
+        /// </summary>
+        internal static string TransferStatusCompleted {
+            get {
+                return ResourceManager.GetString("TransferStatusCompleted", resourceCulture);
+            }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Failed: {0}.
+        /// </summary>
+        internal static string TransferStatusFailed {
+            get {
+                return ResourceManager.GetString("TransferStatusFailed", resourceCulture);
+            }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Cancelled. A partly written file may be left on the server; it is not removed..
+        /// </summary>
+        internal static string TransferStatusCancelled {
+            get {
+                return ResourceManager.GetString("TransferStatusCancelled", resourceCulture);
+            }
     }
 }

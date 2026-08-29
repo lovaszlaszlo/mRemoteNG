@@ -938,4 +938,9 @@ Megnyitja mindet?</value></data>
 
 
 Bontja mindet?</value></data>
+  <data name="TransferStatusConnecting" xml:space="preserve"><value>Csatlakozás...</value></data>
+  <data name="TransferStatusTransferring" xml:space="preserve"><value>Átvitel... {0}%</value></data>
+  <data name="TransferStatusCompleted" xml:space="preserve"><value>Kész. A(z) {0} átmásolva ide: {1}.</value></data>
+  <data name="TransferStatusFailed" xml:space="preserve"><value>Sikertelen: {0}</value></data>
+  <data name="TransferStatusCancelled" xml:space="preserve"><value>Megszakítva. A szerveren félig megírt fájl maradhat; azt nem törli.</value></data>
 </root>
