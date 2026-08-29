@@ -906,4 +906,11 @@
   <data name="Weekly" xml:space="preserve"><value>Hetente</value></data>
   <data name="WorkingDirColumnHeader" xml:space="preserve"><value>Munkakönyvtár</value></data>
   <data name="WorkingDirectory" xml:space="preserve"><value>Munkakönyvtár:</value></data>
+  <data name="Yes" xml:space="preserve"><value>Igen</value></data>
+  <data name="ConfirmDeleteNodeConnection" xml:space="preserve"><value>Biztosan törli a(z) &quot;{0}&quot; kapcsolatot?</value></data>
+  <data name="ConfirmDeleteNodeFolder" xml:space="preserve"><value>Biztosan törli a(z) &quot;{0}&quot; üres mappát?</value></data>
+  <data name="ConfirmDeleteNodeFolderNotEmpty" xml:space="preserve"><value>Biztosan törli a(z) &quot;{0}&quot; mappát? A benne lévő mappák és kapcsolatok is törlődnek.</value></data>
+  <data name="ConfirmDeleteCredentialRecord" xml:space="preserve"><value>Biztosan törli a(z) {0} hitelesítő adatot?</value></data>
+  <data name="ConfirmDeleteOption" xml:space="preserve"><value>Biztosan törli a(z) &apos;{0}&apos; beállítást?</value></data>
+  <data name="WarnIfAuthFails" xml:space="preserve"><value>Figyelmeztetés sikertelen hitelesítéskor</value></data>
 </root>
