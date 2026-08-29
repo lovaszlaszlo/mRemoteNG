@@ -24,10 +24,19 @@ using System.Resources;
 
 // Compute version values
 <#
+    // Own numbering from 1.8 on: this fork has diverged enough from the 1.78.2 it started at
+    // that carrying upstream's number would claim something untrue about what is running.
+    // AssemblyProduct is deliberately left alone - it names the data folder under %APPDATA%,
+    // and changing it would strand the existing connections file.
     int major = 1;
-    int minor = 78;
-    int revision = 2;
-    string channel = "Nightly Build";
+    int minor = 8;
+    int revision = 0;
+    string channel = "Build";
+
+    // The identity the settings store is keyed by - the version this fork was cut from. Leave it.
+    int identityMajor = 1;
+    int identityMinor = 78;
+    int identityRevision = 2;
     DateTime lastReleaseDate = new DateTime(2019, 9, 2);
     TimeSpan elapsed = DateTime.UtcNow - lastReleaseDate;
     int build = (int)(elapsed.TotalMinutes / 1000);
@@ -46,7 +55,11 @@ using System.Resources;
 [assembly: AssemblyCulture("")]
 
 // Version information
-[assembly: AssemblyVersion("<#= major #>.<#= minor #>.<#= revision #>.<#= build #>")]
+// AssemblyVersion is an identity, not a version anyone reads: .NET keys the per-user settings
+// store by it, so moving it starts the application in an empty store - first-run questions,
+// window back on another monitor. It stays at the number this fork was cut from; the numbers
+// above move instead, and the splash and About box read AssemblyInformationalVersion.
+[assembly: AssemblyVersion("<#= identityMajor #>.<#= identityMinor #>.<#= identityRevision #>.<#= build #>")]
 [assembly: AssemblyFileVersion("<#= major #>.<#= minor #>.<#= revision #>.<#= build #>")]
 [assembly: NeutralResourcesLanguageAttribute("en-US")]
 [assembly: AssemblyInformationalVersion("<#= major #>.<#= minor #>.<#= revision #> (<#= channel #> <#= build #>) <#= platformValue #>")]

@@ -16,7 +16,7 @@ namespace mRemoteNG.UI.Forms
             InitializeComponent();
             LoadFont();
             lblLogoPartD.HorizontalContentAlignment = System.Windows.HorizontalAlignment.Center;
-            lblLogoPartD.Content = $@"v. {GeneralAppInfo.ApplicationVersion} - 'Fructus temporum'";
+            lblLogoPartD.Content = $@"v. {GeneralAppInfo.ApplicationVersion} - 'DBSystem Kft.'";
         }
         public static FrmSplashScreenNew GetInstance()
         {
