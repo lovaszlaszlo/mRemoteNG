@@ -617,6 +617,12 @@ namespace mRemoteNG.Connection.Protocol.SSH
                 // before this can be read. Tearing the tab down is what the PuTTY protocol does
                 // when its process exits - a tab holding a dead console is nothing but clutter.
                 WriteStatus($"[2m-- {reason} --[0m");
+                // The client is disposed here for the same reason the tunnels are: Close is not
+                // reliably called after a protocol raises Event_Closed itself. Left undisposed,
+                // the transport stays up after the shell has exited, and the server goes on
+                // counting a session nobody is using - a login that survives Ctrl+D.
+                DisposeSshSession();
+
                 Event_Closed(this);
                 return;
             }

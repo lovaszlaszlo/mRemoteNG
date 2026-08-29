@@ -109,6 +109,10 @@ namespace mRemoteNG.Connection
                 // connectionInfoOriginal points to the original connection info in either case, for where its needed later on.
                 ConnectionInfo connectionInfoOriginal = connectionInfo;
                 ConnectionInfo connectionInfoSshTunnel = null; // SSH tunnel connection info will be set if SSH tunnel connection is configured, can be found and connected.
+
+                // The protocol carrying the tunnel, kept so it can be closed with the connection
+                // that travels over it rather than outliving it.
+                ProtocolBase protocolToClose = null;
                 if (!string.IsNullOrEmpty(connectionInfoOriginal.SSHTunnelConnectionName))
                 {
                     // Find the connection info specified as SSH tunnel in the connections tree
@@ -216,6 +220,15 @@ namespace mRemoteNG.Connection
                     // hide the display of the SSH tunnel connection which has been shown until this time, such that password can be entered if required or errors be seen
                     // it stays invisible in the container however which will be reused for the actual connection and such that if the container is closed the SSH tunnel connection is closed as well
                     protocolSshTunnel.InterfaceControl.Hide();
+
+                    // Being in the container is not on its own enough to end the tunnel with the
+                    // connection it carries. Closing the container disposes the hidden control,
+                    // and disposing a control does not close a protocol - it only happened to
+                    // finish PuTTY off, whose session dies with the window it was drawn in. A
+                    // native SSH session survives its control, so the tunnel stayed logged in to
+                    // the far side after the connection through it had gone; three tries left
+                    // three sessions on the server, and only mRemoteNG exiting cleared them.
+                    protocolToClose = protocolSshTunnel;
                 }
 
                 ProtocolBase newProtocol = protocolFactory.CreateProtocol(connectionInfo);
@@ -231,6 +244,18 @@ namespace mRemoteNG.Connection
                 newProtocol.InterfaceControl.SSHTunnelInfo = connectionInfoSshTunnel;
 
                 newProtocol.Force = force;
+
+                if (protocolToClose != null)
+                {
+                    ProtocolBase tunnelToClose = protocolToClose;
+
+                    newProtocol.Closed += _ =>
+                    {
+                        Runtime.MessageCollector.AddMessage(MessageClass.DebugMsg,
+                            $"Closing the SSH tunnel that carried '{connectionInfoOriginal.Name}'");
+                        tunnelToClose.Close();
+                    };
+                }
 
                 if (newProtocol.Initialize() == false)
                 {
