@@ -627,6 +627,14 @@ namespace mRemoteNG.Connection.Protocol.SSH
                         WriteToShell(message.GetProperty("data").GetString());
                         break;
 
+                    case "paste":
+                        WriteToShell(ReadClipboard());
+                        break;
+
+                    case "copy":
+                        WriteClipboard(message.GetProperty("data").GetString());
+                        break;
+
                     case "resize":
                         _columns = (uint)message.GetProperty("cols").GetInt32();
                         _rows = (uint)message.GetProperty("rows").GetInt32();
@@ -653,6 +661,52 @@ namespace mRemoteNG.Connection.Protocol.SSH
             catch (Exception ex)
             {
                 Runtime.MessageCollector.AddExceptionMessage("Could not close the connection tree's menu", ex,
+                                                             MessageClass.WarningMsg, false);
+            }
+        }
+
+        /// <summary>
+        /// The clipboard for the terminal's two mouse habits: a right click pastes, and a
+        /// selection is copied as soon as it is made - the way PuTTY has always behaved.
+        /// </summary>
+        /// <remarks>
+        /// Done here rather than in the page because the page would have to ask the browser for
+        /// clipboard permission, and a terminal is a poor place to be asked. Here it is a plain
+        /// WinForms call on the UI thread that WebMessageReceived already runs on, which is also
+        /// what Clipboard needs, being STA only.
+        ///
+        /// Both directions swallow their failures. The clipboard is shared, another process can
+        /// hold it open for a moment, and neither a lost copy nor an empty paste is worth putting
+        /// an error in front of someone mid-session.
+        /// </remarks>
+        private static string ReadClipboard()
+        {
+            try
+            {
+                return Clipboard.ContainsText() ? Clipboard.GetText() : string.Empty;
+            }
+            catch (Exception ex)
+            {
+                Runtime.MessageCollector.AddExceptionMessage("Could not read the clipboard", ex,
+                                                             MessageClass.WarningMsg, false);
+                return string.Empty;
+            }
+        }
+
+        private static void WriteClipboard(string text)
+        {
+            if (string.IsNullOrEmpty(text)) return;
+
+            try
+            {
+                // The retrying overload rather than SetText: selecting text is a thing people do
+                // constantly, and a clipboard another process happens to hold for a moment should
+                // cost a short wait, not the copy.
+                Clipboard.SetDataObject(text, true, 5, 100);
+            }
+            catch (Exception ex)
+            {
+                Runtime.MessageCollector.AddExceptionMessage("Could not put the selection on the clipboard", ex,
                                                              MessageClass.WarningMsg, false);
             }
         }

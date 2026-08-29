@@ -20,6 +20,9 @@
         //                { type: 'status', text: <message to show in the terminal> }
         // page -> host : { type: 'input',  data: <the text the user typed> }
         //                { type: 'resize', cols: n, rows: n }
+        //                { type: 'copy',   data: <the text just selected> }
+        //                { type: 'paste' }  - the host reads the clipboard itself
+        //                { type: 'active' } - clicked or typed in, so menus elsewhere can close
         //                { type: 'ready' }
         //
         // Server output travels as base64 rather than text: it is a byte stream that can be cut
@@ -57,6 +60,20 @@
         // lands in here: this page runs in the browser process, so its input never passes through
         // the message loop the menus watch. Saying so is the only way they can find out.
         term.element.addEventListener('pointerdown', () => send({ type: 'active' }));
+
+        // PuTTY's two mouse habits, which is what people actually reach for in a terminal: a
+        // right click pastes outright, and a selection is on the clipboard the moment it is
+        // made. The clipboard itself is left to the host - there it needs no browser permission,
+        // and the pasted text never has to travel through this page at all.
+        term.element.addEventListener('contextmenu', e => {
+            e.preventDefault();
+            send({ type: 'paste' });
+        });
+
+        term.element.addEventListener('mouseup', () => {
+            const selection = term.getSelection();
+            if (selection) send({ type: 'copy', data: selection });
+        });
 
         // Font size: the PuTTY session sets the base size, and this remembers an adjustment on
         // top of it. Kept in localStorage rather than in the connection file - the page is always
