@@ -361,7 +361,7 @@ namespace mRemoteNG.Connection
         [LocalizedAttributes.LocalizedCategory(nameof(Language.Miscellaneous), 7),
         LocalizedAttributes.LocalizedDisplayName(nameof(Language.OpeningCommand)),
         LocalizedAttributes.LocalizedDescription(nameof(Language.PropertyDescriptionOpeningCommand)),
-           AttributeUsedInProtocol(ProtocolType.SSH1, ProtocolType.SSH2)]
+           AttributeUsedInProtocol(ProtocolType.SSH1, ProtocolType.SSH2, ProtocolType.SSHNative)]
         public virtual string OpeningCommand
         {
             get => GetPropertyValue("OpeningCommand", _openingCommand);

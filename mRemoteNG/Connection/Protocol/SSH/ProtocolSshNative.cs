@@ -145,7 +145,6 @@ namespace mRemoteNG.Connection.Protocol.SSH
                 // Deliberately leaves the tab open, unlike a session that ended normally: the
                 // reason it could not connect is worth reading, and it is written into the
                 // terminal itself.
-
                 Runtime.MessageCollector.AddExceptionMessage($"SSH connection to '{_connectionInfo.Hostname}' failed", ex);
                 WriteStatus($"[31m{ex.Message}[0m");
 
@@ -256,6 +255,8 @@ namespace mRemoteNG.Connection.Protocol.SSH
 
             _readCancellation = new CancellationTokenSource();
             _ = Task.Run(() => PumpOutputAsync(_readCancellation.Token));
+
+            SendOpeningCommand();
 
             // Armed only now: a session that is up is one that can be lost again.
             Interlocked.Exchange(ref _linkLost, 0);
@@ -860,6 +861,28 @@ namespace mRemoteNG.Connection.Protocol.SSH
                 Runtime.MessageCollector.AddExceptionMessage("Could not put the selection on the clipboard", ex,
                                                              MessageClass.WarningMsg, false);
             }
+        }
+
+        /// <summary>
+        /// Types the connection's opening command into the fresh session, the way the PuTTY based
+        /// protocol does.
+        /// </summary>
+        /// <remarks>
+        /// Sent rather than typed: PuttyBase has to reach the console with SendKeys, having no
+        /// other way into a window that belongs to another process, and brings the window to the
+        /// front to do it. Here the shell stream is right there, so the command goes down it and
+        /// nothing has to be focused or brought forward.
+        ///
+        /// Not waited on: the far side may not have drawn a prompt yet, but a shell reads what is
+        /// already in the pipe, so there is nothing to wait for.
+        /// </remarks>
+        private void SendOpeningCommand()
+        {
+            string command = _connectionInfo.OpeningCommand;
+
+            if (string.IsNullOrEmpty(command)) return;
+
+            WriteToShell(command.TrimEnd() + "\n");
         }
 
         private void WriteToShell(string text)
