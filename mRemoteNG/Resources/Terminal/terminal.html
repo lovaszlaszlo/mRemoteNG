@@ -70,9 +70,16 @@
             send({ type: 'paste' });
         });
 
-        term.element.addEventListener('mouseup', () => {
-            const selection = term.getSelection();
-            if (selection) send({ type: 'copy', data: selection });
+        // Not on mouseup: xterm has not settled the selection by then, so what came back was the
+        // one before it - copying appeared to work only on the second try. onSelectionChange fires
+        // when the selection is final, and the wait swallows the storm of them during a drag.
+        let selectionTimer = null;
+        term.onSelectionChange(() => {
+            clearTimeout(selectionTimer);
+            selectionTimer = setTimeout(() => {
+                const selection = term.getSelection();
+                if (selection) send({ type: 'copy', data: selection });
+            }, 60);
         });
 
         // Font size: the PuTTY session sets the base size, and this remembers an adjustment on

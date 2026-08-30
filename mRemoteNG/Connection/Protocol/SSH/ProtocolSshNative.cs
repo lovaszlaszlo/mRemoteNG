@@ -937,7 +937,7 @@ namespace mRemoteNG.Connection.Protocol.SSH
                         break;
 
                     case "paste":
-                        WriteToShell(ReadClipboard());
+                        PasteFromClipboard();
                         break;
 
                     case "copy":
@@ -988,6 +988,43 @@ namespace mRemoteNG.Connection.Protocol.SSH
         /// hold it open for a moment, and neither a lost copy nor an empty paste is worth putting
         /// an error in front of someone mid-session.
         /// </remarks>
+        /// <summary>
+        /// Pastes the clipboard into the session, asking first when it holds more than one line.
+        /// </summary>
+        /// <remarks>
+        /// A right click pastes immediately, which is what PuTTY does and what people want - and
+        /// it is also easy to do by accident, next to a terminal that runs what it is given. One
+        /// stray line can be corrected. Several arrive as several commands and the first of them
+        /// has run before the mistake is noticed; that happened here on 2026-08-28, when a
+        /// selected block of output was pasted back and bash tried to execute each line of it.
+        ///
+        /// So the confirmation is asked only where the risk is: text carrying line breaks. A
+        /// single line - the overwhelming majority of pastes - still goes straight through, and
+        /// the guard is not in the way often enough to be dismissed out of habit.
+        /// </remarks>
+        private void PasteFromClipboard()
+        {
+            string text = ReadClipboard();
+
+            if (string.IsNullOrEmpty(text)) return;
+
+            string[] lines = text.ReplaceLineEndings("\n").TrimEnd('\n').Split('\n');
+
+            if (lines.Length > 1)
+            {
+                string preview = lines[0].Length > 80 ? lines[0][..80] + "..." : lines[0];
+
+                DialogResult answer = MessageBox.Show(
+                    string.Format(Language.ConfirmMultilinePaste, lines.Length, preview),
+                    _connectionInfo.Name, MessageBoxButtons.YesNo, MessageBoxIcon.Warning,
+                    MessageBoxDefaultButton.Button2);
+
+                if (answer != DialogResult.Yes) return;
+            }
+
+            WriteToShell(text);
+        }
+
         private static string ReadClipboard()
         {
             try
