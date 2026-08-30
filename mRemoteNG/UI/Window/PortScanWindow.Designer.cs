@@ -73,8 +73,6 @@ namespace mRemoteNG.UI.Window
             this.chkOnlyResponding = new MrngCheckBox();
             this.chkOnlyNew = new MrngCheckBox();
             this.pnlFilter = new System.Windows.Forms.TableLayoutPanel();
-            this.flowGeneralFilter = new System.Windows.Forms.FlowLayoutPanel();
-            this.flowProtocolFilter = new System.Windows.Forms.FlowLayoutPanel();
             this.lblFilter = new mRemoteNG.UI.Controls.MrngLabel();
             this.lblProtocolFilter = new mRemoteNG.UI.Controls.MrngLabel();
             this.chkProtoAll = new MrngCheckBox();
@@ -97,8 +95,6 @@ namespace mRemoteNG.UI.Window
             ((System.ComponentModel.ISupportInitialize)(this.portStart)).BeginInit();
             this.pnlIp.SuspendLayout();
             this.pnlFilter.SuspendLayout();
-            this.flowGeneralFilter.SuspendLayout();
-            this.flowProtocolFilter.SuspendLayout();
             this.pnlImport.SuspendLayout();
             this.pnlMain.SuspendLayout();
             this.SuspendLayout();
@@ -453,7 +449,11 @@ namespace mRemoteNG.UI.Window
             // btnScan
             // 
             this.btnScan._mice = MrngButton.MouseState.OUT;
-            this.btnScan.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
+            // Left, not right. Its column takes whatever space is left over, so anchoring right
+            // put the button against the far edge of the window - a screen's width away from the
+            // fields it acts on, and further the wider the monitor. It sits by the timeout now.
+            this.btnScan.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left)));
+            this.btnScan.Margin = new System.Windows.Forms.Padding(16, 3, 3, 3);
             this.btnScan.Image = global::mRemoteNG.Properties.Resources.Search_16x;
             this.btnScan.ImageAlign = System.Drawing.ContentAlignment.MiddleRight;
             //
@@ -557,49 +557,47 @@ namespace mRemoteNG.UI.Window
             //
             this.pnlFilter.AutoSize = true;
             this.pnlFilter.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
-            this.pnlFilter.ColumnCount = 1;
+            // Ten columns, with the controls in them directly. They were in two wrapping
+            // FlowLayoutPanels before, which left a hand's width of blank space between this block
+            // and the grid: a TableLayoutPanel measures a child by proposing zero width, a
+            // FlowLayoutPanel with WrapContents answers that by putting every control on a line of
+            // its own, and the row kept that height even though the panel drew itself on one line
+            // once it had real width to work with.
+            //
+            // The labels share column 0, so both rows start at the same place. The two long
+            // checkboxes on the first row span the narrow protocol columns beneath them rather
+            // than widening any one of them, and the last column takes up the slack.
+            this.pnlFilter.ColumnCount = 10;
+            this.pnlFilter.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.AutoSize));
+            this.pnlFilter.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.AutoSize));
+            this.pnlFilter.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.AutoSize));
+            this.pnlFilter.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.AutoSize));
+            this.pnlFilter.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.AutoSize));
+            this.pnlFilter.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.AutoSize));
+            this.pnlFilter.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.AutoSize));
+            this.pnlFilter.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.AutoSize));
+            this.pnlFilter.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.AutoSize));
             this.pnlFilter.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 100F));
-            this.pnlFilter.Controls.Add(this.flowGeneralFilter, 0, 0);
-            this.pnlFilter.Controls.Add(this.flowProtocolFilter, 0, 1);
+            this.pnlFilter.Controls.Add(this.lblFilter, 0, 0);
+            this.pnlFilter.Controls.Add(this.chkOnlyResponding, 1, 0);
+            this.pnlFilter.SetColumnSpan(this.chkOnlyResponding, 4);
+            this.pnlFilter.Controls.Add(this.chkOnlyNew, 5, 0);
+            this.pnlFilter.SetColumnSpan(this.chkOnlyNew, 5);
+            this.pnlFilter.Controls.Add(this.lblProtocolFilter, 0, 1);
+            this.pnlFilter.Controls.Add(this.chkProtoAll, 1, 1);
+            this.pnlFilter.Controls.Add(this.chkProtoSsh, 2, 1);
+            this.pnlFilter.Controls.Add(this.chkProtoTelnet, 3, 1);
+            this.pnlFilter.Controls.Add(this.chkProtoHttp, 4, 1);
+            this.pnlFilter.Controls.Add(this.chkProtoHttps, 5, 1);
+            this.pnlFilter.Controls.Add(this.chkProtoRlogin, 6, 1);
+            this.pnlFilter.Controls.Add(this.chkProtoRdp, 7, 1);
+            this.pnlFilter.Controls.Add(this.chkProtoVnc, 8, 1);
             this.pnlFilter.Dock = System.Windows.Forms.DockStyle.Fill;
             this.pnlFilter.Name = "pnlFilter";
             this.pnlFilter.RowCount = 2;
             this.pnlFilter.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.AutoSize));
             this.pnlFilter.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.AutoSize));
             this.pnlFilter.TabIndex = 106;
-            //
-            // flowGeneralFilter
-            //
-            // Both rows wrap: seven protocols plus their label do not fit a narrow window, and a
-            // fixed row would simply cut them off - which is how the port block lost its Scan
-            // button once already.
-            this.flowGeneralFilter.AutoSize = true;
-            this.flowGeneralFilter.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
-            this.flowGeneralFilter.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.flowGeneralFilter.Margin = new System.Windows.Forms.Padding(0);
-            this.flowGeneralFilter.Name = "flowGeneralFilter";
-            this.flowGeneralFilter.WrapContents = true;
-            this.flowGeneralFilter.Controls.Add(this.lblFilter);
-            this.flowGeneralFilter.Controls.Add(this.chkOnlyResponding);
-            this.flowGeneralFilter.Controls.Add(this.chkOnlyNew);
-            //
-            // flowProtocolFilter
-            //
-            this.flowProtocolFilter.AutoSize = true;
-            this.flowProtocolFilter.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
-            this.flowProtocolFilter.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.flowProtocolFilter.Margin = new System.Windows.Forms.Padding(0);
-            this.flowProtocolFilter.Name = "flowProtocolFilter";
-            this.flowProtocolFilter.WrapContents = true;
-            this.flowProtocolFilter.Controls.Add(this.lblProtocolFilter);
-            this.flowProtocolFilter.Controls.Add(this.chkProtoAll);
-            this.flowProtocolFilter.Controls.Add(this.chkProtoSsh);
-            this.flowProtocolFilter.Controls.Add(this.chkProtoTelnet);
-            this.flowProtocolFilter.Controls.Add(this.chkProtoHttp);
-            this.flowProtocolFilter.Controls.Add(this.chkProtoHttps);
-            this.flowProtocolFilter.Controls.Add(this.chkProtoRlogin);
-            this.flowProtocolFilter.Controls.Add(this.chkProtoRdp);
-            this.flowProtocolFilter.Controls.Add(this.chkProtoVnc);
             //
             // lblFilter
             //
@@ -743,10 +741,6 @@ namespace mRemoteNG.UI.Window
             this.pnlIp.PerformLayout();
             this.pnlFilter.ResumeLayout(false);
             this.pnlFilter.PerformLayout();
-            this.flowGeneralFilter.ResumeLayout(false);
-            this.flowGeneralFilter.PerformLayout();
-            this.flowProtocolFilter.ResumeLayout(false);
-            this.flowProtocolFilter.PerformLayout();
             this.pnlImport.ResumeLayout(false);
             this.pnlImport.PerformLayout();
             this.pnlMain.ResumeLayout(false);
@@ -776,8 +770,6 @@ namespace mRemoteNG.UI.Window
         private MrngCheckBox chkOnlyResponding;
         private MrngCheckBox chkOnlyNew;
         private System.Windows.Forms.TableLayoutPanel pnlFilter;
-        private System.Windows.Forms.FlowLayoutPanel flowGeneralFilter;
-        private System.Windows.Forms.FlowLayoutPanel flowProtocolFilter;
         private mRemoteNG.UI.Controls.MrngLabel lblFilter;
         private mRemoteNG.UI.Controls.MrngLabel lblProtocolFilter;
         private MrngCheckBox chkProtoAll;
