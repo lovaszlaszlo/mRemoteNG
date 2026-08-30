@@ -8123,5 +8123,131 @@ namespace mRemoteNG.Resources.Language {
                 return ResourceManager.GetString("TransferStatusTransferring", resourceCulture);
             }
         }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The connection "{0}" will be exported..
+        /// </summary>
+        internal static string ExportTargetConnection {
+            get {
+                return ResourceManager.GetString("ExportTargetConnection", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The folder "{0}" will be exported, with everything in it - {1} connections..
+        /// </summary>
+        internal static string ExportTargetFolder {
+            get {
+                return ResourceManager.GetString("ExportTargetFolder", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Every connection will be exported..
+        /// </summary>
+        internal static string ExportTargetEverything {
+            get {
+                return ResourceManager.GetString("ExportTargetEverything", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Select the hosts to import in the list first..
+        /// </summary>
+        internal static string PortScanNothingSelected {
+            get {
+                return ResourceManager.GetString("PortScanNothingSelected", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to {0} connections will be created as {1}, in the folder "{2}". The folder is the one selected in the connection tree - or the folder holding it, if a connection is selected there. Create them?.
+        /// </summary>
+        internal static string PortScanConfirmImport {
+            get {
+                return ResourceManager.GetString("PortScanConfirmImport", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Will scan the usual ports: SSH 22, Telnet 23, HTTP 80, HTTPS 443, Rlogin 513, RDP 3389, VNC 5900..
+        /// </summary>
+        internal static string PortScanScopeDefaultPorts {
+            get {
+                return ResourceManager.GetString("PortScanScopeDefaultPorts", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Will scan ports {0} to {1} - {2} ports on every host. The usual ports are not scanned while either port box is ticked..
+        /// </summary>
+        internal static string PortScanScopeRange {
+            get {
+                return ResourceManager.GetString("PortScanScopeRange", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Already added.
+        /// </summary>
+        internal static string PortScanAlreadyAdded {
+            get {
+                return ResourceManager.GetString("PortScanAlreadyAdded", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Only hosts with an open port.
+        /// </summary>
+        internal static string PortScanOnlyResponding {
+            get {
+                return ResourceManager.GetString("PortScanOnlyResponding", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to This will paste {0} lines into the session, and the shell will run each of them. The first is: {1} Paste it?.
+        /// </summary>
+        internal static string ConfirmMultilinePaste {
+            get {
+                return ResourceManager.GetString("ConfirmMultilinePaste", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Only hosts not already added.
+        /// </summary>
+        internal static string PortScanOnlyNew {
+            get {
+                return ResourceManager.GetString("PortScanOnlyNew", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to {0} / {1} hosts - {2}%.
+        /// </summary>
+        internal static string PortScanProgress {
+            get {
+                return ResourceManager.GetString("PortScanProgress", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Done: {0} hosts scanned, {1} answered on a port..
+        /// </summary>
+        internal static string PortScanFinished {
+            get {
+                return ResourceManager.GetString("PortScanFinished", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Import into folder.
+        /// </summary>
+        internal static string PortScanDestination {
+            get {
+                return ResourceManager.GetString("PortScanDestination", resourceCulture);
+            }
+        }
     }
 }

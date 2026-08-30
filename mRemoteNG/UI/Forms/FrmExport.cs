@@ -72,13 +72,41 @@ namespace mRemoteNG.UI.Forms
 
         private ContainerInfo _selectedFolder;
 
+        /// <summary>
+        /// States what is about to be exported, in place of asking for it.
+        /// </summary>
+        /// <remarks>
+        /// The dialog used to offer three scopes - everything, the selected folder, the selected
+        /// connection - and opened on "everything" whatever had been right-clicked. Exporting one
+        /// folder meant noticing a radio button first; missing it wrote the entire tree, passwords
+        /// and all, into the file. Asking for one thing and being given another is bad enough on
+        /// its own, and worse when the file leaves the machine.
+        ///
+        /// So the choice is gone rather than merely defaulted: what was right-clicked is what is
+        /// exported. Everything is still reachable - that is what the root node is. The controls
+        /// are hidden rather than disabled, because a disabled control claims there is a choice
+        /// and then refuses to explain it.
+        /// </remarks>
+        public void ShowExportTarget(string description)
+        {
+            rdoExportEverything.Visible = false;
+            rdoExportSelectedFolder.Visible = false;
+            rdoExportSelectedConnection.Visible = false;
+            lblSelectedConnection.Visible = false;
+
+            lblSelectedFolder.AutoSize = true;
+            lblSelectedFolder.Location = new System.Drawing.Point(12, 26);
+            lblSelectedFolder.Text = description;
+            lblSelectedFolder.Visible = true;
+        }
+
         public ContainerInfo SelectedFolder
         {
             get => _selectedFolder;
             set
             {
                 _selectedFolder = value;
-                lblSelectedFolder.Text = value?.Name;
+                if (rdoExportSelectedFolder.Visible) lblSelectedFolder.Text = value?.Name;
                 rdoExportSelectedFolder.Enabled = value != null;
             }
         }

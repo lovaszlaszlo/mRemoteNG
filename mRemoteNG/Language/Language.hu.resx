@@ -943,4 +943,36 @@ Bontja mindet?</value></data>
   <data name="TransferStatusCompleted" xml:space="preserve"><value>Kész. A(z) {0} átmásolva ide: {1}.</value></data>
   <data name="TransferStatusFailed" xml:space="preserve"><value>Sikertelen: {0}</value></data>
   <data name="TransferStatusCancelled" xml:space="preserve"><value>Megszakítva. A szerveren félig megírt fájl maradhat; azt nem törli.</value></data>
+  <data name="ExportTargetConnection" xml:space="preserve"><value>A(z) &quot;{0}&quot; kapcsolat lesz exportálva.</value></data>
+  <data name="ExportTargetFolder" xml:space="preserve"><value>A(z) &quot;{0}&quot; mappa lesz exportálva mindennel, ami benne van — {1} kapcsolat.</value></data>
+  <data name="ExportTargetEverything" xml:space="preserve"><value>Az összes kapcsolat exportálva lesz.</value></data>
+  <data name="PortScanNothingSelected" xml:space="preserve"><value>Előbb jelöld ki a listában az importálandó gépeket.</value></data>
+  <data name="PortScanConfirmImport" xml:space="preserve"><value>{0} kapcsolat jön létre {1} protokollal, a(z) &quot;{2}&quot; mappában.
+
+
+
+A mappa az, amit a kapcsolatfán kijelöltél — vagy annak a szülő mappája, ha ott épp egy kapcsolaton állsz.
+
+
+
+Létrehozod?</value></data>
+  <data name="PortScanScopeDefaultPorts" xml:space="preserve"><value>A szokásos portokat vizsgálja: SSH 22, Telnet 23, HTTP 80, HTTPS 443, Rlogin 513, RDP 3389, VNC 5900.</value></data>
+  <data name="PortScanScopeRange" xml:space="preserve"><value>A(z) {0}–{1} portokat vizsgálja — gépenként {2} portot. Amíg bármelyik port-pipa be van jelölve, a szokásos portokat nem nézi.</value></data>
+  <data name="PortScanAlreadyAdded" xml:space="preserve"><value>Már felvéve</value></data>
+  <data name="PortScanOnlyResponding" xml:space="preserve"><value>Csak a nyitott porttal rendelkező gépek</value></data>
+  <data name="ConfirmMultilinePaste" xml:space="preserve"><value>Ez {0} sort illeszt be a munkamenetbe, és a shell mindet lefuttatja.
+
+
+
+Az első:
+
+{1}
+
+
+
+Beilleszted?</value></data>
+  <data name="PortScanOnlyNew" xml:space="preserve"><value>Csak a még fel nem vett gépek</value></data>
+  <data name="PortScanProgress" xml:space="preserve"><value>{0} / {1} gép — {2}%</value></data>
+  <data name="PortScanFinished" xml:space="preserve"><value>Kész: {0} gép megvizsgálva, {1} válaszolt valamelyik porton.</value></data>
+  <data name="PortScanDestination" xml:space="preserve"><value>Cél mappa</value></data>
 </root>

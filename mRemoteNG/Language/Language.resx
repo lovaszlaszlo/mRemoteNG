@@ -2902,4 +2902,64 @@ Close them all?</value>
   <data name="TransferStatusCancelled" xml:space="preserve">
     <value>Cancelled. A partly written file may be left on the server; it is not removed.</value>
   </data>
+  <data name="ExportTargetConnection" xml:space="preserve">
+    <value>The connection &quot;{0}&quot; will be exported.</value>
+  </data>
+  <data name="ExportTargetFolder" xml:space="preserve">
+    <value>The folder &quot;{0}&quot; will be exported, with everything in it - {1} connections.</value>
+  </data>
+  <data name="ExportTargetEverything" xml:space="preserve">
+    <value>Every connection will be exported.</value>
+  </data>
+  <data name="PortScanNothingSelected" xml:space="preserve">
+    <value>Select the hosts to import in the list first.</value>
+  </data>
+  <data name="PortScanConfirmImport" xml:space="preserve">
+    <value>{0} connections will be created as {1}, in the folder &quot;{2}&quot;.
+
+
+
+The folder is the one selected in the connection tree - or the folder holding it, if a connection is selected there.
+
+
+
+Create them?</value>
+  </data>
+  <data name="PortScanScopeDefaultPorts" xml:space="preserve">
+    <value>Will scan the usual ports: SSH 22, Telnet 23, HTTP 80, HTTPS 443, Rlogin 513, RDP 3389, VNC 5900.</value>
+  </data>
+  <data name="PortScanScopeRange" xml:space="preserve">
+    <value>Will scan ports {0} to {1} - {2} ports on every host. The usual ports are not scanned while either port box is ticked.</value>
+  </data>
+  <data name="PortScanAlreadyAdded" xml:space="preserve">
+    <value>Already added</value>
+  </data>
+  <data name="PortScanOnlyResponding" xml:space="preserve">
+    <value>Only hosts with an open port</value>
+  </data>
+  <data name="ConfirmMultilinePaste" xml:space="preserve">
+    <value>This will paste {0} lines into the session, and the shell will run each of them.
+
+
+
+The first is:
+
+{1}
+
+
+
+Paste it?</value>
+  </data>
+  <data name="PortScanOnlyNew" xml:space="preserve">
+    <value>Only hosts not already added</value>
+  </data>
+  <data name="PortScanProgress" xml:space="preserve">
+    <value>{0} / {1} hosts - {2}%</value>
+  </data>
+  <data name="PortScanFinished" xml:space="preserve">
+    <value>Done: {0} hosts scanned, {1} answered on a port.</value>
+  </data>
+  <data name="PortScanDestination" xml:space="preserve">
+    <value>Import into folder</value>
+  </data>
 </root>
