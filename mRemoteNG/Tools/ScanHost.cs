@@ -85,7 +85,9 @@ namespace mRemoteNG.Tools
 
         public string VncName => BoolToYesNo(Vnc);
 
-        public string SshName => BoolToYesNo(Rdp);
+        // Was BoolToYesNo(Rdp) - the SSH column showed whether port 3389 was open, not 22.
+        // A copy-paste that made the one column most people scan for report another protocol.
+        public string SshName => BoolToYesNo(Ssh);
 
         public string TelnetName => BoolToYesNo(Telnet);
 
@@ -124,9 +126,18 @@ namespace mRemoteNG.Tools
         }
 
 
+        /// <summary>
+        /// A tick for an open port, and nothing at all for a closed one.
+        /// </summary>
+        /// <remarks>
+        /// It used to write "Yes" or "No" in every cell of seven columns. A scan of a /24 fills
+        /// the grid with hundreds of rows of the word "No", and the handful of hosts that answered
+        /// are lost in it. A mark that is only present when there is something to report lets the
+        /// eye find them without reading.
+        /// </remarks>
         private static string BoolToYesNo(bool value)
         {
-            return value ? Language.Yes : Language.No;
+            return value ? "\u2714" : string.Empty;
         }
 
         public void SetAllProtocols(bool value)

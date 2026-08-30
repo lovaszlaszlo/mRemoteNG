@@ -69,6 +69,11 @@ namespace mRemoteNG.UI.Window
             this.btnScan = new MrngButton();
             this.ngCheckFirstPort = new MrngCheckBox();
             this.ngCheckLastPort = new MrngCheckBox();
+            this.lblScanScope = new mRemoteNG.UI.Controls.MrngLabel();
+            this.chkOnlyResponding = new MrngCheckBox();
+            this.chkOnlyNew = new MrngCheckBox();
+            this.lblDestination = new mRemoteNG.UI.Controls.MrngLabel();
+            this.cbDestination = new mRemoteNG.UI.Controls.MrngComboBox();
             this.pnlImport = new System.Windows.Forms.TableLayoutPanel();
             this.pnlMain = new System.Windows.Forms.TableLayoutPanel();
             this.portScanToolTip = new System.Windows.Forms.ToolTip(this.components);
@@ -380,11 +385,17 @@ namespace mRemoteNG.UI.Window
             // 
             // pnlIp
             // 
+            this.pnlIp.AutoSize = true;
+            this.pnlIp.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
             this.pnlIp.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
             this.pnlIp.ColumnCount = 3;
-            this.pnlIp.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Absolute, 130F));
-            this.pnlIp.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Absolute, 130F));
+            this.pnlIp.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.AutoSize));
+            // Was a fixed 130 pixels, which is wider than the IP control's designed 124 - until the
+            // display scales. At 125% the control needs about 155 and the column stays at 130, so
+            // the fourth octet was cut off the edge of the cell: not reachable by mouse, and typing
+            // into a box nobody can see. Sized to its content instead.
+            this.pnlIp.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.AutoSize));
             this.pnlIp.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 100F));
             this.pnlIp.Controls.Add(this.lblStartIP, 0, 0);
             this.pnlIp.Controls.Add(this.ipEnd, 1, 1);
@@ -397,14 +408,21 @@ namespace mRemoteNG.UI.Window
             this.pnlIp.Controls.Add(this.btnScan, 2, 4);
             this.pnlIp.Controls.Add(this.ngCheckFirstPort, 0, 2);
             this.pnlIp.Controls.Add(this.ngCheckLastPort, 0, 3);
+            this.pnlIp.Controls.Add(this.chkOnlyResponding, 2, 0);
+            this.pnlIp.Controls.Add(this.chkOnlyNew, 2, 1);
+            this.pnlIp.Controls.Add(this.lblScanScope, 2, 2);
+            this.pnlIp.SetRowSpan(this.lblScanScope, 2);
             this.pnlIp.Location = new System.Drawing.Point(3, 3);
             this.pnlIp.Name = "pnlIp";
             this.pnlIp.RowCount = 5;
-            this.pnlIp.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 24F));
-            this.pnlIp.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 24F));
-            this.pnlIp.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 24F));
-            this.pnlIp.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 24F));
-            this.pnlIp.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 24F));
+            // Rows sized to their contents, not to a fixed 24 pixels. The controls grow with the
+            // display scaling and the row did not, so at 125% the bottom of the address fields was
+            // cut off - the same fault as the fixed column width next to it.
+            this.pnlIp.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.AutoSize));
+            this.pnlIp.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.AutoSize));
+            this.pnlIp.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.AutoSize));
+            this.pnlIp.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.AutoSize));
+            this.pnlIp.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.AutoSize));
             this.pnlIp.Size = new System.Drawing.Size(878, 129);
             this.pnlIp.TabIndex = 103;
             // 
@@ -414,6 +432,32 @@ namespace mRemoteNG.UI.Window
             this.btnScan.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
             this.btnScan.Image = global::mRemoteNG.Properties.Resources.Search_16x;
             this.btnScan.ImageAlign = System.Drawing.ContentAlignment.MiddleRight;
+            //
+            // lblScanScope
+            //
+            this.chkOnlyResponding.AutoSize = true;
+            this.chkOnlyResponding.Checked = true;
+            this.chkOnlyResponding.CheckState = System.Windows.Forms.CheckState.Checked;
+            this.chkOnlyResponding.Name = "chkOnlyResponding";
+            this.chkOnlyResponding.TabIndex = 98;
+            this.chkOnlyResponding.UseVisualStyleBackColor = true;
+            this.chkOnlyResponding.CheckedChanged += new System.EventHandler(this.ChkOnlyResponding_CheckedChanged);
+            //
+            // chkOnlyNew
+            //
+            this.chkOnlyNew.AutoSize = true;
+            this.chkOnlyNew.Name = "chkOnlyNew";
+            this.chkOnlyNew.TabIndex = 97;
+            this.chkOnlyNew.UseVisualStyleBackColor = true;
+            this.chkOnlyNew.CheckedChanged += new System.EventHandler(this.ChkOnlyResponding_CheckedChanged);
+            //
+            this.lblScanScope.AutoSize = false;
+            this.lblScanScope.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.lblScanScope.Name = "lblScanScope";
+            this.lblScanScope.TabIndex = 99;
+            this.lblScanScope.Text = "";
+            this.lblScanScope.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
+            //
             this.btnScan.Location = new System.Drawing.Point(765, 99);
             this.btnScan.Name = "btnScan";
             this.btnScan.Size = new System.Drawing.Size(110, 24);
@@ -457,12 +501,30 @@ namespace mRemoteNG.UI.Window
             this.pnlImport.Controls.Add(this.lblOnlyImport, 0, 0);
             this.pnlImport.Controls.Add(this.cbProtocol, 0, 1);
             this.pnlImport.Controls.Add(this.btnImport, 1, 1);
+            this.pnlImport.Controls.Add(this.lblDestination, 0, 2);
+            this.pnlImport.Controls.Add(this.cbDestination, 1, 2);
+            //
+            // lblDestination
+            //
+            this.lblDestination.AutoSize = true;
+            this.lblDestination.Name = "lblDestination";
+            this.lblDestination.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
+            //
+            // cbDestination
+            //
+            this.cbDestination.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
+            this.cbDestination.Name = "cbDestination";
+            this.cbDestination.Width = 420;
             this.pnlImport.Dock = System.Windows.Forms.DockStyle.Fill;
             this.pnlImport.Location = new System.Drawing.Point(3, 404);
             this.pnlImport.Name = "pnlImport";
-            this.pnlImport.RowCount = 2;
-            this.pnlImport.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 24F));
-            this.pnlImport.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 24F));
+            // Three rows now, sized to their contents: the destination folder is chosen here
+            // rather than being read invisibly from whatever happens to be selected in the tree.
+            this.pnlImport.RowCount = 3;
+            this.pnlImport.AutoSize = true;
+            this.pnlImport.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.AutoSize));
+            this.pnlImport.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.AutoSize));
+            this.pnlImport.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.AutoSize));
             this.pnlImport.Size = new System.Drawing.Size(878, 54);
             this.pnlImport.TabIndex = 104;
             // 
@@ -478,10 +540,10 @@ namespace mRemoteNG.UI.Window
             this.pnlMain.Location = new System.Drawing.Point(0, 0);
             this.pnlMain.Name = "pnlMain";
             this.pnlMain.RowCount = 4;
-            this.pnlMain.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 135F));
+            this.pnlMain.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.AutoSize));
             this.pnlMain.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 30F));
             this.pnlMain.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 100F));
-            this.pnlMain.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 60F));
+            this.pnlMain.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.AutoSize));
             this.pnlMain.Size = new System.Drawing.Size(884, 461);
             this.pnlMain.TabIndex = 105;
             // 
@@ -530,6 +592,11 @@ namespace mRemoteNG.UI.Window
         private System.Windows.Forms.TableLayoutPanel pnlMain;
         private MrngCheckBox ngCheckFirstPort;
         private MrngCheckBox ngCheckLastPort;
+        private mRemoteNG.UI.Controls.MrngLabel lblScanScope;
+        private MrngCheckBox chkOnlyResponding;
+        private MrngCheckBox chkOnlyNew;
+        private mRemoteNG.UI.Controls.MrngLabel lblDestination;
+        private mRemoteNG.UI.Controls.MrngComboBox cbDestination;
         private System.Windows.Forms.ToolTip portScanToolTip;
     }
 }

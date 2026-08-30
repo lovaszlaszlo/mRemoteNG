@@ -77,17 +77,20 @@ namespace mRemoteNG.UI.Controls
             InitializeComponent();
             SetTabSTopProperties();
 
-            // Initialize non-nullable fields to avoid CS8618 warnings
-            panel1 = new Panel();
-            Octet1 = new MrngTextBox();
-            Octet2 = new MrngTextBox();
-            Octet3 = new MrngTextBox();
-            Octet4 = new MrngTextBox();
-            label1 = new MrngLabel();
-            label2 = new MrngLabel();
-            label3 = new MrngLabel();
-            toolTip1 = new ToolTip();
-            components = new System.ComponentModel.Container();
+            // There used to be a second set of assignments here - panel1, the four octets, the
+            // labels, the tooltip, all built again - under the heading "initialize non-nullable
+            // fields to avoid CS8618 warnings". It silenced the warnings and broke the control.
+            //
+            // InitializeComponent has already created those controls and added them to the panel.
+            // Assigning new ones over the top left the fields pointing at controls that are on no
+            // form at all, while the boxes on screen belonged to nobody. So the text typed into
+            // them was never read: the address properties returned the empty strings of the
+            // detached copies, IpsValid was therefore false whatever was entered, and the port
+            // scan simply refused to start. Theming went to the detached panel too, which is why
+            // the fields had no visible background.
+            //
+            // The fields are assigned by InitializeComponent. Nothing more is needed, and nothing
+            // more may be done here.
         }
 
         private void SetTabSTopProperties()
@@ -112,7 +115,25 @@ namespace mRemoteNG.UI.Controls
         private void ApplyTheme()
         {
             if (!ThemeManager.getInstance().ActiveAndExtended) return;
-            panel1.BackColor = ThemeManager.getInstance().ActiveTheme.ExtendedPalette.getColor("TextBox_Background");
+
+            System.Drawing.Color background =
+                ThemeManager.getInstance().ActiveTheme.ExtendedPalette.getColor("TextBox_Background");
+
+            panel1.BackColor = background;
+
+            // The octets carry the panel's colour too. Left to themselves they take the theme's
+            // text box background as well, but only once their handle is made, and the box has to
+            // look like a box before anyone clicks in it.
+            Octet1.BackColor = background;
+            Octet2.BackColor = background;
+            Octet3.BackColor = background;
+            Octet4.BackColor = background;
+
+            // A border, because colour alone does not do it here: the dark theme paints a text box
+            // #333337 against a #2D2D30 dialog, four steps apart and invisible in practice. There
+            // was no outline either, so the field could not be found at all - one of the octets was
+            // reported as simply missing.
+            panel1.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
         }
 
         protected override void Dispose(bool disposing)

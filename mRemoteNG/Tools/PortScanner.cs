@@ -258,7 +258,13 @@ namespace mRemoteNG.Tools
                                                 $"Tools.PortScan: Scan of {scanHost.HostIp} ({h}) complete.", true);
 
             _scannedHosts.Add(scanHost);
-            RaiseHostScannedEvent(scanHost, _hostCount, _ipAddresses.Count);
+
+            // The count reported is of hosts finished, not of pings answered. _hostCount rises in
+            // PingCompleted, which happens long before the ports of that host have been tried -
+            // so the progress bar filled up early and then sat at the end while results kept
+            // arriving behind it. This is the number the next line already trusts to decide that
+            // the scan is over.
+            RaiseHostScannedEvent(scanHost, _scannedHosts.Count, _ipAddresses.Count);
 
             if (_scannedHosts.Count == _ipAddresses.Count)
                 RaiseScanCompleteEvent(_scannedHosts);
