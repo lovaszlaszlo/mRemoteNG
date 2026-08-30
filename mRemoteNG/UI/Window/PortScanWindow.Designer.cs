@@ -72,6 +72,19 @@ namespace mRemoteNG.UI.Window
             this.lblScanScope = new mRemoteNG.UI.Controls.MrngLabel();
             this.chkOnlyResponding = new MrngCheckBox();
             this.chkOnlyNew = new MrngCheckBox();
+            this.pnlFilter = new System.Windows.Forms.TableLayoutPanel();
+            this.flowGeneralFilter = new System.Windows.Forms.FlowLayoutPanel();
+            this.flowProtocolFilter = new System.Windows.Forms.FlowLayoutPanel();
+            this.lblFilter = new mRemoteNG.UI.Controls.MrngLabel();
+            this.lblProtocolFilter = new mRemoteNG.UI.Controls.MrngLabel();
+            this.chkProtoAll = new MrngCheckBox();
+            this.chkProtoSsh = new MrngCheckBox();
+            this.chkProtoTelnet = new MrngCheckBox();
+            this.chkProtoHttp = new MrngCheckBox();
+            this.chkProtoHttps = new MrngCheckBox();
+            this.chkProtoRlogin = new MrngCheckBox();
+            this.chkProtoRdp = new MrngCheckBox();
+            this.chkProtoVnc = new MrngCheckBox();
             this.lblDestination = new mRemoteNG.UI.Controls.MrngLabel();
             this.cbDestination = new mRemoteNG.UI.Controls.MrngComboBox();
             this.pnlImport = new System.Windows.Forms.TableLayoutPanel();
@@ -83,6 +96,9 @@ namespace mRemoteNG.UI.Window
             ((System.ComponentModel.ISupportInitialize)(this.portEnd)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.portStart)).BeginInit();
             this.pnlIp.SuspendLayout();
+            this.pnlFilter.SuspendLayout();
+            this.flowGeneralFilter.SuspendLayout();
+            this.flowProtocolFilter.SuspendLayout();
             this.pnlImport.SuspendLayout();
             this.pnlMain.SuspendLayout();
             this.SuspendLayout();
@@ -415,10 +431,11 @@ namespace mRemoteNG.UI.Window
             this.pnlIp.Controls.Add(this.btnScan, 2, 4);
             this.pnlIp.Controls.Add(this.ngCheckFirstPort, 0, 2);
             this.pnlIp.Controls.Add(this.ngCheckLastPort, 0, 3);
-            this.pnlIp.Controls.Add(this.chkOnlyResponding, 2, 0);
-            this.pnlIp.Controls.Add(this.chkOnlyNew, 2, 1);
-            this.pnlIp.Controls.Add(this.lblScanScope, 2, 2);
-            this.pnlIp.SetRowSpan(this.lblScanScope, 2);
+            // The two result filters used to sit here, in the block that says what to scan -
+            // they say what to show of what came back, which is a different question and now has
+            // its own block. The scan scope text takes the whole free column instead.
+            this.pnlIp.Controls.Add(this.lblScanScope, 2, 0);
+            this.pnlIp.SetRowSpan(this.lblScanScope, 4);
             this.pnlIp.Location = new System.Drawing.Point(3, 3);
             this.pnlIp.Name = "pnlIp";
             this.pnlIp.RowCount = 5;
@@ -535,18 +552,168 @@ namespace mRemoteNG.UI.Window
             this.pnlImport.Size = new System.Drawing.Size(878, 54);
             this.pnlImport.TabIndex = 104;
             // 
+            //
+            // pnlFilter
+            //
+            this.pnlFilter.AutoSize = true;
+            this.pnlFilter.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
+            this.pnlFilter.ColumnCount = 1;
+            this.pnlFilter.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 100F));
+            this.pnlFilter.Controls.Add(this.flowGeneralFilter, 0, 0);
+            this.pnlFilter.Controls.Add(this.flowProtocolFilter, 0, 1);
+            this.pnlFilter.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.pnlFilter.Name = "pnlFilter";
+            this.pnlFilter.RowCount = 2;
+            this.pnlFilter.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.AutoSize));
+            this.pnlFilter.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.AutoSize));
+            this.pnlFilter.TabIndex = 106;
+            //
+            // flowGeneralFilter
+            //
+            // Both rows wrap: seven protocols plus their label do not fit a narrow window, and a
+            // fixed row would simply cut them off - which is how the port block lost its Scan
+            // button once already.
+            this.flowGeneralFilter.AutoSize = true;
+            this.flowGeneralFilter.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
+            this.flowGeneralFilter.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.flowGeneralFilter.Margin = new System.Windows.Forms.Padding(0);
+            this.flowGeneralFilter.Name = "flowGeneralFilter";
+            this.flowGeneralFilter.WrapContents = true;
+            this.flowGeneralFilter.Controls.Add(this.lblFilter);
+            this.flowGeneralFilter.Controls.Add(this.chkOnlyResponding);
+            this.flowGeneralFilter.Controls.Add(this.chkOnlyNew);
+            //
+            // flowProtocolFilter
+            //
+            this.flowProtocolFilter.AutoSize = true;
+            this.flowProtocolFilter.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
+            this.flowProtocolFilter.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.flowProtocolFilter.Margin = new System.Windows.Forms.Padding(0);
+            this.flowProtocolFilter.Name = "flowProtocolFilter";
+            this.flowProtocolFilter.WrapContents = true;
+            this.flowProtocolFilter.Controls.Add(this.lblProtocolFilter);
+            this.flowProtocolFilter.Controls.Add(this.chkProtoAll);
+            this.flowProtocolFilter.Controls.Add(this.chkProtoSsh);
+            this.flowProtocolFilter.Controls.Add(this.chkProtoTelnet);
+            this.flowProtocolFilter.Controls.Add(this.chkProtoHttp);
+            this.flowProtocolFilter.Controls.Add(this.chkProtoHttps);
+            this.flowProtocolFilter.Controls.Add(this.chkProtoRlogin);
+            this.flowProtocolFilter.Controls.Add(this.chkProtoRdp);
+            this.flowProtocolFilter.Controls.Add(this.chkProtoVnc);
+            //
+            // lblFilter
+            //
+            this.lblFilter.AutoSize = true;
+            this.lblFilter.Margin = new System.Windows.Forms.Padding(3, 4, 8, 3);
+            this.lblFilter.Name = "lblFilter";
+            //
+            // lblProtocolFilter
+            //
+            this.lblProtocolFilter.AutoSize = true;
+            this.lblProtocolFilter.Margin = new System.Windows.Forms.Padding(3, 4, 8, 3);
+            this.lblProtocolFilter.Name = "lblProtocolFilter";
+            //
+            // chkProtoAll
+            //
+            this.chkProtoAll.AutoSize = true;
+            this.chkProtoAll.Checked = true;
+            this.chkProtoAll.CheckState = System.Windows.Forms.CheckState.Checked;
+            this.chkProtoAll.Margin = new System.Windows.Forms.Padding(3, 3, 16, 3);
+            this.chkProtoAll.Name = "chkProtoAll";
+            this.chkProtoAll.UseVisualStyleBackColor = true;
+            this.chkProtoAll.CheckedChanged += new System.EventHandler(this.ChkProtoAll_CheckedChanged);
+            //
+            // chkProtoSsh
+            //
+            this.chkProtoSsh.AutoSize = true;
+            this.chkProtoSsh.Checked = true;
+            this.chkProtoSsh.CheckState = System.Windows.Forms.CheckState.Checked;
+            this.chkProtoSsh.Margin = new System.Windows.Forms.Padding(3, 3, 12, 3);
+            this.chkProtoSsh.Name = "chkProtoSsh";
+            this.chkProtoSsh.Text = "SSH";
+            this.chkProtoSsh.UseVisualStyleBackColor = true;
+            this.chkProtoSsh.CheckedChanged += new System.EventHandler(this.ProtocolFilter_CheckedChanged);
+            //
+            // chkProtoTelnet
+            //
+            this.chkProtoTelnet.AutoSize = true;
+            this.chkProtoTelnet.Checked = true;
+            this.chkProtoTelnet.CheckState = System.Windows.Forms.CheckState.Checked;
+            this.chkProtoTelnet.Margin = new System.Windows.Forms.Padding(3, 3, 12, 3);
+            this.chkProtoTelnet.Name = "chkProtoTelnet";
+            this.chkProtoTelnet.Text = "Telnet";
+            this.chkProtoTelnet.UseVisualStyleBackColor = true;
+            this.chkProtoTelnet.CheckedChanged += new System.EventHandler(this.ProtocolFilter_CheckedChanged);
+            //
+            // chkProtoHttp
+            //
+            this.chkProtoHttp.AutoSize = true;
+            this.chkProtoHttp.Checked = true;
+            this.chkProtoHttp.CheckState = System.Windows.Forms.CheckState.Checked;
+            this.chkProtoHttp.Margin = new System.Windows.Forms.Padding(3, 3, 12, 3);
+            this.chkProtoHttp.Name = "chkProtoHttp";
+            this.chkProtoHttp.Text = "HTTP";
+            this.chkProtoHttp.UseVisualStyleBackColor = true;
+            this.chkProtoHttp.CheckedChanged += new System.EventHandler(this.ProtocolFilter_CheckedChanged);
+            //
+            // chkProtoHttps
+            //
+            this.chkProtoHttps.AutoSize = true;
+            this.chkProtoHttps.Checked = true;
+            this.chkProtoHttps.CheckState = System.Windows.Forms.CheckState.Checked;
+            this.chkProtoHttps.Margin = new System.Windows.Forms.Padding(3, 3, 12, 3);
+            this.chkProtoHttps.Name = "chkProtoHttps";
+            this.chkProtoHttps.Text = "HTTPS";
+            this.chkProtoHttps.UseVisualStyleBackColor = true;
+            this.chkProtoHttps.CheckedChanged += new System.EventHandler(this.ProtocolFilter_CheckedChanged);
+            //
+            // chkProtoRlogin
+            //
+            this.chkProtoRlogin.AutoSize = true;
+            this.chkProtoRlogin.Checked = true;
+            this.chkProtoRlogin.CheckState = System.Windows.Forms.CheckState.Checked;
+            this.chkProtoRlogin.Margin = new System.Windows.Forms.Padding(3, 3, 12, 3);
+            this.chkProtoRlogin.Name = "chkProtoRlogin";
+            this.chkProtoRlogin.Text = "Rlogin";
+            this.chkProtoRlogin.UseVisualStyleBackColor = true;
+            this.chkProtoRlogin.CheckedChanged += new System.EventHandler(this.ProtocolFilter_CheckedChanged);
+            //
+            // chkProtoRdp
+            //
+            this.chkProtoRdp.AutoSize = true;
+            this.chkProtoRdp.Checked = true;
+            this.chkProtoRdp.CheckState = System.Windows.Forms.CheckState.Checked;
+            this.chkProtoRdp.Margin = new System.Windows.Forms.Padding(3, 3, 12, 3);
+            this.chkProtoRdp.Name = "chkProtoRdp";
+            this.chkProtoRdp.Text = "RDP";
+            this.chkProtoRdp.UseVisualStyleBackColor = true;
+            this.chkProtoRdp.CheckedChanged += new System.EventHandler(this.ProtocolFilter_CheckedChanged);
+            //
+            // chkProtoVnc
+            //
+            this.chkProtoVnc.AutoSize = true;
+            this.chkProtoVnc.Checked = true;
+            this.chkProtoVnc.CheckState = System.Windows.Forms.CheckState.Checked;
+            this.chkProtoVnc.Margin = new System.Windows.Forms.Padding(3, 3, 12, 3);
+            this.chkProtoVnc.Name = "chkProtoVnc";
+            this.chkProtoVnc.Text = "VNC";
+            this.chkProtoVnc.UseVisualStyleBackColor = true;
+            this.chkProtoVnc.CheckedChanged += new System.EventHandler(this.ProtocolFilter_CheckedChanged);
+            //
             // pnlMain
             // 
             this.pnlMain.ColumnCount = 1;
             this.pnlMain.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 100F));
             this.pnlMain.Controls.Add(this.pnlIp, 0, 0);
-            this.pnlMain.Controls.Add(this.prgBar, 0, 1);
-            this.pnlMain.Controls.Add(this.pnlImport, 0, 3);
-            this.pnlMain.Controls.Add(this.olvHosts, 0, 2);
+            this.pnlMain.Controls.Add(this.pnlFilter, 0, 1);
+            this.pnlMain.Controls.Add(this.prgBar, 0, 2);
+            this.pnlMain.Controls.Add(this.olvHosts, 0, 3);
+            this.pnlMain.Controls.Add(this.pnlImport, 0, 4);
             this.pnlMain.Dock = System.Windows.Forms.DockStyle.Fill;
             this.pnlMain.Location = new System.Drawing.Point(0, 0);
             this.pnlMain.Name = "pnlMain";
-            this.pnlMain.RowCount = 4;
+            this.pnlMain.RowCount = 5;
+            this.pnlMain.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.AutoSize));
             this.pnlMain.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.AutoSize));
             this.pnlMain.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 30F));
             this.pnlMain.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 100F));
@@ -574,6 +741,12 @@ namespace mRemoteNG.UI.Window
             ((System.ComponentModel.ISupportInitialize)(this.portStart)).EndInit();
             this.pnlIp.ResumeLayout(false);
             this.pnlIp.PerformLayout();
+            this.pnlFilter.ResumeLayout(false);
+            this.pnlFilter.PerformLayout();
+            this.flowGeneralFilter.ResumeLayout(false);
+            this.flowGeneralFilter.PerformLayout();
+            this.flowProtocolFilter.ResumeLayout(false);
+            this.flowProtocolFilter.PerformLayout();
             this.pnlImport.ResumeLayout(false);
             this.pnlImport.PerformLayout();
             this.pnlMain.ResumeLayout(false);
@@ -602,6 +775,19 @@ namespace mRemoteNG.UI.Window
         private mRemoteNG.UI.Controls.MrngLabel lblScanScope;
         private MrngCheckBox chkOnlyResponding;
         private MrngCheckBox chkOnlyNew;
+        private System.Windows.Forms.TableLayoutPanel pnlFilter;
+        private System.Windows.Forms.FlowLayoutPanel flowGeneralFilter;
+        private System.Windows.Forms.FlowLayoutPanel flowProtocolFilter;
+        private mRemoteNG.UI.Controls.MrngLabel lblFilter;
+        private mRemoteNG.UI.Controls.MrngLabel lblProtocolFilter;
+        private MrngCheckBox chkProtoAll;
+        private MrngCheckBox chkProtoSsh;
+        private MrngCheckBox chkProtoTelnet;
+        private MrngCheckBox chkProtoHttp;
+        private MrngCheckBox chkProtoHttps;
+        private MrngCheckBox chkProtoRlogin;
+        private MrngCheckBox chkProtoRdp;
+        private MrngCheckBox chkProtoVnc;
         private mRemoteNG.UI.Controls.MrngLabel lblDestination;
         private mRemoteNG.UI.Controls.MrngComboBox cbDestination;
         private System.Windows.Forms.ToolTip portScanToolTip;

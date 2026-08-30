@@ -145,8 +145,11 @@ namespace mRemoteNG.UI.Window
                 // row, and it is what decides whether the rest of the row is worth reading at all.
                 olvHosts.Columns.Insert(1, alreadyAdded);
 
+                lblFilter.Text = Language.PortScanFilter;
                 chkOnlyResponding.Text = Language.PortScanOnlyResponding;
                 chkOnlyNew.Text = Language.PortScanOnlyNew;
+                lblProtocolFilter.Text = Language.PortScanProtocolFilter;
+                chkProtoAll.Text = Language.PortScanProtocolAll;
 
                 lblDestination.Text = Language.PortScanDestination;
                 cbDestination.DropDown += (_, _) => FillDestinations();
@@ -274,9 +277,77 @@ namespace mRemoteNG.UI.Window
         /// <summary>
         /// Whether a scanned host belongs on screen under the current setting.
         /// </summary>
+        /// <summary>
+        /// The protocol boxes, each paired with what it asks of a host.
+        /// </summary>
+        private IEnumerable<(Controls.MrngCheckBox Box, Func<ScanHost, bool> Answered)> ProtocolFilters()
+        {
+            yield return (chkProtoSsh, host => host.Ssh);
+            yield return (chkProtoTelnet, host => host.Telnet);
+            yield return (chkProtoHttp, host => host.Http);
+            yield return (chkProtoHttps, host => host.Https);
+            yield return (chkProtoRlogin, host => host.Rlogin);
+            yield return (chkProtoRdp, host => host.Rdp);
+            yield return (chkProtoVnc, host => host.Vnc);
+        }
+
+        private bool AllProtocolsPicked => ProtocolFilters().All(filter => filter.Box.Checked);
+
+        /// <summary>
+        /// Set while the All box and the seven protocol boxes are being brought into line, so the
+        /// change events they raise do not drive each other back and forth.
+        /// </summary>
+        private bool _syncingProtocolBoxes;
+
+        /// <summary>
+        /// The All box switches the seven to match itself.
+        /// </summary>
+        private void ChkProtoAll_CheckedChanged(object sender, EventArgs e)
+        {
+            if (_syncingProtocolBoxes) return;
+
+            _syncingProtocolBoxes = true;
+
+            foreach ((Controls.MrngCheckBox box, _) in ProtocolFilters())
+                box.Checked = chkProtoAll.Checked;
+
+            _syncingProtocolBoxes = false;
+            ApplyRespondingFilter();
+        }
+
+        /// <summary>
+        /// And the seven keep the All box honest: all of them ticked shows as ticked, none as
+        /// unticked, and anything between as the filled square.
+        /// </summary>
+        private void ProtocolFilter_CheckedChanged(object sender, EventArgs e)
+        {
+            if (_syncingProtocolBoxes) return;
+
+            int ticked = ProtocolFilters().Count(filter => filter.Box.Checked);
+
+            _syncingProtocolBoxes = true;
+            chkProtoAll.CheckState = ticked == 0
+                                         ? CheckState.Unchecked
+                                         : ticked == ProtocolFilters().Count()
+                                             ? CheckState.Checked
+                                             : CheckState.Indeterminate;
+            _syncingProtocolBoxes = false;
+
+            ApplyRespondingFilter();
+        }
+
         private bool Shown(ScanHost host)
         {
             if (chkOnlyResponding.Checked && host.OpenPorts.Count == 0) return false;
+
+            // All seven ticked - the state it starts in - hides nothing, deliberately: a scan
+            // over a port range turns up hosts answering on ports that belong to none of these
+            // seven protocols, and asking for all of them must not throw those away. Untick any
+            // and it narrows to hosts offering at least one of the rest; untick the lot and the
+            // list empties, which is plainly what that asks for.
+            if (!AllProtocolsPicked &&
+                !ProtocolFilters().Any(filter => filter.Box.Checked && filter.Answered(host)))
+                return false;
 
             // The second question people actually ask of a scan: not what is out there, but what
             // is out there that I have not got yet. Off by default - hiding what you already have

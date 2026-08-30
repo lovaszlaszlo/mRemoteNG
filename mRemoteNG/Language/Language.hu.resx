@@ -975,4 +975,7 @@ Beilleszted?</value></data>
   <data name="PortScanProgress" xml:space="preserve"><value>{0} / {1} gép — {2}%</value></data>
   <data name="PortScanFinished" xml:space="preserve"><value>Kész: {0} gép megvizsgálva, {1} válaszolt valamelyik porton.</value></data>
   <data name="PortScanDestination" xml:space="preserve"><value>Cél mappa</value></data>
+  <data name="PortScanFilter" xml:space="preserve"><value>Szűrés:</value></data>
+  <data name="PortScanProtocolFilter" xml:space="preserve"><value>Protokoll:</value></data>
+  <data name="PortScanProtocolAll" xml:space="preserve"><value>Mind</value></data>
 </root>

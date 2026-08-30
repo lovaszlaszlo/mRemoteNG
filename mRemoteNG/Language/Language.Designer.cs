@@ -8249,5 +8249,32 @@ namespace mRemoteNG.Resources.Language {
                 return ResourceManager.GetString("PortScanDestination", resourceCulture);
             }
         }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Filter:.
+        /// </summary>
+        internal static string PortScanFilter {
+            get {
+                return ResourceManager.GetString("PortScanFilter", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Protocol:.
+        /// </summary>
+        internal static string PortScanProtocolFilter {
+            get {
+                return ResourceManager.GetString("PortScanProtocolFilter", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to All.
+        /// </summary>
+        internal static string PortScanProtocolAll {
+            get {
+                return ResourceManager.GetString("PortScanProtocolAll", resourceCulture);
+            }
+        }
     }
 }

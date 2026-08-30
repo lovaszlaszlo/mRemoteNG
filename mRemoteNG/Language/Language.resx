@@ -2962,4 +2962,13 @@ Paste it?</value>
   <data name="PortScanDestination" xml:space="preserve">
     <value>Import into folder</value>
   </data>
+  <data name="PortScanFilter" xml:space="preserve">
+    <value>Filter:</value>
+  </data>
+  <data name="PortScanProtocolFilter" xml:space="preserve">
+    <value>Protocol:</value>
+  </data>
+  <data name="PortScanProtocolAll" xml:space="preserve">
+    <value>All</value>
+  </data>
 </root>
