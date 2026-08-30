@@ -262,42 +262,49 @@ namespace mRemoteNG.UI.Window
             this.clmSSH.AspectName = "SshName";
             this.clmSSH.Text = "SSH";
             this.clmSSH.Width = 50;
+            this.clmSSH.TextAlign = System.Windows.Forms.HorizontalAlignment.Center;
             // 
             // clmTelnet
             // 
             this.clmTelnet.AspectName = "TelnetName";
             this.clmTelnet.Text = "Telnet";
             this.clmTelnet.Width = 50;
+            this.clmTelnet.TextAlign = System.Windows.Forms.HorizontalAlignment.Center;
             // 
             // clmHTTP
             // 
             this.clmHTTP.AspectName = "HttpName";
             this.clmHTTP.Text = "HTTP";
             this.clmHTTP.Width = 50;
+            this.clmHTTP.TextAlign = System.Windows.Forms.HorizontalAlignment.Center;
             // 
             // clmHTTPS
             // 
             this.clmHTTPS.AspectName = "HttpsName";
             this.clmHTTPS.Text = "HTTPS";
             this.clmHTTPS.Width = 50;
+            this.clmHTTPS.TextAlign = System.Windows.Forms.HorizontalAlignment.Center;
             // 
             // clmRlogin
             // 
             this.clmRlogin.AspectName = "RloginName";
             this.clmRlogin.Text = "Rlogin";
             this.clmRlogin.Width = 50;
+            this.clmRlogin.TextAlign = System.Windows.Forms.HorizontalAlignment.Center;
             // 
             // clmRDP
             // 
             this.clmRDP.AspectName = "RdpName";
             this.clmRDP.Text = "RDP";
             this.clmRDP.Width = 50;
+            this.clmRDP.TextAlign = System.Windows.Forms.HorizontalAlignment.Center;
             // 
             // clmVNC
             // 
             this.clmVNC.AspectName = "VncName";
             this.clmVNC.Text = "VNC";
             this.clmVNC.Width = 50;
+            this.clmVNC.TextAlign = System.Windows.Forms.HorizontalAlignment.Center;
             // 
             // clmOpenPorts
             // 

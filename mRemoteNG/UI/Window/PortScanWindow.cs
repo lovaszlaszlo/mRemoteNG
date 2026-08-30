@@ -135,6 +135,7 @@ namespace mRemoteNG.UI.Window
                 BrightIdeasSoftware.OLVColumn alreadyAdded = new(Language.PortScanAlreadyAdded, null)
                 {
                     Width = 110,
+                    TextAlign = HorizontalAlignment.Center,
                     AspectGetter = row => row is ScanHost scanned && IsAlreadyInTree(scanned)
                                               ? "✔"
                                               : string.Empty

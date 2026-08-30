@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections;
+using System.Linq;
 using System.Runtime.Versioning;
 using mRemoteNG.App;
 using mRemoteNG.Connection.Protocol.Http;
@@ -97,33 +98,14 @@ namespace mRemoteNG.Tools
 
         public string HttpsName => BoolToYesNo(Https);
 
-        public string OpenPortsName
-        {
-            get
-            {
-                string strOpen = "";
-                foreach (int p in OpenPorts)
-                {
-                    strOpen += p + ", ";
-                }
+        // Both lists used to be built by appending "port, " in a loop, so every cell in the
+        // grid ended on a comma with nothing after it.
+        public string OpenPortsName => Join(OpenPorts);
 
-                return strOpen;
-            }
-        }
+        public string ClosedPortsName => Join(ClosedPorts);
 
-        public string ClosedPortsName
-        {
-            get
-            {
-                string strClosed = "";
-                foreach (int p in ClosedPorts)
-                {
-                    strClosed += p + ", ";
-                }
-
-                return strClosed;
-            }
-        }
+        private static string Join(ArrayList ports) =>
+            string.Join(", ", ports.Cast<int>());
 
 
         /// <summary>
