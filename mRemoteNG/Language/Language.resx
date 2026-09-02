@@ -2977,4 +2977,7 @@ Paste it?</value>
   <data name="ConfirmMultilinePasteMore" xml:space="preserve">
     <value>... and {0} more lines.</value>
   </data>
+  <data name="PortScanIp" xml:space="preserve">
+    <value>IP</value>
+  </data>
 </root>

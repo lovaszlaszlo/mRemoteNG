@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Net;
@@ -124,8 +125,8 @@ namespace mRemoteNG.UI.Window
             {
                 olvHosts.Columns.AddRange(new ColumnHeader[]
                 {
-                    clmHost, clmSSH, clmTelnet, clmHTTP, clmHTTPS, clmRlogin, clmRDP, clmVNC, clmOpenPorts,
-                    clmClosedPorts
+                    clmHost, clmIp, clmSSH, clmTelnet, clmHTTP, clmHTTPS, clmRlogin, clmRDP, clmVNC,
+                    clmOpenPorts, clmClosedPorts
                 });
 
                 // Which of these are already in the tree. Scanning a subnet you have been using
@@ -141,11 +142,21 @@ namespace mRemoteNG.UI.Window
                                               : string.Empty
                 };
 
-                // Second, right after the host itself: that is where the eye goes when reading a
-                // row, and it is what decides whether the rest of the row is worth reading at all.
-                olvHosts.Columns.Insert(1, alreadyAdded);
+                // Right after the two columns that name the host: that is where the eye goes when
+                // reading a row, and it is what decides whether the rest of the row is worth
+                // reading at all. Behind the address rather than in front of it, because name and
+                // address together are what identify the machine and belong side by side.
+                olvHosts.Columns.Insert(2, alreadyAdded);
 
                 lblFilter.Text = Language.PortScanFilter;
+                // Every other column sorts the way the grid sorts by default; only the address
+                // needs telling. Installing a sorter is the whole contract here - the grid calls
+                // this instead of building its own.
+                olvHosts.CustomSorter = (column, order) =>
+                    olvHosts.ListViewItemSorter = column == clmIp
+                                                      ? new IpComparer(order)
+                                                      : new BrightIdeasSoftware.ColumnComparer(column, order);
+
                 chkOnlyResponding.Text = Language.PortScanOnlyResponding;
                 chkOnlyNew.Text = Language.PortScanOnlyNew;
                 lblProtocolFilter.Text = Language.PortScanProtocolFilter;
@@ -272,6 +283,27 @@ namespace mRemoteNG.UI.Window
         private void ChkOnlyResponding_CheckedChanged(object sender, EventArgs e)
         {
             ApplyRespondingFilter();
+        }
+
+        /// <summary>
+        /// Orders rows by address, numerically.
+        /// </summary>
+        private sealed class IpComparer(SortOrder order) : IComparer
+        {
+            public int Compare(object x, object y)
+            {
+                long left = Key(x);
+                long right = Key(y);
+
+                return order == SortOrder.Descending
+                           ? right.CompareTo(left)
+                           : left.CompareTo(right);
+            }
+
+            private static long Key(object row) =>
+                (row as BrightIdeasSoftware.OLVListItem)?.RowObject is ScanHost host
+                    ? host.IpSortKey
+                    : long.MaxValue;
         }
 
         /// <summary>
@@ -420,7 +452,8 @@ namespace mRemoteNG.UI.Window
             btnScan.Text = Language._Scan;
             btnImport.Text = Language._Import;
             lblOnlyImport.Text = Language.ProtocolToImport;
-            clmHost.Text = Language.HostnameIp;
+            clmHost.Text = Language.Hostname;
+            clmIp.Text = Language.PortScanIp;
             clmOpenPorts.Text = Language.OpenPorts;
             clmClosedPorts.Text = Language.ClosedPorts;
             ngCheckFirstPort.Text = Language.FirstPort;

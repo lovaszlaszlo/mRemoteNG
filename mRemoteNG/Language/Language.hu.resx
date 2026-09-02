@@ -976,4 +976,5 @@ Létrehozod?</value></data>
 
 Beilleszted?</value></data>
   <data name="ConfirmMultilinePasteMore" xml:space="preserve"><value>… és még {0} sor.</value></data>
+  <data name="PortScanIp" xml:space="preserve"><value>IP</value></data>
 </root>

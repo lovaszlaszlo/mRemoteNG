@@ -13,6 +13,7 @@ namespace mRemoteNG.UI.Window
 		internal MrngIpTextBox ipEnd;
 		internal Controls.MrngListView olvHosts;
 		internal BrightIdeasSoftware.OLVColumn clmHost;
+		internal BrightIdeasSoftware.OLVColumn clmIp;
 		internal BrightIdeasSoftware.OLVColumn clmSSH;
 		internal BrightIdeasSoftware.OLVColumn clmTelnet;
 		internal BrightIdeasSoftware.OLVColumn clmHTTP;
@@ -51,6 +52,7 @@ namespace mRemoteNG.UI.Window
             this.cbProtocol = new MrngComboBox();
             this.lblOnlyImport = new mRemoteNG.UI.Controls.MrngLabel();
             this.clmHost = ((BrightIdeasSoftware.OLVColumn)(new BrightIdeasSoftware.OLVColumn()));
+            this.clmIp = ((BrightIdeasSoftware.OLVColumn)(new BrightIdeasSoftware.OLVColumn()));
             this.clmSSH = ((BrightIdeasSoftware.OLVColumn)(new BrightIdeasSoftware.OLVColumn()));
             this.clmTelnet = ((BrightIdeasSoftware.OLVColumn)(new BrightIdeasSoftware.OLVColumn()));
             this.clmHTTP = ((BrightIdeasSoftware.OLVColumn)(new BrightIdeasSoftware.OLVColumn()));
@@ -264,10 +266,15 @@ namespace mRemoteNG.UI.Window
             // 
             // clmHost
             // 
-            this.clmHost.AspectName = "HostIPorName";
-            this.clmHost.FillsFreeSpace = true;
-            this.clmHost.Text = "Hostname/IP";
-            this.clmHost.Width = 130;
+            this.clmHost.AspectName = "HostNameOnly";
+            this.clmHost.Text = "Hostname";
+            this.clmHost.Width = 160;
+            //
+            // clmIp
+            //
+            this.clmIp.AspectName = "HostIp";
+            this.clmIp.Text = "IP";
+            this.clmIp.Width = 110;
             // 
             // clmSSH
             // 

@@ -8312,5 +8312,14 @@ namespace mRemoteNG.Resources.Language {
                 return ResourceManager.GetString("ConfirmMultilinePasteMore", resourceCulture);
             }
         }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to IP.
+        /// </summary>
+        internal static string PortScanIp {
+            get {
+                return ResourceManager.GetString("PortScanIp", resourceCulture);
+            }
+        }
     }
 }

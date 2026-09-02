@@ -1,5 +1,7 @@
 ﻿using System;
 using System.Collections;
+using System.Net;
+using System.Net.Sockets;
 using System.Linq;
 using System.Runtime.Versioning;
 using mRemoteNG.App;
@@ -69,6 +71,41 @@ namespace mRemoteNG.Tools
                 return "";
             }
         }
+
+        /// <summary>
+        /// The address as a number, for sorting.
+        /// </summary>
+        /// <remarks>
+        /// Sorted as text, 192.168.1.106 comes before 192.168.1.2 and 192.168.1.35 - the grid
+        /// reads character by character and 1 sorts before 3. Anything that will not parse as IPv4
+        /// sorts to the end rather than to the front, so a stray entry cannot hide at the top of
+        /// the list.
+        /// </remarks>
+        public long IpSortKey
+        {
+            get
+            {
+                if (!IPAddress.TryParse(HostIp, out IPAddress address) ||
+                    address.AddressFamily != AddressFamily.InterNetwork)
+                    return long.MaxValue;
+
+                byte[] octets = address.GetAddressBytes();
+                return ((long)octets[0] << 24) | ((long)octets[1] << 16) |
+                       ((long)octets[2] << 8) | octets[3];
+            }
+        }
+
+        /// <summary>
+        /// The name on its own, blank when there is none.
+        /// </summary>
+        /// <remarks>
+        /// The grid used to show name-or-address in one column, so on everything that resolved -
+        /// which is most of a working network - the address was simply not there. Knowing a host
+        /// is called WIN11-WEB does not tell you which machine answered, and that is usually the
+        /// thing being looked up. Two columns, both always filled in.
+        /// </remarks>
+        public string HostNameOnly =>
+            string.IsNullOrEmpty(HostName) || HostName == HostIp ? string.Empty : HostName;
 
         //Adpating to objectlistview instaed of listview
         public string HostIPorName
