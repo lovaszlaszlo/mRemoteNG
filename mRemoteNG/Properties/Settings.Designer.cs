@@ -946,6 +946,18 @@ namespace mRemoteNG.Properties {
                 this["SingleClickSwitchesToOpenConnection"] = value;
             }
         }
+
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("False")]
+        public bool AlwaysOpenNewSession {
+            get {
+                return ((bool)(this["AlwaysOpenNewSession"]));
+            }
+            set {
+                this["AlwaysOpenNewSession"] = value;
+            }
+        }
         
         [global::System.Configuration.UserScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]

@@ -301,7 +301,10 @@ namespace mRemoteNG.UI.TaskDialog
                     bt3.DialogResult = DialogResult.No;
                     AcceptButton = bt2;
                     CancelButton = bt3;
-                    _focusControl = bt2;
+                    // No is already what Escape and the close box give - it is the CancelButton.
+                    // A question whose safe answer is No wants the focus there too, so that Enter
+                    // and Escape agree; pass a default index of 1 for that.
+                    _focusControl = DefaultButtonIndex == 1 ? bt3 : bt2;
                     break;
                 case ETaskDialogButtons.YesNoCancel:
                     bt1.Text = Language.Yes;

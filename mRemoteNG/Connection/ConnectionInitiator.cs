@@ -28,6 +28,17 @@ namespace mRemoteNG.Connection
         {
             InterfaceControl interfaceControl = FindConnectionContainer(connectionInfo);
             if (interfaceControl == null) return false;
+
+            // A tab whose session has died is not somewhere to jump to. Closing it takes the
+            // protocol out of the connection's open list and takes the tab with it, and saying no
+            // here lets the caller go on and connect - so double-clicking a connection that failed
+            // or dropped tries it again, which is the only thing anybody wants at that point.
+            if (interfaceControl.Protocol?.IsSessionAlive == false)
+            {
+                interfaceControl.Protocol.Close();
+                return false;
+            }
+
             ConnectionTab connT = (ConnectionTab)interfaceControl.FindForm();
             connT?.Focus();
             ConnectionTab findForm = (ConnectionTab)interfaceControl.FindForm();
@@ -92,7 +103,12 @@ namespace mRemoteNG.Connection
 
                 StartPreConnectionExternalApp(connectionInfo);
 
-                if (!force.HasFlag(ConnectionInfo.Force.DoNotJump))
+                // Opening a connection that is already open goes to its tab instead of starting
+                // a second session. That is the sensible default and stays the default, but it is
+                // also the one piece of this window's behaviour nothing announces - so it can be
+                // turned off, under Options - Connections.
+                if (!force.HasFlag(ConnectionInfo.Force.DoNotJump) &&
+                    !Settings.Default.AlwaysOpenNewSession)
                 {
                     if (SwitchToOpenConnection(connectionInfo))
                         return;

@@ -960,17 +960,7 @@ Létrehozod?</value></data>
   <data name="PortScanScopeRange" xml:space="preserve"><value>A(z) {0}–{1} portokat vizsgálja — gépenként {2} portot. Amíg bármelyik port-pipa be van jelölve, a szokásos portokat nem nézi.</value></data>
   <data name="PortScanAlreadyAdded" xml:space="preserve"><value>Már felvéve</value></data>
   <data name="PortScanOnlyResponding" xml:space="preserve"><value>Csak a nyitott porttal rendelkező gépek</value></data>
-  <data name="ConfirmMultilinePaste" xml:space="preserve"><value>Ez {0} sort illeszt be a munkamenetbe, és a shell mindet lefuttatja.
-
-
-
-Az első:
-
-{1}
-
-
-
-Beilleszted?</value></data>
+  <data name="ConfirmMultilinePaste" xml:space="preserve"><value>Ez {0} sort illeszt be a munkamenetbe, és a shell mindet lefuttatja.</value></data>
   <data name="PortScanOnlyNew" xml:space="preserve"><value>Csak a még fel nem vett gépek</value></data>
   <data name="PortScanProgress" xml:space="preserve"><value>{0} / {1} gép — {2}%</value></data>
   <data name="PortScanFinished" xml:space="preserve"><value>Kész: {0} gép megvizsgálva, {1} válaszolt valamelyik porton.</value></data>
@@ -978,4 +968,12 @@ Beilleszted?</value></data>
   <data name="PortScanFilter" xml:space="preserve"><value>Szűrés:</value></data>
   <data name="PortScanProtocolFilter" xml:space="preserve"><value>Protokoll:</value></data>
   <data name="PortScanProtocolAll" xml:space="preserve"><value>Mind</value></data>
+  <data name="ConnectNewSession" xml:space="preserve"><value>Csatlakozás (új munkamenet)</value></data>
+  <data name="AlwaysOpenNewSession" xml:space="preserve"><value>A már nyitott kapcsolat megnyitása új munkamenetet indítson, ne a meglévőre ugorjon</value></data>
+  <data name="ConfirmMultilinePasteDetail" xml:space="preserve"><value>A beillesztendő szöveg:
+
+{0}
+
+Beilleszted?</value></data>
+  <data name="ConfirmMultilinePasteMore" xml:space="preserve"><value>… és még {0} sor.</value></data>
 </root>

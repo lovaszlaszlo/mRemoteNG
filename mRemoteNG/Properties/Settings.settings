@@ -233,6 +233,9 @@
     <Setting Name="SingleClickSwitchesToOpenConnection" Type="System.Boolean" Scope="User">
       <Value Profile="(Default)">False</Value>
     </Setting>
+    <Setting Name="AlwaysOpenNewSession" Type="System.Boolean" Scope="User">
+      <Value Profile="(Default)">False</Value>
+    </Setting>
     <Setting Name="ConDefaultRDPAuthenticationLevel" Type="System.String" Scope="User">
       <Value Profile="(Default)">NoAuth</Value>
     </Setting>

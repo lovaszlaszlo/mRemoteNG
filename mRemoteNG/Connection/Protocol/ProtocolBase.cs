@@ -62,6 +62,24 @@ namespace mRemoteNG.Connection.Protocol
 
         public ConnectionInfo.Force Force { get; set; }
 
+        /// <summary>
+        /// Whether this session is still worth switching to.
+        /// </summary>
+        /// <remarks>
+        /// Opening a connection that is already open jumps to its tab instead of starting a second
+        /// session, and until now it jumped whether or not anything was still running there. A
+        /// session that had failed to connect, or had died since, stayed in the connection's open
+        /// list with its tab still standing, so double-clicking the connection landed on a dead
+        /// terminal and did nothing else - no error, no retry, no way to tell it apart from a
+        /// working session other than typing into it.
+        ///
+        /// True by default: a protocol that cannot tell is assumed to be running, which is what
+        /// every one of them did before. RDP is left alone deliberately - it either closes itself
+        /// on losing the link or shows its own reconnect countdown, so its tab always says what
+        /// state it is in.
+        /// </remarks>
+        public virtual bool IsSessionAlive => true;
+
         protected readonly System.Timers.Timer tmrReconnect = new(5000);
         protected ReconnectGroup ReconnectGroup;
 

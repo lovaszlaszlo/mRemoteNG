@@ -2938,17 +2938,7 @@ Create them?</value>
     <value>Only hosts with an open port</value>
   </data>
   <data name="ConfirmMultilinePaste" xml:space="preserve">
-    <value>This will paste {0} lines into the session, and the shell will run each of them.
-
-
-
-The first is:
-
-{1}
-
-
-
-Paste it?</value>
+    <value>This will paste {0} lines into the session, and the shell will run each of them.</value>
   </data>
   <data name="PortScanOnlyNew" xml:space="preserve">
     <value>Only hosts not already added</value>
@@ -2970,5 +2960,21 @@ Paste it?</value>
   </data>
   <data name="PortScanProtocolAll" xml:space="preserve">
     <value>All</value>
+  </data>
+  <data name="ConnectNewSession" xml:space="preserve">
+    <value>Connect (new session)</value>
+  </data>
+  <data name="AlwaysOpenNewSession" xml:space="preserve">
+    <value>Opening a connection that is already open starts another session instead of switching to it</value>
+  </data>
+  <data name="ConfirmMultilinePasteDetail" xml:space="preserve">
+    <value>What will be pasted:
+
+{0}
+
+Paste it?</value>
+  </data>
+  <data name="ConfirmMultilinePasteMore" xml:space="preserve">
+    <value>... and {0} more lines.</value>
   </data>
 </root>

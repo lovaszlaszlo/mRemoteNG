@@ -80,6 +80,7 @@ namespace mRemoteNG.UI.Forms.OptionsPages
         {
             chkSingleClickOnConnectionOpensIt.Checked = Settings.Default.SingleClickOnConnectionOpensIt;
             chkSingleClickOnOpenedConnectionSwitchesToIt.Checked = Settings.Default.SingleClickSwitchesToOpenConnection;
+            chkAlwaysOpenNewSession.Checked = Settings.Default.AlwaysOpenNewSession;
             chkConnectionTreeTrackActiveConnection.Checked = Settings.Default.TrackActiveConnectionInConnectionTree;
             chkHostnameLikeDisplayName.Checked = Settings.Default.SetHostnameLikeDisplayName;
 
@@ -133,6 +134,7 @@ namespace mRemoteNG.UI.Forms.OptionsPages
         {
             Properties.Settings.Default.SingleClickOnConnectionOpensIt = chkSingleClickOnConnectionOpensIt.Checked;
             Properties.Settings.Default.SingleClickSwitchesToOpenConnection = chkSingleClickOnOpenedConnectionSwitchesToIt.Checked;
+            Properties.Settings.Default.AlwaysOpenNewSession = chkAlwaysOpenNewSession.Checked;
             Properties.Settings.Default.TrackActiveConnectionInConnectionTree = chkConnectionTreeTrackActiveConnection.Checked;
             Properties.Settings.Default.SetHostnameLikeDisplayName = chkHostnameLikeDisplayName.Checked;
 

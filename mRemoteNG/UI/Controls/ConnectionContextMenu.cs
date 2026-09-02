@@ -861,7 +861,17 @@ namespace mRemoteNG.UI.Controls
         internal void ShowHideMenuItemsForConnectionNode(ConnectionInfo connectionInfo)
         {
             if (connectionInfo.OpenConnections.Count == 0)
+            {
                 Unavailable(_cMenTreeDisconnect, Language.MenuReasonNothingOpen);
+            }
+            else
+            {
+                // This item passes DoNotJump, so on a connection that is already open it starts a
+                // second session rather than going to the first - the opposite of what a double
+                // click does, and nothing in the word "Connect" said so. It says so now, and only
+                // when there is in fact something to open a second one alongside.
+                _cMenTreeConnect.Text = Language.ConnectNewSession;
+            }
 
             if (!SupportsFileTransfer(connectionInfo.Protocol))
                 Unavailable(_cMenTreeToolsTransferFile,

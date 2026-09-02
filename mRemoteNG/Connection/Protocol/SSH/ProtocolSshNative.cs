@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Drawing;
 using System.IO;
+using System.Linq;
 using System.Runtime.Versioning;
 using System.Text;
 using System.Text.Json;
@@ -16,6 +17,8 @@ using mRemoteNG.App;
 using mRemoteNG.Messages;
 using mRemoteNG.Resources.Language;
 using mRemoteNG.Tools;
+using mRemoteNG.UI.Forms;
+using mRemoteNG.UI.TaskDialog;
 using Renci.SshNet;
 
 namespace mRemoteNG.Connection.Protocol.SSH
@@ -95,6 +98,12 @@ namespace mRemoteNG.Connection.Protocol.SSH
         /// "never going to".
         /// </remarks>
         public bool IsTunnelRunning => !_startFailed && (_sshClient == null || _sshClient.IsConnected);
+
+        /// <summary>
+        /// Set the moment the link goes - a refused connection, a dropped one, a standby the
+        /// session did not survive - and cleared again on every successful connect.
+        /// </summary>
+        public override bool IsSessionAlive => Volatile.Read(ref _linkLost) == 0;
 
         public ProtocolSshNative(ConnectionInfo connectionInfo)
         {
@@ -647,39 +656,49 @@ namespace mRemoteNG.Connection.Protocol.SSH
         private bool AskAboutHostKey(SshKnownHosts.Verdict verdict, string host, int port,
                                      string keyType, string fingerprint, string storedFingerprint)
         {
-            string caption = verdict == SshKnownHosts.Verdict.Changed
-                ? "SSH host key CHANGED"
-                : "Unknown SSH host key";
+            bool changed = verdict == SshKnownHosts.Verdict.Changed;
 
-            string text = verdict == SshKnownHosts.Verdict.Changed
-                ? $"The host key of {host}:{port} is not the one accepted earlier.\r\n\r\n" +
-                  $"Key type: {keyType}\r\n" +
+            string caption = changed ? "SSH host key CHANGED" : "Unknown SSH host key";
+
+            string question = changed
+                ? $"The host key of {host}:{port} is not the one accepted earlier."
+                : $"{host}:{port} has not been connected to before.";
+
+            string detail = changed
+                ? $"Key type: {keyType}\r\n" +
                   $"Now:      SHA256:{fingerprint}\r\n" +
                   $"Earlier:  SHA256:{storedFingerprint}\r\n\r\n" +
                   "This happens after a server is rebuilt - but it is also what an intercepted " +
                   "connection looks like. Only continue if you know why the key changed.\r\n\r\n" +
                   "Trust this key from now on?"
-                : $"{host}:{port} has not been connected to before.\r\n\r\n" +
-                  $"Key type: {keyType}\r\n" +
+                : $"Key type: {keyType}\r\n" +
                   $"SHA256:{fingerprint}\r\n\r\n" +
                   "Trust this key from now on?";
 
-            MessageBoxIcon icon = verdict == SshKnownHosts.Verdict.Changed
-                ? MessageBoxIcon.Warning
-                : MessageBoxIcon.Question;
+            ESysIcons icon = changed ? ESysIcons.Warning : ESysIcons.Question;
 
             Control uiThread = _webView;
             if (uiThread == null || uiThread.IsDisposed) return false;
 
             if (uiThread.InvokeRequired)
-                return (bool)uiThread.Invoke(new Func<bool>(() => Ask(text, caption, icon)));
+                return (bool)uiThread.Invoke(new Func<bool>(() => Ask(caption, question, detail, icon)));
 
-            return Ask(text, caption, icon);
+            return Ask(caption, question, detail, icon);
         }
 
-        private static bool Ask(string text, string caption, MessageBoxIcon icon) =>
-            MessageBox.Show(text, caption, MessageBoxButtons.YesNo, icon, MessageBoxDefaultButton.Button2)
-            == DialogResult.Yes;
+        /// <summary>
+        /// Asks a yes-or-no question whose safe answer is No.
+        /// </summary>
+        /// <remarks>
+        /// Not MessageBox: its Yes/No pair has no cancel button, so Escape does nothing at all
+        /// there and the only ways out are the mouse or Alt+N. This dialog makes No the cancel
+        /// button, so Escape and the close box both decline - and it follows the colour theme,
+        /// which a system message box does not.
+        /// </remarks>
+        private static bool Ask(string caption, string question, string detail, ESysIcons icon) =>
+            CTaskDialog.ShowTaskDialogBox(FrmMain.Default, caption, question, detail, "", "", "",
+                                          "", "", ETaskDialogButtons.YesNo, icon,
+                                          ESysIcons.Information, 1) == DialogResult.Yes;
 
         private async Task PumpOutputAsync(CancellationToken cancellationToken)
         {
@@ -1012,14 +1031,30 @@ namespace mRemoteNG.Connection.Protocol.SSH
 
             if (lines.Length > 1)
             {
-                string preview = lines[0].Length > 80 ? lines[0][..80] + "..." : lines[0];
+                // Show enough of it to recognise. One line was all that fitted in a system
+                // message box; this dialog has room, so the question can be answered by reading it
+                // rather than by remembering what was copied. Still capped, in both directions -
+                // the dialog sizes itself to its text and nothing stops it growing past the screen.
+                const int previewLines = 12;
+                const int previewWidth = 110;
 
-                DialogResult answer = MessageBox.Show(
-                    string.Format(Language.ConfirmMultilinePaste, lines.Length, preview),
-                    _connectionInfo.Name, MessageBoxButtons.YesNo, MessageBoxIcon.Warning,
-                    MessageBoxDefaultButton.Button2);
+                string preview = string.Join(
+                    "\r\n",
+                    lines.Take(previewLines)
+                         .Select(line => line.Length > previewWidth
+                                             ? line[..previewWidth] + "\u2026"
+                                             : line));
 
-                if (answer != DialogResult.Yes) return;
+                if (lines.Length > previewLines)
+                    preview += "\r\n" + string.Format(Language.ConfirmMultilinePasteMore,
+                                                      lines.Length - previewLines);
+
+                bool paste = Ask(_connectionInfo.Name,
+                                 string.Format(Language.ConfirmMultilinePaste, lines.Length),
+                                 string.Format(Language.ConfirmMultilinePasteDetail, preview),
+                                 ESysIcons.Warning);
+
+                if (!paste) return;
             }
 
             WriteToShell(text);

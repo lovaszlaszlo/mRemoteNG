@@ -8276,5 +8276,41 @@ namespace mRemoteNG.Resources.Language {
                 return ResourceManager.GetString("PortScanProtocolAll", resourceCulture);
             }
         }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Connect (new session).
+        /// </summary>
+        internal static string ConnectNewSession {
+            get {
+                return ResourceManager.GetString("ConnectNewSession", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Opening a connection that is already open starts another session instead of switching to it.
+        /// </summary>
+        internal static string AlwaysOpenNewSession {
+            get {
+                return ResourceManager.GetString("AlwaysOpenNewSession", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The first is: {0} Paste it?.
+        /// </summary>
+        internal static string ConfirmMultilinePasteDetail {
+            get {
+                return ResourceManager.GetString("ConfirmMultilinePasteDetail", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to ... and {0} more lines..
+        /// </summary>
+        internal static string ConfirmMultilinePasteMore {
+            get {
+                return ResourceManager.GetString("ConfirmMultilinePasteMore", resourceCulture);
+            }
+        }
     }
 }

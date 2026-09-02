@@ -40,6 +40,7 @@ namespace mRemoteNG.UI.Forms.OptionsPages
             chkSingleClickOnConnectionOpensIt = new MrngCheckBox();
             chkHostnameLikeDisplayName = new MrngCheckBox();
             chkSingleClickOnOpenedConnectionSwitchesToIt = new MrngCheckBox();
+            chkAlwaysOpenNewSession = new MrngCheckBox();
             lblAutoSave1 = new MrngLabel();
             numAutoSave = new MrngNumericUpDown();
             pnlConfirmCloseConnection = new System.Windows.Forms.Panel();
@@ -123,7 +124,7 @@ namespace mRemoteNG.UI.Forms.OptionsPages
             chkHostnameLikeDisplayName._mice = MrngCheckBox.MouseState.OUT;
             chkHostnameLikeDisplayName.AutoSize = true;
             chkHostnameLikeDisplayName.Font = new System.Drawing.Font("Segoe UI", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point);
-            chkHostnameLikeDisplayName.Location = new System.Drawing.Point(6, 72);
+            chkHostnameLikeDisplayName.Location = new System.Drawing.Point(6, 95);
             chkHostnameLikeDisplayName.Name = "chkHostnameLikeDisplayName";
             chkHostnameLikeDisplayName.Size = new System.Drawing.Size(355, 17);
             chkHostnameLikeDisplayName.TabIndex = 2;
@@ -141,6 +142,18 @@ namespace mRemoteNG.UI.Forms.OptionsPages
             chkSingleClickOnOpenedConnectionSwitchesToIt.TabIndex = 1;
             chkSingleClickOnOpenedConnectionSwitchesToIt.Text = Language.SingleClickOnOpenConnectionSwitchesToIt;
             chkSingleClickOnOpenedConnectionSwitchesToIt.UseVisualStyleBackColor = true;
+            //
+            // chkAlwaysOpenNewSession
+            //
+            chkAlwaysOpenNewSession._mice = MrngCheckBox.MouseState.OUT;
+            chkAlwaysOpenNewSession.AutoSize = true;
+            chkAlwaysOpenNewSession.Font = new System.Drawing.Font("Segoe UI", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point);
+            chkAlwaysOpenNewSession.Location = new System.Drawing.Point(6, 49);
+            chkAlwaysOpenNewSession.Name = "chkAlwaysOpenNewSession";
+            chkAlwaysOpenNewSession.Size = new System.Drawing.Size(492, 17);
+            chkAlwaysOpenNewSession.TabIndex = 2;
+            chkAlwaysOpenNewSession.Text = Language.AlwaysOpenNewSession;
+            chkAlwaysOpenNewSession.UseVisualStyleBackColor = true;
             // 
             // lblAutoSave1
             // 
@@ -236,7 +249,7 @@ namespace mRemoteNG.UI.Forms.OptionsPages
             chkSaveConnectionsAfterEveryEdit._mice = MrngCheckBox.MouseState.OUT;
             chkSaveConnectionsAfterEveryEdit.AutoSize = true;
             chkSaveConnectionsAfterEveryEdit.Font = new System.Drawing.Font("Segoe UI", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point);
-            chkSaveConnectionsAfterEveryEdit.Location = new System.Drawing.Point(6, 95);
+            chkSaveConnectionsAfterEveryEdit.Location = new System.Drawing.Point(6, 118);
             chkSaveConnectionsAfterEveryEdit.Name = "chkSaveConnectionsAfterEveryEdit";
             chkSaveConnectionsAfterEveryEdit.Size = new System.Drawing.Size(194, 17);
             chkSaveConnectionsAfterEveryEdit.TabIndex = 7;
@@ -248,7 +261,7 @@ namespace mRemoteNG.UI.Forms.OptionsPages
             chkUseFilterSearch._mice = MrngCheckBox.MouseState.OUT;
             chkUseFilterSearch.AutoSize = true;
             chkUseFilterSearch.Font = new System.Drawing.Font("Segoe UI", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point);
-            chkUseFilterSearch.Location = new System.Drawing.Point(6, 118);
+            chkUseFilterSearch.Location = new System.Drawing.Point(6, 141);
             chkUseFilterSearch.Name = "chkUseFilterSearch";
             chkUseFilterSearch.Size = new System.Drawing.Size(230, 17);
             chkUseFilterSearch.TabIndex = 8;
@@ -281,7 +294,7 @@ namespace mRemoteNG.UI.Forms.OptionsPages
             chkPlaceSearchBarAboveConnectionTree._mice = MrngCheckBox.MouseState.OUT;
             chkPlaceSearchBarAboveConnectionTree.AutoSize = true;
             chkPlaceSearchBarAboveConnectionTree.Font = new System.Drawing.Font("Segoe UI", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point);
-            chkPlaceSearchBarAboveConnectionTree.Location = new System.Drawing.Point(6, 141);
+            chkPlaceSearchBarAboveConnectionTree.Location = new System.Drawing.Point(6, 165);
             chkPlaceSearchBarAboveConnectionTree.Name = "chkPlaceSearchBarAboveConnectionTree";
             chkPlaceSearchBarAboveConnectionTree.Size = new System.Drawing.Size(226, 17);
             chkPlaceSearchBarAboveConnectionTree.TabIndex = 8;
@@ -293,7 +306,7 @@ namespace mRemoteNG.UI.Forms.OptionsPages
             chkConnectionTreeTrackActiveConnection._mice = MrngCheckBox.MouseState.OUT;
             chkConnectionTreeTrackActiveConnection.AutoSize = true;
             chkConnectionTreeTrackActiveConnection.Font = new System.Drawing.Font("Segoe UI", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point);
-            chkConnectionTreeTrackActiveConnection.Location = new System.Drawing.Point(6, 49);
+            chkConnectionTreeTrackActiveConnection.Location = new System.Drawing.Point(6, 72);
             chkConnectionTreeTrackActiveConnection.Name = "chkConnectionTreeTrackActiveConnection";
             chkConnectionTreeTrackActiveConnection.Size = new System.Drawing.Size(262, 17);
             chkConnectionTreeTrackActiveConnection.TabIndex = 10;
@@ -305,7 +318,7 @@ namespace mRemoteNG.UI.Forms.OptionsPages
             chkDoNotTrimUsername._mice = MrngCheckBox.MouseState.OUT;
             chkDoNotTrimUsername.AutoSize = true;
             chkDoNotTrimUsername.Font = new System.Drawing.Font("Segoe UI", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point);
-            chkDoNotTrimUsername.Location = new System.Drawing.Point(6, 165);
+            chkDoNotTrimUsername.Location = new System.Drawing.Point(6, 188);
             chkDoNotTrimUsername.Name = "chkDoNotTrimUsername";
             chkDoNotTrimUsername.Size = new System.Drawing.Size(143, 17);
             chkDoNotTrimUsername.TabIndex = 11;
@@ -317,7 +330,7 @@ namespace mRemoteNG.UI.Forms.OptionsPages
             chkSlowClickRename._mice = MrngCheckBox.MouseState.OUT;
             chkSlowClickRename.AutoSize = true;
             chkSlowClickRename.Font = new System.Drawing.Font("Segoe UI", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point);
-            chkSlowClickRename.Location = new System.Drawing.Point(6, 188);
+            chkSlowClickRename.Location = new System.Drawing.Point(6, 211);
             chkSlowClickRename.Name = "chkSlowClickRename";
             chkSlowClickRename.Size = new System.Drawing.Size(290, 17);
             chkSlowClickRename.TabIndex = 12;
@@ -330,6 +343,7 @@ namespace mRemoteNG.UI.Forms.OptionsPages
             pnlOptions.Controls.Add(chkDoNotTrimUsername);
             pnlOptions.Controls.Add(chkSlowClickRename);
             pnlOptions.Controls.Add(chkSingleClickOnOpenedConnectionSwitchesToIt);
+            pnlOptions.Controls.Add(chkAlwaysOpenNewSession);
             pnlOptions.Controls.Add(chkConnectionTreeTrackActiveConnection);
             pnlOptions.Controls.Add(chkHostnameLikeDisplayName);
             pnlOptions.Controls.Add(chkSaveConnectionsAfterEveryEdit);
@@ -338,7 +352,7 @@ namespace mRemoteNG.UI.Forms.OptionsPages
             pnlOptions.Dock = System.Windows.Forms.DockStyle.Top;
             pnlOptions.Location = new System.Drawing.Point(0, 30);
             pnlOptions.Name = "pnlOptions";
-            pnlOptions.Size = new System.Drawing.Size(610, 206);
+            pnlOptions.Size = new System.Drawing.Size(610, 229);
             pnlOptions.TabIndex = 12;
             // 
             // lblRegistrySettingsUsedInfo
@@ -379,6 +393,7 @@ namespace mRemoteNG.UI.Forms.OptionsPages
         internal MrngCheckBox chkSingleClickOnConnectionOpensIt;
         internal MrngCheckBox chkHostnameLikeDisplayName;
         internal MrngCheckBox chkSingleClickOnOpenedConnectionSwitchesToIt;
+        internal MrngCheckBox chkAlwaysOpenNewSession;
         internal Controls.MrngLabel lblAutoSave1;
         internal Controls.MrngNumericUpDown numAutoSave;
         internal System.Windows.Forms.Panel pnlConfirmCloseConnection;
