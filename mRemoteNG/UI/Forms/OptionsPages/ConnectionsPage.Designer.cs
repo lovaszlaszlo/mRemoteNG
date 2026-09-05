@@ -41,6 +41,7 @@ namespace mRemoteNG.UI.Forms.OptionsPages
             chkHostnameLikeDisplayName = new MrngCheckBox();
             chkSingleClickOnOpenedConnectionSwitchesToIt = new MrngCheckBox();
             chkAlwaysOpenNewSession = new MrngCheckBox();
+            chkShowPuttySessions = new MrngCheckBox();
             lblAutoSave1 = new MrngLabel();
             numAutoSave = new MrngNumericUpDown();
             pnlConfirmCloseConnection = new System.Windows.Forms.Panel();
@@ -154,6 +155,18 @@ namespace mRemoteNG.UI.Forms.OptionsPages
             chkAlwaysOpenNewSession.TabIndex = 2;
             chkAlwaysOpenNewSession.Text = Language.AlwaysOpenNewSession;
             chkAlwaysOpenNewSession.UseVisualStyleBackColor = true;
+            //
+            // chkShowPuttySessions
+            //
+            chkShowPuttySessions._mice = MrngCheckBox.MouseState.OUT;
+            chkShowPuttySessions.AutoSize = true;
+            chkShowPuttySessions.Font = new System.Drawing.Font("Segoe UI", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point);
+            chkShowPuttySessions.Location = new System.Drawing.Point(6, 234);
+            chkShowPuttySessions.Name = "chkShowPuttySessions";
+            chkShowPuttySessions.Size = new System.Drawing.Size(492, 17);
+            chkShowPuttySessions.TabIndex = 11;
+            chkShowPuttySessions.Text = Language.ShowPuttySessionsInTree;
+            chkShowPuttySessions.UseVisualStyleBackColor = true;
             // 
             // lblAutoSave1
             // 
@@ -344,6 +357,7 @@ namespace mRemoteNG.UI.Forms.OptionsPages
             pnlOptions.Controls.Add(chkSlowClickRename);
             pnlOptions.Controls.Add(chkSingleClickOnOpenedConnectionSwitchesToIt);
             pnlOptions.Controls.Add(chkAlwaysOpenNewSession);
+            pnlOptions.Controls.Add(chkShowPuttySessions);
             pnlOptions.Controls.Add(chkConnectionTreeTrackActiveConnection);
             pnlOptions.Controls.Add(chkHostnameLikeDisplayName);
             pnlOptions.Controls.Add(chkSaveConnectionsAfterEveryEdit);
@@ -352,7 +366,7 @@ namespace mRemoteNG.UI.Forms.OptionsPages
             pnlOptions.Dock = System.Windows.Forms.DockStyle.Top;
             pnlOptions.Location = new System.Drawing.Point(0, 30);
             pnlOptions.Name = "pnlOptions";
-            pnlOptions.Size = new System.Drawing.Size(610, 229);
+            pnlOptions.Size = new System.Drawing.Size(610, 252);
             pnlOptions.TabIndex = 12;
             // 
             // lblRegistrySettingsUsedInfo
@@ -394,6 +408,7 @@ namespace mRemoteNG.UI.Forms.OptionsPages
         internal MrngCheckBox chkHostnameLikeDisplayName;
         internal MrngCheckBox chkSingleClickOnOpenedConnectionSwitchesToIt;
         internal MrngCheckBox chkAlwaysOpenNewSession;
+        internal MrngCheckBox chkShowPuttySessions;
         internal Controls.MrngLabel lblAutoSave1;
         internal Controls.MrngNumericUpDown numAutoSave;
         internal System.Windows.Forms.Panel pnlConfirmCloseConnection;

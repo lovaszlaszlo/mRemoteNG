@@ -149,7 +149,10 @@ namespace mRemoteNG.Connection
 
             UsingDatabase = useDatabase;
 
-            if (!import)
+            // The PuTTY sessions node lists what another program has saved, and it is of no use
+            // to anyone who does not use PuTTY - which, once the terminal has its own settings, is
+            // most people here. It can be turned off, under Options - Connections.
+            if (!import && Properties.Settings.Default.ShowPuttySessionsInTree)
             {
                 _puttySessionsManager.AddSessions();
                 newConnectionTreeModel.RootNodes.AddRange(_puttySessionsManager.RootPuttySessionsNodes);
@@ -159,6 +162,33 @@ namespace mRemoteNG.Connection
             UpdateCustomConsPathSetting(connectionFileName);
             RaiseConnectionsLoadedEvent(oldConnectionTreeModel, newConnectionTreeModel, oldIsUsingDatabaseValue, useDatabase, connectionFileName);
             Runtime.MessageCollector.AddMessage(MessageClass.DebugMsg, $"Connections loaded using {connectionLoader.GetType().Name}");
+        }
+
+        /// <summary>
+        /// Puts the PuTTY sessions node on the tree, or takes it off, to match the setting.
+        /// </summary>
+        /// <remarks>
+        /// Applied here rather than at the next start: a checkbox whose effect only shows after a
+        /// restart is a checkbox people press twice, wondering whether it took.
+        /// </remarks>
+        public void ApplyPuttySessionVisibility()
+        {
+            if (ConnectionTreeModel == null) return;
+
+            if (!Properties.Settings.Default.ShowPuttySessionsInTree)
+            {
+                foreach (Container.ContainerInfo node in System.Linq.Enumerable.ToArray(
+                             System.Linq.Enumerable.OfType<Tree.Root.RootPuttySessionsNodeInfo>(
+                                 ConnectionTreeModel.RootNodes)))
+                    ConnectionTreeModel.RemoveRootNode(node);
+
+                return;
+            }
+
+            _puttySessionsManager.AddSessions();
+
+            foreach (Tree.Root.RootPuttySessionsNodeInfo node in _puttySessionsManager.RootPuttySessionsNodes)
+                ConnectionTreeModel.AddRootNode(node);
         }
 
         /// <summary>

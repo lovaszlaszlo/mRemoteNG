@@ -596,6 +596,12 @@ namespace mRemoteNG.UI.Controls.ConnectionTree
             {
                 if (item is ContainerInfo { IsRootGroup: true })
                     return true;
+
+                // A root node itself coming or going changes the roots just as much, and it is not
+                // a "root group": the PuTTY sessions node is one of these, so turning it off left
+                // the model without it and the tree still showing it until the next start.
+                if (item is RootNodeInfo)
+                    return true;
             }
 
             return false;
