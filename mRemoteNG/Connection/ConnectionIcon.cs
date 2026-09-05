@@ -1,5 +1,6 @@
 ﻿using System;
 using System.ComponentModel;
+using System.Linq;
 using System.Runtime.Versioning;
 using mRemoteNG.App;
 using mRemoteNG.App.Info;
@@ -31,12 +32,26 @@ namespace mRemoteNG.Connection
         {
             try
             {
-                string iconPath = $"{GeneralAppInfo.HomePath}\\Icons\\{iconName}.ico";
+                string iconFolder = $"{GeneralAppInfo.HomePath}\\Icons";
+                string iconPath = $"{iconFolder}\\{iconName}.ico";
 
                 if (System.IO.File.Exists(iconPath))
+                    return new System.Drawing.Icon(iconPath);
+
+                // The loader gathers names from subfolders too, so anyone who sorted their
+                // icons into folders got the names in the list and nothing drawn beside the
+                // connection - this looked only in the top folder. Searched properly now,
+                // and only once the direct path has missed, so the usual case still costs
+                // a single File.Exists.
+                if (System.IO.Directory.Exists(iconFolder))
                 {
-                    System.Drawing.Icon nI = new(iconPath);
-                    return nI;
+                    string found = System.IO.Directory
+                                         .EnumerateFiles(iconFolder, $"{iconName}.ico",
+                                                         System.IO.SearchOption.AllDirectories)
+                                         .FirstOrDefault();
+
+                    if (found != null)
+                        return new System.Drawing.Icon(found);
                 }
             }
             catch (Exception ex)
