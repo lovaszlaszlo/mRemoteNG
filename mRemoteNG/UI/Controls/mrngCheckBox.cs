@@ -121,7 +121,17 @@ namespace mRemoteNG.UI.Controls
                 e.Graphics.DrawRectangle(p, boxRect);
             }
 
-            if (Checked)
+            // Indeterminate first: Checked is true for it as well, so testing Checked alone
+            // drew a full tick on a box meaning "some of them" - a select-all box claiming
+            // everything was selected while three rows out of twenty-one were.
+            if (CheckState == CheckState.Indeterminate)
+            {
+                Rectangle fill = new(3, _checkboxYCoord + 3,
+                                     _checkboxSize.Width - 5, _checkboxSize.Height - 5);
+                using SolidBrush glyphBrush = new(glyph);
+                e.Graphics.FillRectangle(glyphBrush, fill);
+            }
+            else if (Checked)
             {
                 // | \uE001 | &#xE001; |  |  is the tick/check mark and it exists in Segoe UI Symbol at least...
                 e.Graphics.DrawString("\uE001", new Font("Segoe UI Symbol", 7.75f), new SolidBrush(glyph), -4, 0);
