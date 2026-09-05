@@ -65,6 +65,7 @@ namespace mRemoteNG.UI.Controls
         private ToolStripMenuItem _cMenTreeImportActiveDirectory;
         private ToolStripMenuItem _cMenTreeImportPortScan;
         private ToolStripMenuItem _cMenTreeImportPutty;
+        private ToolStripMenuItem _cMenTreeImportRdpRegistry;
         private ToolStripMenuItem _cMenTreeApplyInheritanceToChildren;
         private ToolStripMenuItem _cMenTreeApplyDefaultInheritance;
         private readonly ConnectionTree.ConnectionTree _connectionTree;
@@ -306,6 +307,7 @@ namespace mRemoteNG.UI.Controls
             _cMenTreeImportActiveDirectory = new ToolStripMenuItem();
             _cMenTreeImportPortScan = new ToolStripMenuItem();
             _cMenTreeImportPutty = new ToolStripMenuItem();
+            _cMenTreeImportRdpRegistry = new ToolStripMenuItem();
             _cMenInheritanceSubMenu = new ToolStripMenuItem();
             _cMenTreeApplyInheritanceToChildren = new ToolStripMenuItem();
             _cMenTreeApplyDefaultInheritance = new ToolStripMenuItem();
@@ -521,6 +523,7 @@ namespace mRemoteNG.UI.Controls
                 _cMenTreeImportFromRemoteDesktopManager,
                 _cMenTreeImportActiveDirectory,
                 _cMenTreeImportPutty,
+                _cMenTreeImportRdpRegistry,
                 _cMenTreeImportPortScan
             });
             _cMenTreeImport.Name = "_cMenTreeImport";
@@ -528,6 +531,11 @@ namespace mRemoteNG.UI.Controls
             _cMenTreeImport.Text = "&Import";
             //
             // cMenTreeImportFile
+            //
+            _cMenTreeImportRdpRegistry.Name = "_cMenTreeImportRdpRegistry";
+            _cMenTreeImportRdpRegistry.Size = new System.Drawing.Size(226, 22);
+            _cMenTreeImportRdpRegistry.Text = "Import from Windows Remote Desktop...";
+            _cMenTreeImportRdpRegistry.Click += Guarded(OnImportRdpRegistryClicked);
             //
             _cMenTreeImportFile.Name = "_cMenTreeImportFile";
             _cMenTreeImportFile.Size = new System.Drawing.Size(226, 22);
@@ -696,6 +704,7 @@ namespace mRemoteNG.UI.Controls
 
             _cMenTreeImport.Text = Language._Import;
             _cMenTreeImportFile.Text = Language.ImportFromFile;
+            _cMenTreeImportRdpRegistry.Text = Language.ImportFromRdpRegistry;
             _cMenTreeImportActiveDirectory.Text = Language.ImportAD;
             _cMenTreeImportPortScan.Text = Language.ImportPortScan;
             _cMenTreeExportFile.Text = Language._ExportToFile;
@@ -1245,6 +1254,20 @@ namespace mRemoteNG.UI.Controls
                     _connectionTree.SelectedNode as ContainerInfo ?? _connectionTree.SelectedNode.Parent;
             Import.ImportFromFile(selectedNodeAsContainer);
         }
+
+        private void OnImportRdpRegistryClicked(object sender, EventArgs e)
+        {
+            Import.ImportFromRdpRegistry(SelectedNodeAsContainer());
+        }
+
+        /// <summary>
+        /// The folder the import was started from: the selected folder, or the one holding the
+        /// selected connection, or the root when nothing is selected.
+        /// </summary>
+        private ContainerInfo SelectedNodeAsContainer() =>
+            _connectionTree.SelectedNode == null
+                ? Runtime.ConnectionsService.ConnectionTreeModel.RootNodes.First()
+                : _connectionTree.SelectedNode as ContainerInfo ?? _connectionTree.SelectedNode.Parent;
 
         private void OnImportPuttyClicked(object sender, EventArgs e)
         {

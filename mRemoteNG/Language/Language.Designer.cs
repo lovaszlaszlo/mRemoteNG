@@ -8321,5 +8321,50 @@ namespace mRemoteNG.Resources.Language {
                 return ResourceManager.GetString("PortScanIp", resourceCulture);
             }
         }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Import from Windows Remote Desktop....
+        /// </summary>
+        internal static string ImportFromRdpRegistry {
+            get {
+                return ResourceManager.GetString("ImportFromRdpRegistry", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The machines the Windows Remote Desktop client remembers, with the account last used on ea.
+        /// </summary>
+        internal static string ImportFromRdpRegistryExplanation {
+            get {
+                return ResourceManager.GetString("ImportFromRdpRegistryExplanation", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Windows Remote Desktop has not recorded any machine on this computer..
+        /// </summary>
+        internal static string ImportFromRdpRegistryNothingFound {
+            get {
+                return ResourceManager.GetString("ImportFromRdpRegistryNothingFound", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Nothing is ticked, so there is nothing to import..
+        /// </summary>
+        internal static string ImportFromRdpRegistryNothingTicked {
+            get {
+                return ResourceManager.GetString("ImportFromRdpRegistryNothingTicked", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Select all.
+        /// </summary>
+        internal static string SelectAllEntries {
+            get {
+                return ResourceManager.GetString("SelectAllEntries", resourceCulture);
+            }
+        }
     }
 }

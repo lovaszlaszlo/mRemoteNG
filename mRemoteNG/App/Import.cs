@@ -144,6 +144,29 @@ namespace mRemoteNG.App
             }
         }
 
+        /// <summary>
+        /// Offers the machines the Windows Remote Desktop client remembers, and takes the ticked
+        /// ones.
+        /// </summary>
+        /// <remarks>
+        /// Unlike every other importer here, this one asks first. Its source is not a file someone
+        /// chose but a list Windows has been keeping for years, most of which is usually in the
+        /// tree already - importing it wholesale would mean a folder of duplicates to weed out by
+        /// hand.
+        /// </remarks>
+        internal static void ImportFromRdpRegistry(ContainerInfo selectedNodeAsContainer)
+        {
+            try
+            {
+                using UI.Forms.RdpRegistryImportWindow window = new(selectedNodeAsContainer);
+                window.ShowDialog(UI.Forms.FrmMain.Default);
+            }
+            catch (Exception ex)
+            {
+                Runtime.MessageCollector.AddExceptionMessage("App.Import.ImportFromRdpRegistry() failed.", ex);
+            }
+        }
+
         internal static void ImportFromPutty(ContainerInfo selectedNodeAsContainer)
         {
             try

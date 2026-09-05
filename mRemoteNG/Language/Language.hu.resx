@@ -977,4 +977,11 @@ Létrehozod?</value></data>
 Beilleszted?</value></data>
   <data name="ConfirmMultilinePasteMore" xml:space="preserve"><value>… és még {0} sor.</value></data>
   <data name="PortScanIp" xml:space="preserve"><value>IP</value></data>
+  <data name="ImportFromRdpRegistry" xml:space="preserve"><value>Importálás a Windows Távoli asztalból...</value></data>
+  <data name="ImportFromRdpRegistryExplanation" xml:space="preserve"><value>A Windows Távoli asztal által megjegyzett gépek, mindegyiknél az utoljára használt fiókkal. Kezdetben semmi nincs kipipálva — pipáld ki, amelyiket fel akarod venni. A „Már felvéve” oszlop jelöli, amelyik már szerepel a fában, az alatta lévő jelölőnégyzettel pedig el is rejtheted őket.
+
+Jelszó nem jön át — azokat a Windows a Hitelesítőadat-kezelőben tartja, a fiókodhoz titkosítva, és innen nem olvashatók. A jelszót kézzel kell megadnod, vagy a mappáról örököltetned.</value></data>
+  <data name="ImportFromRdpRegistryNothingFound" xml:space="preserve"><value>A Windows Távoli asztal nem jegyzett fel egyetlen gépet sem ezen a számítógépen.</value></data>
+  <data name="ImportFromRdpRegistryNothingTicked" xml:space="preserve"><value>Nincs semmi kipipálva, tehát nincs mit importálni.</value></data>
+  <data name="SelectAllEntries" xml:space="preserve"><value>Mind kijelölése</value></data>
 </root>

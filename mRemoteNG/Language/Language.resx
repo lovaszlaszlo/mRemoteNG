@@ -2980,4 +2980,21 @@ Paste it?</value>
   <data name="PortScanIp" xml:space="preserve">
     <value>IP</value>
   </data>
+  <data name="ImportFromRdpRegistry" xml:space="preserve">
+    <value>Import from Windows Remote Desktop...</value>
+  </data>
+  <data name="ImportFromRdpRegistryExplanation" xml:space="preserve">
+    <value>The machines the Windows Remote Desktop client remembers, with the account last used on each. Nothing is ticked to begin with - tick the ones to add. The "Already added" column marks the machines that are in the tree already, and the checkbox below hides them.
+
+No password comes across - Windows keeps those in Credential Manager, encrypted to your account, and they are not readable from here. You will have to enter them yourself, or inherit them from the folder.</value>
+  </data>
+  <data name="ImportFromRdpRegistryNothingFound" xml:space="preserve">
+    <value>Windows Remote Desktop has not recorded any machine on this computer.</value>
+  </data>
+  <data name="ImportFromRdpRegistryNothingTicked" xml:space="preserve">
+    <value>Nothing is ticked, so there is nothing to import.</value>
+  </data>
+  <data name="SelectAllEntries" xml:space="preserve">
+    <value>Select all</value>
+  </data>
 </root>
