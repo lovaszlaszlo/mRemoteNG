@@ -295,9 +295,9 @@ namespace mRemoteNG.UI.TaskDialog
             {
                 case ETaskDialogButtons.YesNo:
                     bt1.Visible = false;
-                    bt2.Text = Language.Yes;
+                    bt2.Text = WithMnemonic(Language.Yes);
                     bt2.DialogResult = DialogResult.Yes;
-                    bt3.Text = Language.No;
+                    bt3.Text = WithMnemonic(Language.No);
                     bt3.DialogResult = DialogResult.No;
                     AcceptButton = bt2;
                     CancelButton = bt3;
@@ -307,11 +307,11 @@ namespace mRemoteNG.UI.TaskDialog
                     _focusControl = DefaultButtonIndex == 1 ? bt3 : bt2;
                     break;
                 case ETaskDialogButtons.YesNoCancel:
-                    bt1.Text = Language.Yes;
+                    bt1.Text = WithMnemonic(Language.Yes);
                     bt1.DialogResult = DialogResult.Yes;
-                    bt2.Text = Language.No;
+                    bt2.Text = WithMnemonic(Language.No);
                     bt2.DialogResult = DialogResult.No;
-                    bt3.Text = Language._Cancel;
+                    bt3.Text = WithMnemonic(Language._Cancel);
                     bt3.DialogResult = DialogResult.Cancel;
                     AcceptButton = bt1;
                     CancelButton = bt3;
@@ -319,9 +319,9 @@ namespace mRemoteNG.UI.TaskDialog
                     break;
                 case ETaskDialogButtons.OkCancel:
                     bt1.Visible = false;
-                    bt2.Text = Language._Ok;
+                    bt2.Text = WithMnemonic(Language._Ok);
                     bt2.DialogResult = DialogResult.OK;
-                    bt3.Text = Language._Cancel;
+                    bt3.Text = WithMnemonic(Language._Cancel);
                     bt3.DialogResult = DialogResult.Cancel;
                     AcceptButton = bt2;
                     CancelButton = bt3;
@@ -330,7 +330,7 @@ namespace mRemoteNG.UI.TaskDialog
                 case ETaskDialogButtons.Ok:
                     bt1.Visible = false;
                     bt2.Visible = false;
-                    bt3.Text = Language._Ok;
+                    bt3.Text = WithMnemonic(Language._Ok);
                     bt3.DialogResult = DialogResult.OK;
                     AcceptButton = bt3;
                     CancelButton = bt3;
@@ -339,7 +339,7 @@ namespace mRemoteNG.UI.TaskDialog
                 case ETaskDialogButtons.Close:
                     bt1.Visible = false;
                     bt2.Visible = false;
-                    bt3.Text = Language._Close;
+                    bt3.Text = WithMnemonic(Language._Close);
                     bt3.DialogResult = DialogResult.Cancel;
                     CancelButton = bt3;
                     _focusControl = bt3;
@@ -347,7 +347,7 @@ namespace mRemoteNG.UI.TaskDialog
                 case ETaskDialogButtons.Cancel:
                     bt1.Visible = false;
                     bt2.Visible = false;
-                    bt3.Text = Language._Cancel;
+                    bt3.Text = WithMnemonic(Language._Cancel);
                     bt3.DialogResult = DialogResult.Cancel;
                     CancelButton = bt3;
                     _focusControl = bt3;
@@ -414,6 +414,19 @@ namespace mRemoteNG.UI.TaskDialog
             base.OnHandleCreated(e);
             ThemeManager.getInstance().ApplyThemeToTitleBar(this);
         }
+
+        /// <summary>
+        /// Puts a keyboard mnemonic on a button caption when it has none.
+        /// </summary>
+        /// <remarks>
+        /// Yes and No carry no ampersand, unlike Ok and Cancel, so on every Yes/No dialog those two
+        /// buttons could be reached only with the mouse or Tab - including the one that asks
+        /// whether to close a live session. The resource strings are left alone deliberately: the
+        /// same two double as the text form of a boolean in MiscTools, where an ampersand would
+        /// stop them matching what is stored.
+        /// </remarks>
+        private static string WithMnemonic(string caption) =>
+            string.IsNullOrEmpty(caption) || caption.Contains('&') ? caption : "&" + caption;
 
         private void ApplyTheme()
         {
