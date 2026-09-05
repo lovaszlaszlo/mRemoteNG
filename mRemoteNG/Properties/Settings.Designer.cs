@@ -958,6 +958,78 @@ namespace mRemoteNG.Properties {
                 this["AlwaysOpenNewSession"] = value;
             }
         }
+
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("True")]
+        public bool ShowPuttySessionsInTree {
+            get {
+                return ((bool)(this["ShowPuttySessionsInTree"]));
+            }
+            set {
+                this["ShowPuttySessionsInTree"] = value;
+            }
+        }
+
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("")]
+        public string TerminalFontFamily {
+            get {
+                return ((string)(this["TerminalFontFamily"]));
+            }
+            set {
+                this["TerminalFontFamily"] = value;
+            }
+        }
+
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("0")]
+        public int TerminalFontSize {
+            get {
+                return ((int)(this["TerminalFontSize"]));
+            }
+            set {
+                this["TerminalFontSize"] = value;
+            }
+        }
+
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("False")]
+        public bool TerminalFontBold {
+            get {
+                return ((bool)(this["TerminalFontBold"]));
+            }
+            set {
+                this["TerminalFontBold"] = value;
+            }
+        }
+
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("0")]
+        public int TerminalScrollback {
+            get {
+                return ((int)(this["TerminalScrollback"]));
+            }
+            set {
+                this["TerminalScrollback"] = value;
+            }
+        }
+
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("")]
+        public string TerminalTheme {
+            get {
+                return ((string)(this["TerminalTheme"]));
+            }
+            set {
+                this["TerminalTheme"] = value;
+            }
+        }
         
         [global::System.Configuration.UserScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]

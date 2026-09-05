@@ -236,6 +236,24 @@
     <Setting Name="AlwaysOpenNewSession" Type="System.Boolean" Scope="User">
       <Value Profile="(Default)">False</Value>
     </Setting>
+    <Setting Name="ShowPuttySessionsInTree" Type="System.Boolean" Scope="User">
+      <Value Profile="(Default)">True</Value>
+    </Setting>
+    <Setting Name="TerminalFontFamily" Type="System.String" Scope="User">
+      <Value Profile="(Default)"></Value>
+    </Setting>
+    <Setting Name="TerminalFontSize" Type="System.Int32" Scope="User">
+      <Value Profile="(Default)">0</Value>
+    </Setting>
+    <Setting Name="TerminalFontBold" Type="System.Boolean" Scope="User">
+      <Value Profile="(Default)">False</Value>
+    </Setting>
+    <Setting Name="TerminalScrollback" Type="System.Int32" Scope="User">
+      <Value Profile="(Default)">0</Value>
+    </Setting>
+    <Setting Name="TerminalTheme" Type="System.String" Scope="User">
+      <Value Profile="(Default)"></Value>
+    </Setting>
     <Setting Name="ConDefaultRDPAuthenticationLevel" Type="System.String" Scope="User">
       <Value Profile="(Default)">NoAuth</Value>
     </Setting>

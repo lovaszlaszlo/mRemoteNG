@@ -38,6 +38,9 @@ namespace mRemoteNG.Connection.Protocol.SSH
 
         public string FontFamily { get; private init; }
         public int FontSize { get; private init; }
+
+        /// <summary>The size as PuTTY stores it, before the conversion to pixels.</summary>
+        public int FontSizePoints { get; private init; }
         public bool Bold { get; private init; }
         public int Scrollback { get; private init; }
         public Dictionary<string, string> Theme { get; private init; }
@@ -73,6 +76,7 @@ namespace mRemoteNG.Connection.Protocol.SSH
                     FontFamily = key.GetValue("Font") as string,
                     // PuTTY keeps the font height in points, xterm.js wants CSS pixels.
                     FontSize = PointsToPixels(key.GetValue("FontHeight")),
+                    FontSizePoints = Points(key.GetValue("FontHeight")),
                     Bold = Convert.ToInt32(key.GetValue("FontIsBold", 0), CultureInfo.InvariantCulture) != 0,
                     Scrollback = Convert.ToInt32(key.GetValue("ScrollbackLines", 2000), CultureInfo.InvariantCulture),
                     Theme = theme
@@ -86,11 +90,13 @@ namespace mRemoteNG.Connection.Protocol.SSH
             }
         }
 
-        private static int PointsToPixels(object fontHeight)
+        private static int PointsToPixels(object fontHeight) =>
+            (int)Math.Round(Points(fontHeight) * 96.0 / 72.0);
+
+        private static int Points(object fontHeight)
         {
             int points = Convert.ToInt32(fontHeight ?? 10, CultureInfo.InvariantCulture);
-            if (points <= 0) points = 10;
-            return (int)Math.Round(points * 96.0 / 72.0);
+            return points <= 0 ? 10 : points;
         }
 
         private static void AddColour(Dictionary<string, string> theme, RegistryKey key, int index, string name)

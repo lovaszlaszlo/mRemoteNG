@@ -228,26 +228,48 @@ namespace mRemoteNG.Connection.Protocol.SSH
             core.Navigate($"https://{VirtualHost}/terminal.html");
             await navigated.Task;
 
-            ApplyPuttySessionAppearance();
+            ApplyTerminalAppearance();
         }
 
         /// <summary>
-        /// Takes the font and colours from the PuTTY session the connection names, so it looks the
-        /// same whether it is opened with this protocol or the PuTTY based one.
+        /// Gives the page the font and colours to draw with.
         /// </summary>
-        private void ApplyPuttySessionAppearance()
+        /// <remarks>
+        /// From this program's own Terminal settings once they have been set. Until then the PuTTY
+        /// session named on the connection is still read, exactly as before, so upgrading does not
+        /// silently change how anyone's terminals look - but that is a fallback on its way out, not
+        /// where these settings belong.
+        /// </remarks>
+        private void ApplyTerminalAppearance()
         {
-            PuttySessionAppearance appearance = PuttySessionAppearance.Load(_connectionInfo.PuttySession);
-            if (appearance == null) return;
+            if (TerminalAppearance.IsConfigured)
+            {
+                TerminalAppearance appearance = TerminalAppearance.Load();
+
+                PostToPage(new
+                {
+                    type = "appearance",
+                    fontFamily = appearance.FontFamily,
+                    fontSize = appearance.FontSizePixels,
+                    bold = appearance.Bold,
+                    scrollback = appearance.Scrollback,
+                    theme = appearance.Theme
+                });
+
+                return;
+            }
+
+            PuttySessionAppearance legacy = PuttySessionAppearance.Load(_connectionInfo.PuttySession);
+            if (legacy == null) return;
 
             PostToPage(new
             {
                 type = "appearance",
-                fontFamily = appearance.FontFamily,
-                fontSize = appearance.FontSize,
-                bold = appearance.Bold,
-                scrollback = appearance.Scrollback,
-                theme = appearance.Theme
+                fontFamily = legacy.FontFamily,
+                fontSize = legacy.FontSize,
+                bold = legacy.Bold,
+                scrollback = legacy.Scrollback,
+                theme = legacy.Theme
             });
         }
 

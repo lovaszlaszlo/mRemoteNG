@@ -49,6 +49,7 @@ namespace mRemoteNG.UI.Forms
             {
                 nameof(StartupExitPage),
                 nameof(AppearancePage),
+                nameof(TerminalPage),
                 nameof(ConnectionsPage),
                 nameof(TabsPanelsPage),
                 nameof(NotificationsPage),
@@ -196,6 +197,13 @@ namespace mRemoteNG.UI.Forms
                         if (Properties.OptionsAppearancePage.Default.cbAppearancePageInOptionMenu ||
                             Properties.OptionsRbac.Default.ActiveRole == "AdminRole")
                             page = new AppearancePage { Dock = DockStyle.Fill };
+                        break;
+                    }
+                case "TerminalPage":
+                    {
+                        // No per-page visibility flag: this one exists because the settings on it
+                        // had nowhere to live, and hiding it would put them back out of reach.
+                        page = new TerminalPage { Dock = DockStyle.Fill };
                         break;
                     }
                 case "ConnectionsPage":
