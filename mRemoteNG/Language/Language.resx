@@ -2997,4 +2997,53 @@ No password comes across - Windows keeps those in Credential Manager, encrypted 
   <data name="SelectAllEntries" xml:space="preserve">
     <value>Select all</value>
   </data>
+  <data name="TerminalFont" xml:space="preserve">
+    <value>Font</value>
+  </data>
+  <data name="TerminalFontSize" xml:space="preserve">
+    <value>Size</value>
+  </data>
+  <data name="TerminalBold" xml:space="preserve">
+    <value>Bold</value>
+  </data>
+  <data name="TerminalScrollback" xml:space="preserve">
+    <value>Scrollback lines</value>
+  </data>
+  <data name="TerminalImportFromPutty" xml:space="preserve">
+    <value>Import from a PuTTY session...</value>
+  </data>
+  <data name="TerminalColourForeground" xml:space="preserve">
+    <value>Text</value>
+  </data>
+  <data name="TerminalColourBackground" xml:space="preserve">
+    <value>Background</value>
+  </data>
+  <data name="TerminalColourCursor" xml:space="preserve">
+    <value>Cursor</value>
+  </data>
+  <data name="TerminalColourCursorText" xml:space="preserve">
+    <value>Text under the cursor</value>
+  </data>
+  <data name="TerminalConfigured" xml:space="preserve">
+    <value>The font and colours of the native SSH terminal. These apply to every native SSH session.</value>
+  </data>
+  <data name="TerminalNotConfigured" xml:space="preserve">
+    <value>The font and colours of the native SSH terminal. Nothing has been set here yet, so each session still takes its look from the PuTTY session named on the connection - which is where these settings used to hide. Set anything here, or import a PuTTY session once, and PuTTY is out of it.</value>
+  </data>
+  <data name="TerminalNoPuttySessions" xml:space="preserve">
+    <value>There are no saved PuTTY sessions on this computer.</value>
+  </data>
+  <data name="TerminalPuttySessionUnreadable" xml:space="preserve">
+    <value>That PuTTY session could not be read.</value>
+  </data>
+  <data name="ShowPuttySessionsInTree" xml:space="preserve">
+    <value>Show PuTTY's saved sessions in the connection tree</value>
+  </data>
+  <data name="RdpConnectFailed" xml:space="preserve">
+    <value>The connection to {0} could not be established.
+
+{1}
+
+(Remote Desktop code: {2})</value>
+  </data>
 </root>

@@ -286,7 +286,7 @@
     <value>Kapcsolatfájl megnyitása...</value>
   </data>
   <data name="Options" xml:space="preserve">
-    <value>Opciók</value>
+    <value>Beállítás</value>
   </data>
   <data name="Reconnect" xml:space="preserve">
     <value>Újrakapcsolódás</value>
@@ -595,7 +595,7 @@
   <data name="ClosingConnections" xml:space="preserve"><value>Kapcsolatok bezárásakor:</value></data>
   <data name="CollapseAllFolders" xml:space="preserve"><value>Összes mappa becsukása</value></data>
   <data name="ColorName" xml:space="preserve"><value>Szín neve</value></data>
-  <data name="Config" xml:space="preserve"><value>Beállítások</value></data>
+  <data name="Config" xml:space="preserve"><value>Tulajdonságok</value></data>
   <data name="ConfigPropertyGridButtonIconClickFailed" xml:space="preserve"><value>btnIcon_Click sikertelen!</value></data>
   <data name="ConfigPropertyGridHideItemsFailed" xml:space="preserve"><value>ShowHideGridItems sikertelen!</value></data>
   <data name="ConfigPropertyGridMenuClickFailed" xml:space="preserve"><value>IconMenu_Click sikertelen!</value></data>
@@ -984,4 +984,24 @@ Jelszó nem jön át — azokat a Windows a Hitelesítőadat-kezelőben tartja, 
   <data name="ImportFromRdpRegistryNothingFound" xml:space="preserve"><value>A Windows Távoli asztal nem jegyzett fel egyetlen gépet sem ezen a számítógépen.</value></data>
   <data name="ImportFromRdpRegistryNothingTicked" xml:space="preserve"><value>Nincs semmi kipipálva, tehát nincs mit importálni.</value></data>
   <data name="SelectAllEntries" xml:space="preserve"><value>Mind kijelölése</value></data>
+  <data name="Terminal" xml:space="preserve"><value>Terminál</value></data>
+  <data name="TerminalFont" xml:space="preserve"><value>Betűtípus</value></data>
+  <data name="TerminalFontSize" xml:space="preserve"><value>Méret</value></data>
+  <data name="TerminalBold" xml:space="preserve"><value>Félkövér</value></data>
+  <data name="TerminalScrollback" xml:space="preserve"><value>Visszagörgetés (sor)</value></data>
+  <data name="TerminalImportFromPutty" xml:space="preserve"><value>Behozás PuTTY-munkamenetből...</value></data>
+  <data name="TerminalColourForeground" xml:space="preserve"><value>Szöveg</value></data>
+  <data name="TerminalColourBackground" xml:space="preserve"><value>Háttér</value></data>
+  <data name="TerminalColourCursor" xml:space="preserve"><value>Kurzor</value></data>
+  <data name="TerminalColourCursorText" xml:space="preserve"><value>Szöveg a kurzor alatt</value></data>
+  <data name="TerminalConfigured" xml:space="preserve"><value>A natív SSH terminál betűtípusa és színei. Minden natív SSH munkamenetre érvényes.</value></data>
+  <data name="TerminalNotConfigured" xml:space="preserve"><value>A natív SSH terminál betűtípusa és színei. Itt még semmi nincs beállítva, ezért minden munkamenet a kapcsolatnál megnevezett PuTTY-munkamenetből veszi a kinézetét — eddig ott rejtőztött ez a beállítás. Állíts itt bármit, vagy hozd be egyszer a PuTTY-munkamenetet, és a PuTTY kikerul a képből.</value></data>
+  <data name="TerminalNoPuttySessions" xml:space="preserve"><value>Nincs mentett PuTTY-munkamenet ezen a számítógépen.</value></data>
+  <data name="TerminalPuttySessionUnreadable" xml:space="preserve"><value>Ezt a PuTTY-munkamenetet nem sikerült beolvasni.</value></data>
+  <data name="ShowPuttySessionsInTree" xml:space="preserve"><value>A PuTTY mentett munkamenetei jelenjenek meg a kapcsolatfán</value></data>
+  <data name="RdpConnectFailed" xml:space="preserve"><value>A kapcsolat nem jött létre a következővel: {0}
+
+{1}
+
+(Távoli asztal hibakód: {2})</value></data>
 </root>

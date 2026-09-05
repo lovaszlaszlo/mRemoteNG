@@ -8366,5 +8366,140 @@ namespace mRemoteNG.Resources.Language {
                 return ResourceManager.GetString("SelectAllEntries", resourceCulture);
             }
         }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Font.
+        /// </summary>
+        internal static string TerminalFont {
+            get {
+                return ResourceManager.GetString("TerminalFont", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Size.
+        /// </summary>
+        internal static string TerminalFontSize {
+            get {
+                return ResourceManager.GetString("TerminalFontSize", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Bold.
+        /// </summary>
+        internal static string TerminalBold {
+            get {
+                return ResourceManager.GetString("TerminalBold", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Scrollback lines.
+        /// </summary>
+        internal static string TerminalScrollback {
+            get {
+                return ResourceManager.GetString("TerminalScrollback", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Import from a PuTTY session....
+        /// </summary>
+        internal static string TerminalImportFromPutty {
+            get {
+                return ResourceManager.GetString("TerminalImportFromPutty", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Text.
+        /// </summary>
+        internal static string TerminalColourForeground {
+            get {
+                return ResourceManager.GetString("TerminalColourForeground", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Background.
+        /// </summary>
+        internal static string TerminalColourBackground {
+            get {
+                return ResourceManager.GetString("TerminalColourBackground", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Cursor.
+        /// </summary>
+        internal static string TerminalColourCursor {
+            get {
+                return ResourceManager.GetString("TerminalColourCursor", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Text under the cursor.
+        /// </summary>
+        internal static string TerminalColourCursorText {
+            get {
+                return ResourceManager.GetString("TerminalColourCursorText", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The font and colours of the native SSH terminal. These apply to every native SSH session..
+        /// </summary>
+        internal static string TerminalConfigured {
+            get {
+                return ResourceManager.GetString("TerminalConfigured", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The font and colours of the native SSH terminal. Nothing has been set here yet, so each se.
+        /// </summary>
+        internal static string TerminalNotConfigured {
+            get {
+                return ResourceManager.GetString("TerminalNotConfigured", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to There are no saved PuTTY sessions on this computer..
+        /// </summary>
+        internal static string TerminalNoPuttySessions {
+            get {
+                return ResourceManager.GetString("TerminalNoPuttySessions", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to That PuTTY session could not be read..
+        /// </summary>
+        internal static string TerminalPuttySessionUnreadable {
+            get {
+                return ResourceManager.GetString("TerminalPuttySessionUnreadable", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Show PuTTY's saved sessions in the connection tree.
+        /// </summary>
+        internal static string ShowPuttySessionsInTree {
+            get {
+                return ResourceManager.GetString("ShowPuttySessionsInTree", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The connection to {0} could not be established..
+        /// </summary>
+        internal static string RdpConnectFailed {
+            get {
+                return ResourceManager.GetString("RdpConnectFailed", resourceCulture);
+            }
+        }
     }
 }

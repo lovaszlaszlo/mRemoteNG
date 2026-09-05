@@ -958,6 +958,31 @@ namespace mRemoteNG.Connection.Protocol.RDP
             MessageBox.Show($@"The {connectionInfo.Name} session was disconnected due to inactivity", @"Session Disconnected", MessageBoxButtons.OK, MessageBoxIcon.Information);
         }
 
+        /// <summary>
+        /// Says why a session that never opened has just closed.
+        /// </summary>
+        /// <remarks>
+        /// A connection that fails at once used to flash a tab and vanish. The reason went to the
+        /// notifications panel - a place you have to know about, and one nobody is looking at in
+        /// the second the tab disappears. Shown only when the session never connected: one that
+        /// worked and was then dropped has its tab and its own history to speak for it.
+        /// </remarks>
+        private void ReportFailedConnect(string reason, int code)
+        {
+            string name = InterfaceControl?.Info?.Name ?? string.Empty;
+            string host = InterfaceControl?.Info?.Hostname ?? string.Empty;
+            string text = string.Format(Language.RdpConnectFailed, host, reason, code);
+
+            Form owner = FrmMain.Default;
+            if (owner == null || owner.IsDisposed) return;
+
+            // Posted rather than shown here: this runs from inside the ActiveX control's own event
+            // while the session is being torn down, and a modal dialog on that stack is asking for
+            // trouble.
+            owner.BeginInvoke(new Action(() =>
+                MessageBox.Show(owner, text, name, MessageBoxButtons.OK, MessageBoxIcon.Warning)));
+        }
+
         private void RDPEvent_OnFatalError(int errorCode)
         {
             string errorMsg = RdpErrorCodes.GetError(errorCode);
@@ -971,6 +996,9 @@ namespace mRemoteNG.Connection.Protocol.RDP
             {
                 string reason = _rdpClient.GetErrorDescription((uint)discReason, (uint)_rdpClient.ExtendedDisconnectReason);
                 Event_Disconnected(this, reason, discReason);
+
+                if (!_everConnected)
+                    ReportFailedConnect(reason, discReason);
             }
 
             if (Properties.OptionsAdvancedPage.Default.ReconnectOnDisconnect)
@@ -994,8 +1022,18 @@ namespace mRemoteNG.Connection.Protocol.RDP
             Event_Connecting(this);
         }
 
+        /// <summary>
+        /// Whether this session ever got as far as being connected.
+        /// </summary>
+        /// <remarks>
+        /// A session that fails immediately and one that is closed after an hour both arrive at
+        /// the same event; only the first is worth interrupting somebody over.
+        /// </remarks>
+        private bool _everConnected;
+
         private void RDPEvent_OnConnected()
         {
+            _everConnected = true;
             Event_Connected(this);
         }
 
