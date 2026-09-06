@@ -649,8 +649,7 @@ namespace mRemoteNG.UI.Window
             {
                 if (txtPassword.Text == "")
                 {
-                    if (MessageBox.Show(FrmMain.Default, Language.EmptyPasswordContinue, @"Question?",
-                                        MessageBoxButtons.YesNo, MessageBoxIcon.Question) == DialogResult.No)
+                    if (!Confirm.Ask(FrmMain.Default, Language.EmptyPasswordContinue, Language.SshFileTransfer))
                     {
                         return false;
                     }

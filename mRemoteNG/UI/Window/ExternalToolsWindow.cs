@@ -321,8 +321,7 @@ namespace mRemoteNG.UI.Window
                 else
                     return;
 
-                if (MessageBox.Show(FrmMain.Default, message, "Question?", MessageBoxButtons.YesNo,
-                                    MessageBoxIcon.Question) != DialogResult.Yes)
+                if (!Confirm.Ask(FrmMain.Default, message, Language.ExternalTool))
                     return;
 
                 foreach (ExternalTool externalTool in _currentlySelectedExternalTools)
@@ -371,8 +370,7 @@ namespace mRemoteNG.UI.Window
             {
                 if (!HasUnsavedChanges()) return;
 
-                if (MessageBox.Show(FrmMain.Default, Language.ExternalToolConfirmDiscard, Language.ExternalTool,
-                                    MessageBoxButtons.YesNo, MessageBoxIcon.Question) != DialogResult.Yes)
+                if (!Confirm.Ask(FrmMain.Default, Language.ExternalToolConfirmDiscard, Language.ExternalTool))
                     return;
 
                 RestoreSnapshot();

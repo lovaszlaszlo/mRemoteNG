@@ -603,12 +603,9 @@ namespace mRemoteNG.UI.Window
             // it - and that selection is read now, not when this window was opened. Nothing on
             // this window shows any of it, so it is put in the question instead: the folder by
             // name, and how many connections are about to appear in it.
-            DialogResult answer = MessageBox.Show(
-                this,
-                string.Format(Language.PortScanConfirmImport, hosts.Count, protocol, destinationContainer.Name),
-                GeneralAppInfo.ProductName, MessageBoxButtons.YesNo, MessageBoxIcon.Question);
-
-            if (answer != DialogResult.Yes)
+            if (!Confirm.Ask(this,
+                             string.Format(Language.PortScanConfirmImport, hosts.Count, protocol,
+                                           destinationContainer.Name)))
                 return;
 
             Import.ImportFromPortScan(hosts, protocol, destinationContainer);

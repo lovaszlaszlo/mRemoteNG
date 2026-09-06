@@ -265,9 +265,7 @@ namespace mRemoteNG.UI.Controls
                 opens ? Language.ConfirmConnectAllInFolder : Language.ConfirmDisconnectAllInFolder,
                 count, container.Name);
 
-            return MessageBox.Show(message, GeneralAppInfo.ProductName, MessageBoxButtons.YesNo,
-                                   MessageBoxIcon.Question, MessageBoxDefaultButton.Button2)
-                   == DialogResult.Yes;
+            return Confirm.Ask(Forms.FrmMain.Default, message);
         }
 
         /// <summary>

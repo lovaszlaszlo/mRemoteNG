@@ -452,9 +452,7 @@ namespace mRemoteNG.UI.Window
             {
                 string question = string.Format(Language.ConfirmOpenDroppedConnections, count, TabText);
 
-                if (MessageBox.Show(this, question, GeneralAppInfo.ProductName,
-                                    MessageBoxButtons.YesNo, MessageBoxIcon.Question,
-                                    MessageBoxDefaultButton.Button2) != DialogResult.Yes)
+                if (!Confirm.Ask(this, question))
                     return;
             }
 

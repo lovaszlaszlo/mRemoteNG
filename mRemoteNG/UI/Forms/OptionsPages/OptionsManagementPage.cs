@@ -11,6 +11,7 @@ using mRemoteNG.Config.Settings;
 using mRemoteNG.Config.Settings.Store;
 using mRemoteNG.Resources.Language;
 using mRemoteNG.Themes;
+using mRemoteNG.Tools;
 
 namespace mRemoteNG.UI.Forms.OptionsPages
 {
@@ -522,13 +523,7 @@ namespace mRemoteNG.UI.Forms.OptionsPages
             if (option is null)
                 return;
 
-            var result = MessageBox.Show(
-                $"Are you sure you want to delete the option '{option.Key}'?",
-                "Confirm Delete",
-                MessageBoxButtons.YesNo,
-                MessageBoxIcon.Question);
-
-            if (result != DialogResult.Yes)
+            if (!Confirm.Ask(this, $"Are you sure you want to delete the option '{option.Key}'?", "Confirm Delete"))
                 return;
 
             try
@@ -610,13 +605,9 @@ namespace mRemoteNG.UI.Forms.OptionsPages
             if (openDialog.ShowDialog() != DialogResult.OK)
                 return;
 
-            DialogResult confirm = MessageBox.Show(
-                "Importing schema will recreate options schema objects and can remove existing options data. Continue?",
-                "Confirm Import",
-                MessageBoxButtons.YesNo,
-                MessageBoxIcon.Warning);
-
-            if (confirm != DialogResult.Yes)
+            if (!Confirm.Ask(this,
+                             "Importing schema will recreate options schema objects and can remove existing options data. Continue?",
+                             "Confirm Import", warning: true))
                 return;
 
             try

@@ -3,6 +3,7 @@ using System.Runtime.Versioning;
 using System.Windows.Forms;
 using mRemoteNG.App;
 using mRemoteNG.Properties;
+using mRemoteNG.Tools;
 using mRemoteNG.Resources.Language;
 using mRemoteNG.UI.Forms;
 using mRemoteNG.UI.Panels;
@@ -202,8 +203,7 @@ namespace mRemoteNG.UI.Menu
 
         private void mMenViewResetLayout_Click(object sender, EventArgs e)
         {
-            DialogResult msgBoxResult = MessageBox.Show(Language.ConfirmResetLayout, string.Empty, MessageBoxButtons.YesNo, MessageBoxIcon.Question);
-            if (msgBoxResult == DialogResult.Yes)
+            if (Confirm.Ask(MainForm, Language.ConfirmResetLayout))
             {
                 MainForm.SetDefaultLayout();
             }
