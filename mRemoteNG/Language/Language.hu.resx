@@ -691,6 +691,10 @@
   <data name="ExportSelectedConnection" xml:space="preserve"><value>A kijelölt kapcsolat exportálása</value></data>
   <data name="ExportSelectedFolder" xml:space="preserve"><value>A kijelölt mappa exportálása</value></data>
   <data name="ExternalToolDefaultName" xml:space="preserve"><value>Új külső eszköz</value></data>
+  <data name="ExternalToolNamePrompt" xml:space="preserve"><value>Az új külső eszköz neve:</value></data>
+  <data name="ExternalToolDiscard" xml:space="preserve"><value>Elvetés</value></data>
+  <data name="ExternalToolConfirmDiscard" xml:space="preserve"><value>Elveted a külső eszközökön a legutóbbi mentés óta tett összes módosítást?</value></data>
+  <data name="ExternalToolUnsavedOnClose" xml:space="preserve"><value>A külső eszközök módosításai még nincsenek mentve. Mentsük őket?</value></data>
   <data name="ExternalToolProperties" xml:space="preserve"><value>Külső eszköz tulajdonságai</value></data>
   <data name="ExternalToolsToolbar" xml:space="preserve"><value>Külső eszközök eszköztár</value></data>
   <data name="FailedToClearCachedRdpCredential" xml:space="preserve"><value>A(z) {0} gyorsítótárazott RDP hitelesítő adatainak törlése sikertelen. A részletek az Értesítések panelen.</value></data>

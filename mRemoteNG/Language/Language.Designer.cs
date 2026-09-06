@@ -6846,6 +6846,42 @@ namespace mRemoteNG.Resources.Language {
         }
 
         /// <summary>
+        ///   Looks up a localized string similar to Name of the new external tool:.
+        /// </summary>
+        internal static string ExternalToolNamePrompt {
+            get {
+                return ResourceManager.GetString("ExternalToolNamePrompt", resourceCulture);
+            }
+        }
+
+        /// <summary>
+        ///   Looks up a localized string similar to Discard.
+        /// </summary>
+        internal static string ExternalToolDiscard {
+            get {
+                return ResourceManager.GetString("ExternalToolDiscard", resourceCulture);
+            }
+        }
+
+        /// <summary>
+        ///   Looks up a localized string similar to Discard every change made to the external tools since they were last saved?.
+        /// </summary>
+        internal static string ExternalToolConfirmDiscard {
+            get {
+                return ResourceManager.GetString("ExternalToolConfirmDiscard", resourceCulture);
+            }
+        }
+
+        /// <summary>
+        ///   Looks up a localized string similar to The external tools have changes that are not saved yet. Save them?.
+        /// </summary>
+        internal static string ExternalToolUnsavedOnClose {
+            get {
+                return ResourceManager.GetString("ExternalToolUnsavedOnClose", resourceCulture);
+            }
+        }
+
+        /// <summary>
         ///   Looks up a localized string similar to SSH Options.
         /// </summary>
         internal static string SshOptions {

@@ -77,6 +77,9 @@ namespace mRemoteNG.UI.Window
             this.NewToolToolstripButton = new System.Windows.Forms.ToolStripButton();
             this.DeleteToolToolstripButton = new System.Windows.Forms.ToolStripButton();
             this.ToolStripSeparator2 = new System.Windows.Forms.ToolStripSeparator();
+            this.ToolStripSeparator3 = new System.Windows.Forms.ToolStripSeparator();
+            this.SaveToolstripButton = new System.Windows.Forms.ToolStripButton();
+            this.DiscardToolstripButton = new System.Windows.Forms.ToolStripButton();
             this.LaunchToolToolstripButton = new System.Windows.Forms.ToolStripButton();
             this.vsToolStripExtender = new WeifenLuo.WinFormsUI.Docking.VisualStudioToolStripExtender(this.components);
             ((System.ComponentModel.ISupportInitialize)(this.ToolsListObjView)).BeginInit();
@@ -509,7 +512,10 @@ namespace mRemoteNG.UI.Window
             this.NewToolToolstripButton,
             this.DeleteToolToolstripButton,
             this.ToolStripSeparator2,
-            this.LaunchToolToolstripButton});
+            this.LaunchToolToolstripButton,
+            this.ToolStripSeparator3,
+            this.SaveToolstripButton,
+            this.DiscardToolstripButton});
             this.ToolStrip.Location = new System.Drawing.Point(3, 0);
             this.ToolStrip.Name = "ToolStrip";
             this.ToolStrip.Size = new System.Drawing.Size(186, 25);
@@ -534,8 +540,31 @@ namespace mRemoteNG.UI.Window
             this.DeleteToolToolstripButton.Text = "Delete";
             this.DeleteToolToolstripButton.Click += new System.EventHandler(this.DeleteTool_Click);
             // 
+            // ToolStripSeparator3
+            //
+            this.ToolStripSeparator3.Name = "ToolStripSeparator3";
+            this.ToolStripSeparator3.Size = new System.Drawing.Size(6, 25);
+            //
+            // SaveToolstripButton
+            //
+            this.SaveToolstripButton.Image = global::mRemoteNG.Properties.Resources.Save_16x;
+            this.SaveToolstripButton.ImageTransparentColor = System.Drawing.Color.Magenta;
+            this.SaveToolstripButton.Name = "SaveToolstripButton";
+            this.SaveToolstripButton.Size = new System.Drawing.Size(51, 22);
+            this.SaveToolstripButton.Text = "Save";
+            this.SaveToolstripButton.Click += new System.EventHandler(this.SaveTools_Click);
+            //
+            // DiscardToolstripButton
+            //
+            this.DiscardToolstripButton.Image = global::mRemoteNG.Properties.Resources.Refresh_16x;
+            this.DiscardToolstripButton.ImageTransparentColor = System.Drawing.Color.Magenta;
+            this.DiscardToolstripButton.Name = "DiscardToolstripButton";
+            this.DiscardToolstripButton.Size = new System.Drawing.Size(60, 22);
+            this.DiscardToolstripButton.Text = "Discard";
+            this.DiscardToolstripButton.Click += new System.EventHandler(this.DiscardTools_Click);
+            //
             // ToolStripSeparator2
-            // 
+            //  
             this.ToolStripSeparator2.Name = "ToolStripSeparator2";
             this.ToolStripSeparator2.Size = new System.Drawing.Size(6, 25);
             // 
@@ -564,6 +593,7 @@ namespace mRemoteNG.UI.Window
             this.TabText = "External Applications";
             this.Text = "External Tools";
             this.FormClosed += new System.Windows.Forms.FormClosedEventHandler(this.ExternalTools_FormClosed);
+            this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.ExternalTools_FormClosing);
             this.Load += new System.EventHandler(this.ExternalTools_Load);
             ((System.ComponentModel.ISupportInitialize)(this.ToolsListObjView)).EndInit();
             this.ToolsContextMenuStrip.ResumeLayout(false);
@@ -586,6 +616,9 @@ namespace mRemoteNG.UI.Window
 		internal System.Windows.Forms.ToolStripButton DeleteToolToolstripButton;
 		internal System.Windows.Forms.ToolStripSeparator ToolStripSeparator2;
 		internal System.Windows.Forms.ToolStripButton LaunchToolToolstripButton;
+		internal System.Windows.Forms.ToolStripSeparator ToolStripSeparator3;
+		internal System.Windows.Forms.ToolStripButton SaveToolstripButton;
+		internal System.Windows.Forms.ToolStripButton DiscardToolstripButton;
         private WeifenLuo.WinFormsUI.Docking.VisualStudioToolStripExtender vsToolStripExtender;
         #endregion
 

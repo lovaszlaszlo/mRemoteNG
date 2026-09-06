@@ -866,6 +866,18 @@ See the Microsoft Support article at http://support.microsoft.com/kb/811833 for 
   <data name="SshTransferPasswordNote" xml:space="preserve">
     <value>The transfer authenticates with a password, so a server that only accepts keys will refuse it.</value>
   </data>
+  <data name="ExternalToolNamePrompt" xml:space="preserve">
+    <value>Name of the new external tool:</value>
+  </data>
+  <data name="ExternalToolDiscard" xml:space="preserve">
+    <value>Discard</value>
+  </data>
+  <data name="ExternalToolConfirmDiscard" xml:space="preserve">
+    <value>Discard every change made to the external tools since they were last saved?</value>
+  </data>
+  <data name="ExternalToolUnsavedOnClose" xml:space="preserve">
+    <value>The external tools have changes that are not saved yet. Save them?</value>
+  </data>
   <data name="StartChat" xml:space="preserve">
     <value>Start Chat (VNC)</value>
   </data>

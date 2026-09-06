@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Windows.Forms;
 using BrightIdeasSoftware;
@@ -20,6 +21,11 @@ namespace mRemoteNG.UI.Window
         private readonly ExternalAppsSaver _externalAppsSaver;
         private readonly ThemeManager _themeManager;
         private readonly FullyObservableCollection<ExternalTool> _currentlySelectedExternalTools;
+
+        /// <summary>
+        /// The tools as they stand on disk, to go back to.
+        /// </summary>
+        private List<ExternalTool> _savedState = [];
 
         public ExternalToolsWindow()
         {
@@ -44,6 +50,58 @@ namespace mRemoteNG.UI.Window
             ApplyLanguage();
             ApplyTheme();
             UpdateToolsListObjView();
+            TakeSnapshot();
+        }
+
+        /// <summary>
+        /// Remembers the tools as they are now, so a discard has something to go back to.
+        /// </summary>
+        private void TakeSnapshot()
+        {
+            _savedState = Runtime.ExternalToolsService.ExternalTools.Select(Copy).ToList();
+        }
+
+        private static ExternalTool Copy(ExternalTool tool) =>
+            new(tool.DisplayName, tool.FileName, tool.Arguments, tool.WorkingDir, tool.RunElevated)
+            {
+                WaitForExit = tool.WaitForExit,
+                TryIntegrate = tool.TryIntegrate,
+                ShowOnToolbar = tool.ShowOnToolbar
+            };
+
+        private static bool Same(ExternalTool a, ExternalTool b) =>
+            a.DisplayName == b.DisplayName &&
+            a.FileName == b.FileName &&
+            a.Arguments == b.Arguments &&
+            a.WorkingDir == b.WorkingDir &&
+            a.WaitForExit == b.WaitForExit &&
+            a.TryIntegrate == b.TryIntegrate &&
+            a.ShowOnToolbar == b.ShowOnToolbar &&
+            a.RunElevated == b.RunElevated;
+
+        private bool HasUnsavedChanges()
+        {
+            IList<ExternalTool> current = Runtime.ExternalToolsService.ExternalTools;
+
+            if (current.Count != _savedState.Count) return true;
+
+            return current.Where((tool, i) => !Same(tool, _savedState[i])).Any();
+        }
+
+        private void SaveTools()
+        {
+            _externalAppsSaver.Save(Runtime.ExternalToolsService.ExternalTools);
+            TakeSnapshot();
+        }
+
+        private void RestoreSnapshot()
+        {
+            _currentlySelectedExternalTools.Clear();
+            Runtime.ExternalToolsService.ExternalTools.Clear();
+            Runtime.ExternalToolsService.ExternalTools.AddRange(_savedState.Select(Copy));
+
+            UpdateToolsListObjView();
+            UpdateToolstipControls();
         }
 
         private void ApplyLanguage()
@@ -54,6 +112,8 @@ namespace mRemoteNG.UI.Window
             NewToolToolstripButton.Text = Language._New;
             DeleteToolToolstripButton.Text = Language.Delete;
             LaunchToolToolstripButton.Text = Language._Launch;
+            SaveToolstripButton.Text = Language.Save;
+            DiscardToolstripButton.Text = Language.ExternalToolDiscard;
 
             DisplayNameColumnHeader.Text = Language.DisplayName;
             FilenameColumnHeader.Text = Language.Filename;
@@ -99,6 +159,12 @@ namespace mRemoteNG.UI.Window
             PropertiesGroupBox.BackColor =
                 _themeManager.ActiveTheme.Theme.ColorPalette.CommandBarMenuDefault.Background;
             PropertiesGroupBox.ForeColor = _themeManager.ActiveTheme.Theme.ColorPalette.CommandBarMenuDefault.Text;
+
+            // Windows draws the selection of an unfocused list in a pale grey that all but
+            // disappears against a dark row, so a row selected while the editor below has the
+            // focus looked like no row at all. Same colours as the focused selection.
+            ToolsListObjView.UnfocusedSelectedBackColor = ToolsListObjView.SelectedBackColorOrDefault;
+            ToolsListObjView.UnfocusedSelectedForeColor = ToolsListObjView.SelectedForeColorOrDefault;
         }
 
         private void UpdateToolsListObjView()
@@ -170,9 +236,39 @@ namespace mRemoteNG.UI.Window
             UpdateEditorControls();
         }
 
+        /// <summary>
+        /// Asks what to do with unsaved edits instead of deciding alone.
+        /// </summary>
+        /// <remarks>
+        /// This window has no OK and no Cancel, because it is a docked panel and not a dialog:
+        /// New added a row on the spot, every field was committed as the focus left it, and the
+        /// lot was written to disk when the tab was closed. There was no way to back out of a
+        /// mistake and nothing said when anything had been stored.
+        /// </remarks>
+        private void ExternalTools_FormClosing(object sender, FormClosingEventArgs e)
+        {
+            if (!HasUnsavedChanges()) return;
+
+            DialogResult answer = MessageBox.Show(FrmMain.Default, Language.ExternalToolUnsavedOnClose,
+                                                  Language.ExternalTool, MessageBoxButtons.YesNoCancel,
+                                                  MessageBoxIcon.Question);
+
+            switch (answer)
+            {
+                case DialogResult.Yes:
+                    SaveTools();
+                    break;
+                case DialogResult.No:
+                    RestoreSnapshot();
+                    break;
+                default:
+                    e.Cancel = true;
+                    break;
+            }
+        }
+
         private void ExternalTools_FormClosed(object sender, FormClosedEventArgs e)
         {
-            _externalAppsSaver.Save(Runtime.ExternalToolsService.ExternalTools);
             _themeManager.ThemeChanged -= ApplyTheme;
             _currentlySelectedExternalTools.CollectionUpdated -= CurrentlySelectedExternalToolsOnCollectionUpdated;
         }
@@ -181,11 +277,29 @@ namespace mRemoteNG.UI.Window
         {
             try
             {
-                ExternalTool externalTool = new(Language.ExternalToolDefaultName);
+                // Asked for up front rather than dropping a row called "New External Tool" into
+                // the list and leaving it there to be found later.
+                string name;
+                using (FrmInputBox nameBox = new(Language.NewExternalTool, Language.ExternalToolNamePrompt,
+                                                 Language.ExternalToolDefaultName))
+                {
+                    if (nameBox.ShowDialog() != DialogResult.OK || string.IsNullOrWhiteSpace(nameBox.returnValue))
+                        return;
+
+                    name = nameBox.returnValue.Trim();
+                }
+
+                ExternalTool externalTool = new(name);
                 Runtime.ExternalToolsService.ExternalTools.Add(externalTool);
                 UpdateToolsListObjView();
+
+                // The list keeps the focus, so the new row is drawn as the active row. The name
+                // was asked for up front, so there is nothing left to type in the editor below -
+                // focusing it there only left the new row marked in a colour barely visible on a
+                // dark theme.
+                ToolsListObjView.Focus();
                 ToolsListObjView.SelectedObject = externalTool;
-                DisplayNameTextBox.Focus();
+                ToolsListObjView.EnsureModelVisible(externalTool);
             }
             catch (Exception ex)
             {
@@ -237,6 +351,37 @@ namespace mRemoteNG.UI.Window
         private void LaunchTool_Click(object sender, EventArgs e)
         {
             LaunchTool();
+        }
+
+        private void SaveTools_Click(object sender, EventArgs e)
+        {
+            try
+            {
+                SaveTools();
+            }
+            catch (Exception ex)
+            {
+                Runtime.MessageCollector.AddExceptionMessage("UI.Window.ExternalTools.SaveTools_Click() failed.", ex);
+            }
+        }
+
+        private void DiscardTools_Click(object sender, EventArgs e)
+        {
+            try
+            {
+                if (!HasUnsavedChanges()) return;
+
+                if (MessageBox.Show(FrmMain.Default, Language.ExternalToolConfirmDiscard, Language.ExternalTool,
+                                    MessageBoxButtons.YesNo, MessageBoxIcon.Question) != DialogResult.Yes)
+                    return;
+
+                RestoreSnapshot();
+            }
+            catch (Exception ex)
+            {
+                Runtime.MessageCollector.AddExceptionMessage("UI.Window.ExternalTools.DiscardTools_Click() failed.",
+                                                             ex);
+            }
         }
 
         private void ToolsListObjView_SelectedIndexChanged(object sender, EventArgs e)
