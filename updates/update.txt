@@ -12,5 +12,5 @@
 Version: 1.80.0.0
 dURL: https://github.com/lovaszlaszlo/mRemoteNG/releases/download/v1.80/mRemoteNG-1.80-dbsystem-hu-x64-portable.zip
 clURL: https://raw.githubusercontent.com/lovaszlaszlo/mRemoteNG/dbsystem/main/updates/changelog.txt
-Checksum: 0000000000000000000000000000000000000000000000000000000000000000
+Checksum: CB7DEC98D76F46A7E550245BF6CA844C737DF1B68652510C608F5EC2AB2952EF
 CertificateThumbprint: 
