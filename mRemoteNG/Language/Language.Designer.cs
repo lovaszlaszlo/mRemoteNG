@@ -6810,6 +6810,42 @@ namespace mRemoteNG.Resources.Language {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Connection....
+        /// </summary>
+        internal static string SshTransferPickConnection {
+            get {
+                return ResourceManager.GetString("SshTransferPickConnection", resourceCulture);
+            }
+        }
+
+        /// <summary>
+        ///   Looks up a localized string similar to Pick a connection.
+        /// </summary>
+        internal static string SshTransferPickTitle {
+            get {
+                return ResourceManager.GetString("SshTransferPickTitle", resourceCulture);
+            }
+        }
+
+        /// <summary>
+        ///   Looks up a localized string similar to There are no SSH connections in the tree to take a host from..
+        /// </summary>
+        internal static string SshTransferNoSshConnections {
+            get {
+                return ResourceManager.GetString("SshTransferNoSshConnections", resourceCulture);
+            }
+        }
+
+        /// <summary>
+        ///   Looks up a localized string similar to The transfer authenticates with a password, so a server that only accepts keys will refuse it..
+        /// </summary>
+        internal static string SshTransferPasswordNote {
+            get {
+                return ResourceManager.GetString("SshTransferPasswordNote", resourceCulture);
+            }
+        }
+
+        /// <summary>
         ///   Looks up a localized string similar to SSH Options.
         /// </summary>
         internal static string SshOptions {

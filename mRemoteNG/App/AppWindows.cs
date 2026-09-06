@@ -66,8 +66,11 @@ namespace mRemoteNG.App
                         OptionsFormWindow.Show(dockPanel);
                         break;
                     case WindowType.SSHTransfer:
-                        if (SshtransferForm == null || SshtransferForm.IsDisposed)
-                            SshtransferForm = new SSHTransferWindow();
+                        // A new one every time, the way the port scan window works. Reusing a
+                        // single instance meant a transfer opened from a connection typed its host
+                        // over whatever was already in the window - so a transfer set up from the
+                        // Tools menu was silently replaced the moment a second one was started.
+                        SshtransferForm = new SSHTransferWindow();
                         SshtransferForm.Show(dockPanel);
                         break;
                     case WindowType.Update:

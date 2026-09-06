@@ -1155,11 +1155,7 @@ namespace mRemoteNG.UI.Controls
             try
             {
                 AppWindows.Show(WindowType.SSHTransfer);
-                AppWindows.SshtransferForm.Hostname = _connectionTree.SelectedNode.Hostname;
-                AppWindows.SshtransferForm.Username = _connectionTree.SelectedNode.Username;
-                //App.Windows.SshtransferForm.Password = _connectionTree.SelectedNode.Password.ConvertToUnsecureString();
-                AppWindows.SshtransferForm.Password = _connectionTree.SelectedNode.Password;
-                AppWindows.SshtransferForm.Port = Convert.ToString(_connectionTree.SelectedNode.Port);
+                AppWindows.SshtransferForm.LoadFrom(_connectionTree.SelectedNode);
             }
             catch (Exception ex)
             {

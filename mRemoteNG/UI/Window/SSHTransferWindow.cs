@@ -1,6 +1,12 @@
 ﻿using mRemoteNG.App;
 using System;
+using System.Collections.Generic;
 using System.IO;
+using System.Linq;
+using mRemoteNG.Connection;
+using mRemoteNG.Connection.Protocol;
+using mRemoteNG.Container;
+using mRemoteNG.Tree;
 using System.Threading;
 using mRemoteNG.Tools;
 using WeifenLuo.WinFormsUI.Docking;
@@ -34,6 +40,8 @@ namespace mRemoteNG.UI.Window
         private MrngRadioButton radProtSCP;
         private MrngRadioButton radProtSFTP;
         private MrngGroupBox grpConnection;
+        private MrngButton btnPickConnection;
+        private MrngLabel lblPasswordNote;
         private MrngButton btnBrowse;
         private MrngLabel lblRemoteFile;
         private MrngTextBox txtRemoteFile;
@@ -55,6 +63,8 @@ namespace mRemoteNG.UI.Window
             lblRemoteFile = new MrngLabel();
             btnBrowse = new MrngButton();
             grpConnection = new MrngGroupBox();
+            btnPickConnection = new MrngButton();
+            lblPasswordNote = new MrngLabel();
             radProtSFTP = new MrngRadioButton();
             radProtSCP = new MrngRadioButton();
             lblProtocol = new MrngLabel();
@@ -112,7 +122,15 @@ namespace mRemoteNG.UI.Window
             btnTransfer._mice = MrngButton.MouseState.HOVER;
             btnTransfer.FlatStyle = FlatStyle.Flat;
             btnTransfer.Image = Properties.Resources.SyncArrow_16x;
-            btnTransfer.ImageAlign = System.Drawing.ContentAlignment.MiddleLeft;
+            // The image and the caption were drawn in the same place: by default a button
+            // overlays them, so the icon sat under the word. Laying them out one after the other
+            // is not enough on its own - with the image pinned to the left of its own half it
+            // ends up against the button's border, touching the text. Both centred, the pair is
+            // centred in the button as a unit, and the padding keeps them off the frame.
+            btnTransfer.ImageAlign = System.Drawing.ContentAlignment.MiddleCenter;
+            btnTransfer.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
+            btnTransfer.TextImageRelation = TextImageRelation.ImageBeforeText;
+            btnTransfer.Padding = new Padding(4, 0, 4, 0);
             btnTransfer.Location = new System.Drawing.Point(562, 145);
             btnTransfer.Name = "btnTransfer";
             btnTransfer.Size = new System.Drawing.Size(100, 24);
@@ -164,8 +182,31 @@ namespace mRemoteNG.UI.Window
             btnBrowse.UseVisualStyleBackColor = true;
             btnBrowse.Click += new EventHandler(btnBrowse_Click);
             // 
+            // btnPickConnection
+            //
+            btnPickConnection._mice = MrngButton.MouseState.HOVER;
+            btnPickConnection.FlatStyle = FlatStyle.Flat;
+            btnPickConnection.Location = new System.Drawing.Point(582, 18);
+            btnPickConnection.Name = "btnPickConnection";
+            btnPickConnection.Size = new System.Drawing.Size(80, 24);
+            btnPickConnection.TabIndex = 15;
+            btnPickConnection.Text = "Connection...";
+            btnPickConnection.UseVisualStyleBackColor = true;
+            btnPickConnection.Click += btnPickConnection_Click;
+            //
+            // lblPasswordNote
+            //
+            lblPasswordNote.AutoSize = true;
+            lblPasswordNote.Location = new System.Drawing.Point(9, 136);
+            lblPasswordNote.Name = "lblPasswordNote";
+            lblPasswordNote.Size = new System.Drawing.Size(650, 13);
+            lblPasswordNote.TabIndex = 45;
+            lblPasswordNote.Text = "The transfer authenticates with a password.";
+            //
             // grpConnection
-            // 
+            //  
+            grpConnection.Controls.Add(btnPickConnection);
+            grpConnection.Controls.Add(lblPasswordNote);
             grpConnection.Controls.Add(radProtSFTP);
             grpConnection.Controls.Add(radProtSCP);
             grpConnection.Controls.Add(lblProtocol);
@@ -273,6 +314,7 @@ namespace mRemoteNG.UI.Window
                                                         System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             txtHost.Location = new System.Drawing.Point(105, 19);
             txtHost.Name = "txtHost";
+            txtHost.TextChanged += txtHost_TextChanged;
             txtHost.Size = new System.Drawing.Size(471, 22);
             txtHost.TabIndex = 20;
             // 
@@ -397,8 +439,12 @@ namespace mRemoteNG.UI.Window
             lblHost.Text = Language.Host + ":";
             btnTransfer.Text = Language.Transfer;
             btnCancel.Text = Language._Cancel;
-            TabText = Language.Transfer;
-            Text = Language.Transfer;
+            btnPickConnection.Text = Language.SshTransferPickConnection;
+            lblPasswordNote.Text = Language.SshTransferPasswordNote;
+            // Not Language.Transfer: that is the word on the button below, and a tab reading
+            // "Transfer" said nothing about which tool it was.
+            TabText = Language.SshFileTransfer;
+            Text = Language.SshFileTransfer;
         }
 
         #endregion
@@ -747,6 +793,198 @@ namespace mRemoteNG.UI.Window
             else if (radProtSFTP.Checked)
             {
                 StartTransfer(SecureTransfer.SSHTransferProtocol.SFTP);
+            }
+        }
+
+        /// <summary>
+        /// Fills the connection fields in from a stored connection, and names the tab after it.
+        /// </summary>
+        /// <remarks>
+        /// The four assignments used to sit in the two callers, copied. The tab title is here
+        /// because several transfers can be open at once now, and every one of them saying
+        /// "SSH File Transfer" would leave no way to tell them apart.
+        /// </remarks>
+        public void LoadFrom(ConnectionInfo connectionInfo)
+        {
+            if (connectionInfo == null) return;
+
+            _loadingConnection = true;
+            try
+            {
+                Hostname = connectionInfo.Hostname;
+                Username = connectionInfo.Username;
+                Password = connectionInfo.Password;
+                Port = Convert.ToString(connectionInfo.Port);
+            }
+            finally
+            {
+                _loadingConnection = false;
+            }
+
+            _connectionName = connectionInfo.Name;
+            UpdateCaption();
+        }
+
+        private string _connectionName;
+        private bool _loadingConnection;
+
+        private void txtHost_TextChanged(object sender, EventArgs e)
+        {
+            // Typed over by hand: whatever connection this tab started from is no longer what it
+            // is pointing at, so the name stops standing for it.
+            if (!_loadingConnection) _connectionName = null;
+
+            UpdateCaption();
+        }
+
+        /// <summary>
+        /// Names the tab after whatever this transfer is aimed at.
+        /// </summary>
+        /// <remarks>
+        /// A dock tab is a few centimetres wide and truncates with an ellipsis, so a caption of
+        /// "SSH File Transfer - Bolt" showed the half that reads the same on every one of these
+        /// tabs and cut off the half that tells them apart. The tab carries the transfer icon
+        /// already; the full description goes in the tooltip.
+        /// </remarks>
+        private void UpdateCaption()
+        {
+            string label = !string.IsNullOrEmpty(_connectionName) ? _connectionName : txtHost.Text.Trim();
+
+            if (string.IsNullOrEmpty(label))
+            {
+                TabText = Language.SshFileTransfer;
+                Text = TabText;
+                ToolTipText = TabText;
+                return;
+            }
+
+            TabText = label;
+            Text = Language.SshFileTransfer + " - " + label;
+            ToolTipText = Text;
+        }
+
+        private void btnPickConnection_Click(object sender, EventArgs e)
+        {
+            ConnectionInfo[] candidates = SshConnections().ToArray();
+
+            if (candidates.Length == 0)
+            {
+                MessageBox.Show(this, Language.SshTransferNoSshConnections, Language.SshFileTransfer,
+                                MessageBoxButtons.OK, MessageBoxIcon.Information);
+                return;
+            }
+
+            using ConnectionPicker picker = new(candidates);
+            if (picker.ShowDialog(this) != DialogResult.OK || picker.SelectedConnection == null) return;
+
+            LoadFrom(picker.SelectedConnection);
+        }
+
+        /// <summary>
+        /// Every connection in the tree this window could transfer a file to.
+        /// </summary>
+        /// <remarks>
+        /// The same four fields are already filled in when the window is opened from a connection -
+        /// from the tree's context menu, or from an open session. Opened from the Tools menu there
+        /// is no connection to take them from, and the only way in was to type all four by hand,
+        /// including a password that is already stored a few pixels away.
+        /// </remarks>
+        private static IEnumerable<ConnectionInfo> SshConnections()
+        {
+            ConnectionTreeModel tree = Runtime.ConnectionsService.ConnectionTreeModel;
+            if (tree == null) yield break;
+
+            foreach (ConnectionInfo connection in Flatten(tree.RootNodes))
+            {
+                if (connection.Protocol is ProtocolType.SSH1 or ProtocolType.SSH2 or ProtocolType.SSHNative)
+                    yield return connection;
+            }
+        }
+
+        private static IEnumerable<ConnectionInfo> Flatten(IEnumerable<ConnectionInfo> nodes)
+        {
+            foreach (ConnectionInfo node in nodes)
+            {
+                if (node is ContainerInfo container)
+                {
+                    foreach (ConnectionInfo child in Flatten(container.Children))
+                        yield return child;
+
+                    continue;
+                }
+
+                yield return node;
+            }
+        }
+
+        /// <summary>
+        /// Picks one connection out of the tree, showing where in the tree it sits.
+        /// </summary>
+        private sealed class ConnectionPicker : Form
+        {
+            private readonly ListBox _connections;
+            private readonly ConnectionInfo[] _items;
+
+            public ConnectionPicker(ConnectionInfo[] connections)
+            {
+                _items = connections;
+
+                Text = Language.SshTransferPickTitle;
+                FormBorderStyle = FormBorderStyle.FixedDialog;
+                StartPosition = FormStartPosition.CenterParent;
+                MinimizeBox = false;
+                MaximizeBox = false;
+                ShowInTaskbar = false;
+                ClientSize = new System.Drawing.Size(460, 300);
+
+                _connections = new ListBox { Dock = DockStyle.Fill, IntegralHeight = false };
+                _connections.Items.AddRange(connections.Select(Describe).Cast<object>().ToArray());
+                if (_connections.Items.Count > 0) _connections.SelectedIndex = 0;
+                _connections.DoubleClick += (_, _) => Accept();
+
+                FlowLayoutPanel buttons = new()
+                {
+                    Dock = DockStyle.Bottom,
+                    FlowDirection = FlowDirection.RightToLeft,
+                    AutoSize = true,
+                    Padding = new Padding(6)
+                };
+
+                Button cancel = new() { AutoSize = true, DialogResult = DialogResult.Cancel, Text = Language._Cancel };
+                Button ok = new() { AutoSize = true, Text = Language._Ok };
+                ok.Click += (_, _) => Accept();
+
+                buttons.Controls.Add(cancel);
+                buttons.Controls.Add(ok);
+
+                Controls.Add(_connections);
+                Controls.Add(buttons);
+
+                AcceptButton = ok;
+                CancelButton = cancel;
+            }
+
+            public ConnectionInfo SelectedConnection =>
+                _connections.SelectedIndex >= 0 ? _items[_connections.SelectedIndex] : null;
+
+            /// <summary>
+            /// Two machines often carry the same name in different folders, so the folder is part
+            /// of the line; the host is there because that is what the transfer actually uses.
+            /// </summary>
+            private static string Describe(ConnectionInfo connection)
+            {
+                string folder = connection.Parent?.Name;
+                string where = string.IsNullOrEmpty(folder) ? connection.Name : folder + " / " + connection.Name;
+
+                return string.IsNullOrEmpty(connection.Hostname) ? where : where + "  -  " + connection.Hostname;
+            }
+
+            private void Accept()
+            {
+                if (SelectedConnection == null) return;
+
+                DialogResult = DialogResult.OK;
+                Close();
             }
         }
 

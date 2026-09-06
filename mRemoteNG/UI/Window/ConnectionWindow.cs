@@ -790,13 +790,7 @@ namespace mRemoteNG.UI.Window
                 if (interfaceControl == null) return;
 
                 AppWindows.Show(WindowType.SSHTransfer);
-                ConnectionInfo connectionInfo = interfaceControl.Info;
-
-                AppWindows.SshtransferForm.Hostname = connectionInfo.Hostname;
-                AppWindows.SshtransferForm.Username = connectionInfo.Username;
-                //App.Windows.SshtransferForm.Password = connectionInfo.Password.ConvertToUnsecureString();
-                AppWindows.SshtransferForm.Password = connectionInfo.Password;
-                AppWindows.SshtransferForm.Port = Convert.ToString(connectionInfo.Port);
+                AppWindows.SshtransferForm.LoadFrom(interfaceControl.Info);
             }
             catch (Exception ex)
             {

@@ -854,6 +854,18 @@ See the Microsoft Support article at http://support.microsoft.com/kb/811833 for 
   <data name="SshFileTransfer" xml:space="preserve">
     <value>SSH File Transfer</value>
   </data>
+  <data name="SshTransferPickConnection" xml:space="preserve">
+    <value>Connection...</value>
+  </data>
+  <data name="SshTransferPickTitle" xml:space="preserve">
+    <value>Pick a connection</value>
+  </data>
+  <data name="SshTransferNoSshConnections" xml:space="preserve">
+    <value>There are no SSH connections in the tree to take a host from.</value>
+  </data>
+  <data name="SshTransferPasswordNote" xml:space="preserve">
+    <value>The transfer authenticates with a password, so a server that only accepts keys will refuse it.</value>
+  </data>
   <data name="StartChat" xml:space="preserve">
     <value>Start Chat (VNC)</value>
   </data>

@@ -849,6 +849,10 @@
   <data name="SQLServer" xml:space="preserve"><value>SQL Server</value></data>
   <data name="SshBackgroundTransferFailed" xml:space="preserve"><value>Az SSH háttérátvitel sikertelen!</value></data>
   <data name="SshFileTransfer" xml:space="preserve"><value>SSH fájlátvitel</value></data>
+  <data name="SshTransferPickConnection" xml:space="preserve"><value>Kapcsolat...</value></data>
+  <data name="SshTransferPickTitle" xml:space="preserve"><value>Kapcsolat választása</value></data>
+  <data name="SshTransferNoSshConnections" xml:space="preserve"><value>Nincs a fán olyan SSH kapcsolat, amiből ki lehetne tölteni a mezőket.</value></data>
+  <data name="SshTransferPasswordNote" xml:space="preserve"><value>Az átvitel jelszóval hitelesít, tehát a csak kulcsot elfogadó szerver elutasítja.</value></data>
   <data name="SshTransferFailed" xml:space="preserve"><value>Az SSH-átvitel sikertelen.</value></data>
   <data name="StackTrace" xml:space="preserve"><value>Hívási verem</value></data>
   <data name="StartChat" xml:space="preserve"><value>Csevegés indítása (VNC)</value></data>
@@ -878,7 +882,7 @@
   <data name="TitleSelectPanel" xml:space="preserve"><value>Panel választása</value></data>
   <data name="TrackActiveConnectionInConnectionTree" xml:space="preserve"><value>Az aktív kapcsolat követése a kapcsolatfában</value></data>
   <data name="Transfer" xml:space="preserve"><value>Átvitel</value></data>
-  <data name="TransferFile" xml:space="preserve"><value>Fájlátvitel (SSH)</value></data>
+  <data name="TransferFile" xml:space="preserve"><value>SSH fájlátvitel</value></data>
   <data name="TrustServerCertificate" xml:space="preserve"><value>Kiszolgálói tanúsítvány megbízhatónak tekintése:</value></data>
   <data name="TryToIntegrate" xml:space="preserve"><value>Integrálás megkísérlése</value></data>
   <data name="UltraVNCSCListeningPort" xml:space="preserve"><value>UltraVNC SingleClick port:</value></data>
