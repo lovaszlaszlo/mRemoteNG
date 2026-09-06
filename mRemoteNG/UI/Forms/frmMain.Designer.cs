@@ -45,7 +45,6 @@ namespace mRemoteNG.UI.Forms
             this.mMenSep3 = new System.Windows.Forms.ToolStripSeparator();
             this.tsContainer = new System.Windows.Forms.ToolStripContainer();
             this._quickConnectToolStrip = new mRemoteNG.UI.Controls.QuickConnectToolStrip();
-            this._multiSshToolStrip = new mRemoteNG.UI.Controls.MultiSshToolStrip();
             this._externalToolsToolStrip = new mRemoteNG.UI.Controls.ExternalToolsToolStrip();
             this.tmrAutoSave = new System.Windows.Forms.Timer(this.components);
             this.vsToolStripExtender = new WeifenLuo.WinFormsUI.Docking.VisualStudioToolStripExtender(this.components);
@@ -112,7 +111,6 @@ namespace mRemoteNG.UI.Forms
             this.viewMenu.Size = new System.Drawing.Size(44, 19);
             this.viewMenu.Text = "&View";
             this.viewMenu.TsExternalTools = null;
-            this.viewMenu.TsMultiSsh = null;
             this.viewMenu.TsQuickConnect = null;
             this.viewMenu.DropDownOpening += new System.EventHandler(this.ViewMenu_Opening);
             // 
@@ -156,7 +154,6 @@ namespace mRemoteNG.UI.Forms
             // 
             this.tsContainer.TopToolStripPanel.Controls.Add(this.msMain);
             this.tsContainer.TopToolStripPanel.Controls.Add(this._quickConnectToolStrip);
-            this.tsContainer.TopToolStripPanel.Controls.Add(this._multiSshToolStrip);
             this.tsContainer.TopToolStripPanel.Controls.Add(this._externalToolsToolStrip);
             this.tsContainer.TopToolStripPanel.RenderMode = System.Windows.Forms.ToolStripRenderMode.Professional;
             // 
@@ -169,15 +166,6 @@ namespace mRemoteNG.UI.Forms
             this._quickConnectToolStrip.Name = "_quickConnectToolStrip";
             this._quickConnectToolStrip.Size = new System.Drawing.Size(395, 25);
             this._quickConnectToolStrip.TabIndex = 18;
-            // 
-            // _multiSshToolStrip
-            // 
-            this._multiSshToolStrip.Dock = System.Windows.Forms.DockStyle.None;
-            this._multiSshToolStrip.Location = new System.Drawing.Point(3, 0);
-            this._multiSshToolStrip.MinimumSize = new System.Drawing.Size(300, 0);
-            this._multiSshToolStrip.Name = "_multiSshToolStrip";
-            this._multiSshToolStrip.Size = new System.Drawing.Size(376, 25);
-            this._multiSshToolStrip.TabIndex = 1;
             // 
             // _externalToolsToolStrip
             // 
@@ -268,7 +256,6 @@ namespace mRemoteNG.UI.Forms
         private Menu.HelpMenu helpMenu;
         internal mRemoteNG.UI.Controls.QuickConnectToolStrip _quickConnectToolStrip;
         internal mRemoteNG.UI.Controls.ExternalToolsToolStrip _externalToolsToolStrip;
-		internal mRemoteNG.UI.Controls.MultiSshToolStrip _multiSshToolStrip;
         //theming support
         private WeifenLuo.WinFormsUI.Docking.VisualStudioToolStripExtender vsToolStripExtender;
         private System.Windows.Forms.ToolStripMenuItem tsModeAdmin;

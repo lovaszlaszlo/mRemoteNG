@@ -33,7 +33,6 @@ namespace mRemoteNG.App
 
         public static void Cleanup(Control quickConnectToolStrip,
                                    ExternalToolsToolStrip externalToolsToolStrip,
-                                   MultiSshToolStrip multiSshToolStrip,
                                    FrmMain frmMain)
         {
             try
@@ -41,7 +40,7 @@ namespace mRemoteNG.App
                 StopPuttySessionWatcher();
                 DisposeNotificationAreaIcon();
                 SaveConnections();
-                SaveSettings(quickConnectToolStrip, externalToolsToolStrip, multiSshToolStrip, frmMain);
+                SaveSettings(quickConnectToolStrip, externalToolsToolStrip, frmMain);
                 UnregisterBrowsers();
             }
             catch (Exception ex)
@@ -94,11 +93,9 @@ namespace mRemoteNG.App
 
         private static void SaveSettings(Control quickConnectToolStrip,
                                          ExternalToolsToolStrip externalToolsToolStrip,
-                                         MultiSshToolStrip multiSshToolStrip,
                                          FrmMain frmMain)
         {
-            Config.Settings.SettingsSaver.SaveSettings(quickConnectToolStrip, externalToolsToolStrip, multiSshToolStrip,
-                                                       frmMain);
+            Config.Settings.SettingsSaver.SaveSettings(quickConnectToolStrip, externalToolsToolStrip, frmMain);
         }
 
         private static void UnregisterBrowsers()

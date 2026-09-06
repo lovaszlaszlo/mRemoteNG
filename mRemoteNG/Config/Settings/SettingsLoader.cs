@@ -26,18 +26,16 @@ namespace mRemoteNG.Config.Settings
         private readonly MenuStrip _mainMenu;
         private readonly QuickConnectToolStrip _quickConnectToolStrip;
         private readonly ExternalToolsToolStrip _externalToolsToolStrip;
-        private readonly MultiSshToolStrip _multiSshToolStrip;
 
         private FrmMain MainForm { get; }
 
 
-        public SettingsLoader(FrmMain mainForm, MessageCollector messageCollector, QuickConnectToolStrip quickConnectToolStrip, ExternalToolsToolStrip externalToolsToolStrip, MultiSshToolStrip multiSshToolStrip, MenuStrip mainMenu)
+        public SettingsLoader(FrmMain mainForm, MessageCollector messageCollector, QuickConnectToolStrip quickConnectToolStrip, ExternalToolsToolStrip externalToolsToolStrip, MenuStrip mainMenu)
         {
             MainForm = mainForm ?? throw new ArgumentNullException(nameof(mainForm));
             _messageCollector = messageCollector ?? throw new ArgumentNullException(nameof(messageCollector));
             _quickConnectToolStrip = quickConnectToolStrip ?? throw new ArgumentNullException(nameof(quickConnectToolStrip));
             _externalToolsToolStrip = externalToolsToolStrip ?? throw new ArgumentNullException(nameof(externalToolsToolStrip));
-            _multiSshToolStrip = multiSshToolStrip ?? throw new ArgumentNullException(nameof(multiSshToolStrip));
             _mainMenu = mainMenu ?? throw new ArgumentNullException(nameof(mainMenu));
             _externalAppsLoader = new ExternalAppsLoader(MainForm, messageCollector, _externalToolsToolStrip);
         }
@@ -249,7 +247,6 @@ namespace mRemoteNG.Config.Settings
             AddMainMenuPanel();
             AddExternalAppsPanel();
             AddQuickConnectPanel();
-            AddMultiSshPanel();
         }
 
         /// <summary>
@@ -263,7 +260,6 @@ namespace mRemoteNG.Config.Settings
             tempToolStrip.Join(_mainMenu);
             tempToolStrip.Join(_quickConnectToolStrip);
             tempToolStrip.Join(_externalToolsToolStrip);
-            tempToolStrip.Join(_multiSshToolStrip);
         }
 
         private void AddMainMenuPanel()
@@ -287,20 +283,6 @@ namespace mRemoteNG.Config.Settings
             _externalToolsToolStrip.Visible = Properties.Settings.Default.ExtAppsTBVisible;
             ToolStripPanel toolStripPanel = ToolStripPanelFromString(Properties.Settings.Default.ExtAppsTBParentDock);
             toolStripPanel.Join(_externalToolsToolStrip, Properties.Settings.Default.ExtAppsTBLocation);
-        }
-
-        private void AddMultiSshPanel()
-        {
-            SetToolstripGripStyle(_multiSshToolStrip);
-            // Never shown, and no menu entry turns it on any more. It typed a command into
-            // every open session at once - but only into PuTTY windows, by posting Windows
-            // messages to them, so with every connection on the native protocol it sent
-            // commands nowhere. Made to work again earlier today, then taken out: running one
-            // command on many machines is a real job, and this is not the tool for it - it
-            // shows no output, reports no failure, and says nothing about where it landed.
-            _multiSshToolStrip.Visible = false;
-            ToolStripPanel toolStripPanel = ToolStripPanelFromString(Properties.Settings.Default.MultiSshToolbarParentDock);
-            toolStripPanel.Join(_multiSshToolStrip, Properties.Settings.Default.MultiSshToolbarLocation);
         }
 
         private void SetToolstripGripStyle(ToolStrip toolbar)

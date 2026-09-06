@@ -1900,42 +1900,6 @@ namespace mRemoteNG.Properties {
         
         [global::System.Configuration.UserScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("0, 0")]
-        public global::System.Drawing.Point MultiSshToolbarLocation {
-            get {
-                return ((global::System.Drawing.Point)(this["MultiSshToolbarLocation"]));
-            }
-            set {
-                this["MultiSshToolbarLocation"] = value;
-            }
-        }
-        
-        [global::System.Configuration.UserScopedSettingAttribute()]
-        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("")]
-        public string MultiSshToolbarParentDock {
-            get {
-                return ((string)(this["MultiSshToolbarParentDock"]));
-            }
-            set {
-                this["MultiSshToolbarParentDock"] = value;
-            }
-        }
-        
-        [global::System.Configuration.UserScopedSettingAttribute()]
-        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("False")]
-        public bool MultiSshToolbarVisible {
-            get {
-                return ((bool)(this["MultiSshToolbarVisible"]));
-            }
-            set {
-                this["MultiSshToolbarVisible"] = value;
-            }
-        }
-        
-        [global::System.Configuration.UserScopedSettingAttribute()]
-        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
         [global::System.Configuration.DefaultSettingValueAttribute("False")]
         public bool TrackActiveConnectionInConnectionTree {
             get {
@@ -2279,18 +2243,6 @@ namespace mRemoteNG.Properties {
             }
             set {
                 this["ViewMenuExternalTools"] = value;
-            }
-        }
-        
-        [global::System.Configuration.UserScopedSettingAttribute()]
-        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("False")]
-        public bool ViewMenuMultiSSH {
-            get {
-                return ((bool)(this["ViewMenuMultiSSH"]));
-            }
-            set {
-                this["ViewMenuMultiSSH"] = value;
             }
         }
         

@@ -27,7 +27,6 @@ namespace mRemoteNG.UI.Menu
 
         public ToolStrip TsExternalTools { get; set; }
         public ToolStrip TsQuickConnect { get; set; }
-        public ToolStrip TsMultiSsh { get; set; }
         public FullscreenHandler FullscreenHandler { get; set; }
         public FrmMain MainForm { get; set; }
 
@@ -136,9 +135,6 @@ namespace mRemoteNG.UI.Menu
             _mMenViewExtAppsToolbar.Size = new System.Drawing.Size(228, 22);
             _mMenViewExtAppsToolbar.Text = Language.ExternalToolsToolbar;
             _mMenViewExtAppsToolbar.Click += mMenViewExtAppsToolbar_Click;
-            // 
-            // mMenViewMultiSSHToolbar
-            // 
             // 
             // mMenViewFullscreen
             // 
