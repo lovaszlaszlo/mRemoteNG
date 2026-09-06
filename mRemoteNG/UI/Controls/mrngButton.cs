@@ -119,18 +119,40 @@ namespace mRemoteNG.UI.Controls
             e.Graphics.DrawRectangle(new Pen(border, 1), 0, 0, Width - 1, Height - 1);
             e.Graphics.SmoothingMode = SmoothingMode.AntiAlias;
             e.Graphics.TextRenderingHint = TextRenderingHint.AntiAlias;
-            //Warning. the app doesnt use many images in buttons so this positions are kinda tailored just for the used by the app
-            //not by general usage of iamges in buttons
-            if (Image != null)
+            // The image and the caption are placed together, as one block centred in the button.
+            //
+            // They used to be placed independently: the caption was centred in the whole button
+            // as if there were no image, and the image was then dropped immediately to the left
+            // of where the caption starts - no gap at all, and on a button whose caption is wide
+            // relative to its width, off the left edge and under the border.
+            //
+            // Setting TextImageRelation or ImageAlign on such a button changes nothing, because
+            // this method paints both by hand whenever the extended theme is on.
+            if (Image == null)
             {
-                SizeF stringSize = e.Graphics.MeasureString(Text, Font);
-
-                e.Graphics.DrawImageUnscaled(Image, Width / 2 - (int)stringSize.Width / 2 - Image.Width,
-                                             Height / 2 - Image.Height / 2);
+                TextRenderer.DrawText(e.Graphics, Text, Font, ClientRectangle, fore,
+                                      TextFormatFlags.HorizontalCenter | TextFormatFlags.VerticalCenter);
             }
+            else
+            {
+                const int gap = 6;
+                const int edge = 3;
 
-            TextRenderer.DrawText(e.Graphics, Text, Font, ClientRectangle, fore,
-                                  TextFormatFlags.HorizontalCenter | TextFormatFlags.VerticalCenter);
+                // MeasureText, not Graphics.MeasureString: DrawText below is what actually renders
+                // the caption, and the two measure differently.
+                Size textSize = TextRenderer.MeasureText(e.Graphics, Text, Font);
+                int blockWidth = Image.Width + gap + textSize.Width;
+                int left = Math.Max(edge, (Width - blockWidth) / 2);
+
+                e.Graphics.DrawImageUnscaled(Image, left, (Height - Image.Height) / 2);
+
+                int textLeft = left + Image.Width + gap;
+                Rectangle textRect = new(textLeft, 0, Math.Max(0, Width - textLeft - edge), Height);
+
+                TextRenderer.DrawText(e.Graphics, Text, Font, textRect, fore,
+                                      TextFormatFlags.Left | TextFormatFlags.VerticalCenter |
+                                      TextFormatFlags.EndEllipsis);
+            }
 
             // Draw focus rectangle if button has focus
             if (Focused && Enabled)

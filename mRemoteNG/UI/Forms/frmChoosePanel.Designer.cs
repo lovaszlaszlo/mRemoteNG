@@ -71,7 +71,10 @@ namespace mRemoteNG.UI.Forms
             // 
             this.btnNew._mice = MrngButton.MouseState.HOVER;
             this.btnNew.Image = global::mRemoteNG.Properties.Resources.InsertPanel_16x;
-            this.btnNew.ImageAlign = System.Drawing.ContentAlignment.MiddleLeft;
+            this.btnNew.ImageAlign = System.Drawing.ContentAlignment.MiddleCenter;
+            this.btnNew.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
+            this.btnNew.TextImageRelation = System.Windows.Forms.TextImageRelation.ImageBeforeText;
+            this.btnNew.Padding = new System.Windows.Forms.Padding(4, 0, 4, 0);
             this.btnNew.Location = new System.Drawing.Point(5, 100);
             this.btnNew.Name = "btnNew";
             this.btnNew.Size = new System.Drawing.Size(75, 24);
