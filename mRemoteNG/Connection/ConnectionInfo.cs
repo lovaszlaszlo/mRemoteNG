@@ -73,7 +73,15 @@ namespace mRemoteNG.Connection
         /// Translating a value that is also a key is the mistake. The property grid's category
         /// caption is a different string and stays translated.
         /// </remarks>
-        public static string DefaultPanel =>
+        /// <remarks>
+        /// Internal, and marked as not browsable, because it is static. The properties panel
+        /// collects its fields with Type.GetProperties, which returns static ones too, and then
+        /// looks each up as a property of the selected connection - where a static one is not to
+        /// be found. Every time a connection was selected the panel logged
+        /// "Property 'DefaultPanel' not found" and gave up building the grid.
+        /// </remarks>
+        [System.ComponentModel.Browsable(false)]
+        internal static string DefaultPanel =>
             string.IsNullOrEmpty(Properties.OptionsTabsPanelsPage.Default.StartUpPanelName)
                 ? "General"
                 : Properties.OptionsTabsPanelsPage.Default.StartUpPanelName;
