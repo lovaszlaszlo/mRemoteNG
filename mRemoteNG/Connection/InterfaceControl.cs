@@ -28,9 +28,13 @@ namespace mRemoteNG.Connection
                 Protocol = protocol;
                 Info = info;
                 Parent = parent;
-                Location = new Point(0, 0);
-                Size = Parent.Size;
-                Anchor = AnchorStyles.Bottom | AnchorStyles.Left | AnchorStyles.Right | AnchorStyles.Top;
+                // Docked, not sized once and anchored. Measured on 2026-09-06 with a session
+                // going fullscreen: the tab around this grew to 3198x1770 and this stayed at
+                // 2656x1456, the size it had before - so the session filled four fifths of the
+                // screen and the rest was the host panel's black. Whatever the anchors were
+                // meant to do, they were not tracking the parent; filling it needs no bookkeeping
+                // and cannot fall behind.
+                Dock = DockStyle.Fill;
                 InitializeComponent();
                 
                 // Enable custom painting for border
