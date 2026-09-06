@@ -11,6 +11,9 @@ using mRemoteNG.Messages;
 using mRemoteNG.Tools;
 using mRemoteNG.UI.Controls;
 using mRemoteNG.UI.Forms;
+using System.Collections.Generic;
+using System.Configuration;
+using System.Reflection;
 using System.Runtime.Versioning;
 
 namespace mRemoteNG.Config.Settings
@@ -168,23 +171,62 @@ namespace mRemoteNG.Config.Settings
 
         private void EnsureSettingsAreSavedInNewestVersion()
         {
-            // TODO: is this ever true and run?
             if (Properties.App.Default.DoUpgrade)
                 UpgradeSettingsVersion();
         }
 
+        /// <summary>
+        /// Carries every setting over from the version that was installed before this one.
+        /// </summary>
+        /// <remarks>
+        /// .NET keys the settings store by AssemblyVersion, so a new version starts with an empty
+        /// store and this is what fills it from the old one. It used to upgrade
+        /// <see cref="Properties.Settings"/> and nothing else - one class out of the sixteen this
+        /// program keeps settings in - so bumping the version silently threw away the theme, the
+        /// panel layout, the credentials page, the backup schedule and the rest, and left only the
+        /// main settings behind. That is why the version had to be frozen.
+        ///
+        /// Found by reflection rather than by a list of sixteen names: a seventeenth settings file
+        /// would otherwise be forgotten here and lose its settings the same way, and nothing would
+        /// say so.
+        /// </remarks>
+        /// <summary>
+        /// Every settings class in the program, through its generated Default instance.
+        /// </summary>
+        private static IEnumerable<ApplicationSettingsBase> AllSettings()
+        {
+            foreach (Type type in typeof(Properties.Settings).Assembly.GetTypes())
+            {
+                if (!typeof(ApplicationSettingsBase).IsAssignableFrom(type)) continue;
+                if (type.IsAbstract) continue;
+
+                PropertyInfo defaultInstance = type.GetProperty("Default",
+                    BindingFlags.Public | BindingFlags.Static);
+
+                if (defaultInstance?.GetValue(null) is ApplicationSettingsBase settings)
+                    yield return settings;
+            }
+        }
+
         private void UpgradeSettingsVersion()
         {
-            try
+            foreach (ApplicationSettingsBase settings in AllSettings())
             {
-                Properties.Settings.Default.Save();
-                Properties.Settings.Default.Upgrade();
-            }
-            catch (Exception ex)
-            {
-                _messageCollector.AddExceptionMessage("Settings.Upgrade() failed", ex);
+                try
+                {
+                    settings.Upgrade();
+                    settings.Save();
+                }
+                catch (Exception ex)
+                {
+                    _messageCollector.AddExceptionMessage(
+                        $"Upgrading {settings.GetType().Name} from the previous version failed", ex);
+                }
             }
 
+            // Written last, and by the same store that was just filled: if any of the above
+            // threw, this still runs, because a store that is half carried over is better than one
+            // that tries again on every start and overwrites what has been changed since.
             Properties.App.Default.DoUpgrade = false;
 
             // Clear pending update flag
@@ -250,7 +292,13 @@ namespace mRemoteNG.Config.Settings
         private void AddMultiSshPanel()
         {
             SetToolstripGripStyle(_multiSshToolStrip);
-            _multiSshToolStrip.Visible = Properties.Settings.Default.MultiSshToolbarVisible;
+            // Never shown, and no menu entry turns it on any more. It typed a command into
+            // every open session at once - but only into PuTTY windows, by posting Windows
+            // messages to them, so with every connection on the native protocol it sent
+            // commands nowhere. Made to work again earlier today, then taken out: running one
+            // command on many machines is a real job, and this is not the tool for it - it
+            // shows no output, reports no failure, and says nothing about where it landed.
+            _multiSshToolStrip.Visible = false;
             ToolStripPanel toolStripPanel = ToolStripPanelFromString(Properties.Settings.Default.MultiSshToolbarParentDock);
             toolStripPanel.Join(_multiSshToolStrip, Properties.Settings.Default.MultiSshToolbarLocation);
         }

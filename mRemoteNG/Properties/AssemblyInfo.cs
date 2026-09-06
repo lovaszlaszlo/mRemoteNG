@@ -15,7 +15,6 @@ using System.Resources;
 
 // Compute version values
 
-//Build nr: 3621
 
 // General Information
 [assembly: AssemblyTitle("mRemoteNG")]
@@ -29,25 +28,40 @@ using System.Resources;
 
 // Version information
 //
-// AssemblyVersion is deliberately NOT the version shown to anyone. It is an identity: .NET keys
-// the per-user settings store by it, under %LOCALAPPDATA%\<company>\<app>_Url_<hash>\<version>\.
-// Moving it to 1.8.0.3621 on 2026-08-29 started the application in an empty store - it asked its
-// first-run questions again and opened on a different monitor, because the window position lives
-// there too. Nothing was lost, since the connections file is separate, but the settings were only
-// a version folder away and would have looked gone.
+// 1.80, and 3621 is gone from all three. It was a build counter inherited from upstream and it
+// showed up in the About box, in the file properties, and - the one that mattered - inside
+// AssemblyVersion.
 //
-// So the identity stays where it was, and the number people see moves instead: the splash and the
-// About box read AssemblyInformationalVersion.
+// AssemblyVersion is shown to nobody: it is an identity, and .NET keys the per-user settings store
+// by it, under %LOCALAPPDATA%\<company>\<app>_Url_<hash>\<version>\. Moving it on 2026-08-29
+// started the application in an empty store - first-run questions again, a different monitor,
+// because the window position lives there too - and that is why it sat frozen until now.
 //
-// To give this build a new number, edit the two lines below it and the informational version, and
-// leave AssemblyVersion alone - all four parts of it, the last one included. That last part is the
-// build number as well, and the settings folder is named after the whole four-part version, so
-// moving it there resets the settings just as surely as moving the major does.
+// Two things make it safe to move today:
 //
-// Nothing regenerates this file here: the T4 transform is disabled on this branch so the project
-// builds without a full Visual Studio. The numbers stay exactly as written until someone edits
-// them, which is the point - they are release numbers now, not a clock.
-[assembly: AssemblyVersion("1.78.2.3621")]
-[assembly: AssemblyFileVersion("1.8.0.3621")]
+// 1. Settings now survive a version change. They did not before: SettingsLoader upgraded exactly
+//    one of the sixteen settings classes, so everything else came back at its defaults. It
+//    upgrades all of them now, found by reflection rather than by a list the seventeenth would
+//    drop out of.
+//
+// 2. The number goes UP. .NET migrates from the highest version below the current one, and version
+//    parts are numbers, not text: 1.8 would have been below 1.78, so the old store would have been
+//    invisible and the settings lost anyway. 1.80 is above it, and the migration finds them.
+//
+// The build number is upstream's 3621 - where this fork left it - plus the commits made since,
+// 75 of them at 1.80. So it counts something real again instead of whatever a generator felt like,
+// and it can be recomputed at any time:
+//
+//     git rev-list --count $(git merge-base HEAD origin/v1.78.2-dev)..HEAD
+//
+// It goes in the two versions people can see, and deliberately not in AssemblyVersion: that one
+// names the settings folder, so tying it to the commit count would mint a new folder on every
+// commit. The settings would follow now that the migration works, but they would be spread across
+// a hundred folders for no reason.
+//
+// Nothing regenerates this file: the T4 transform is disabled on this branch so the project builds
+// without a full Visual Studio. The numbers stay exactly as written until someone edits them.
+[assembly: AssemblyVersion("1.80.0.0")]
+[assembly: AssemblyFileVersion("1.80.0.3696")]
 [assembly: NeutralResourcesLanguageAttribute("en-US")]
-[assembly: AssemblyInformationalVersion("1.8.0 (Build 3621) x64")]
+[assembly: AssemblyInformationalVersion("1.80 (Build 3696) x64")]
