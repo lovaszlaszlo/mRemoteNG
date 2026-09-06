@@ -41,10 +41,21 @@ namespace mRemoteNG.Connection
                 return false;
             }
 
-            ConnectionTab connT = (ConnectionTab)interfaceControl.FindForm();
-            connT?.Focus();
-            ConnectionTab findForm = (ConnectionTab)interfaceControl.FindForm();
-            findForm?.Show(findForm.DockPanel);
+            if (interfaceControl.FindForm() is not ConnectionTab tab) return true;
+
+            // Activate, not Show(DockPanel): showing a tab in the panel it came from drags a
+            // floating one back into the main window, which is not what jumping to a session
+            // should do to it.
+            tab.Activate();
+
+            if (tab.TopLevelControl is Form window && window != FrmMain.Default)
+            {
+                window.Activate();
+                window.BringToFront();
+            }
+
+            // The session itself takes the keyboard, not the tab around it.
+            interfaceControl.Protocol?.Focus();
             return true;
         }
 
@@ -404,9 +415,14 @@ namespace mRemoteNG.Connection
                 // time somewhere else.
                 DockPanel cwDp = connectionWindow.Controls.Cast<Control>().OfType<DockPanel>().FirstOrDefault();
                 if (cwDp == null) continue;
-                foreach (IDockContent dockContent in cwDp.Documents)
+                // Contents, not Documents: Documents holds only what is docked as a document,
+                // so a tab dragged out into a window of its own was not in it. The session was
+                // running and on screen, and this reported the connection as closed - a double
+                // click on the tree opened another one, and another, once per click.
+                foreach (IDockContent dockContent in cwDp.Contents)
                 {
-                    ConnectionTab tab = (ConnectionTab)dockContent;
+                    if (dockContent is not ConnectionTab tab) continue;
+
                     InterfaceControl ic = InterfaceControl.FindInterfaceControl(tab);
                     if (ic == null) continue;
                     if (ic.Info == connectionInfo || ic.OriginalInfo == connectionInfo)
