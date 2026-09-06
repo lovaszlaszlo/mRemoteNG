@@ -75,8 +75,12 @@ namespace mRemoteNG.UI.Forms.OptionsPages
             // 
             // labelSwitchToErrorsAndInfos
             // 
+            // At 177 the second column started before the first caption had finished. That was
+            // enough in English - "Show these message types" is 147 wide - but not in a language
+            // whose wording is longer, and the two captions were then drawn over one another and
+            // read as a single sentence. Moved out to where the longest of them still fits.
             labelSwitchToErrorsAndInfos.AutoSize = true;
-            labelSwitchToErrorsAndInfos.Location = new System.Drawing.Point(177, 25);
+            labelSwitchToErrorsAndInfos.Location = new System.Drawing.Point(300, 25);
             labelSwitchToErrorsAndInfos.Name = "labelSwitchToErrorsAndInfos";
             labelSwitchToErrorsAndInfos.Size = new System.Drawing.Size(176, 13);
             labelSwitchToErrorsAndInfos.TabIndex = 5;
@@ -87,7 +91,7 @@ namespace mRemoteNG.UI.Forms.OptionsPages
             chkSwitchToMCInformation._mice = MrngCheckBox.MouseState.OUT;
             chkSwitchToMCInformation.AutoSize = true;
             chkSwitchToMCInformation.Font = new System.Drawing.Font("Segoe UI", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point);
-            chkSwitchToMCInformation.Location = new System.Drawing.Point(195, 64);
+            chkSwitchToMCInformation.Location = new System.Drawing.Point(318, 64);
             chkSwitchToMCInformation.Name = "chkSwitchToMCInformation";
             chkSwitchToMCInformation.Size = new System.Drawing.Size(87, 17);
             chkSwitchToMCInformation.TabIndex = 6;
@@ -99,7 +103,7 @@ namespace mRemoteNG.UI.Forms.OptionsPages
             chkSwitchToMCErrors._mice = MrngCheckBox.MouseState.OUT;
             chkSwitchToMCErrors.AutoSize = true;
             chkSwitchToMCErrors.Font = new System.Drawing.Font("Segoe UI", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point);
-            chkSwitchToMCErrors.Location = new System.Drawing.Point(195, 110);
+            chkSwitchToMCErrors.Location = new System.Drawing.Point(318, 110);
             chkSwitchToMCErrors.Name = "chkSwitchToMCErrors";
             chkSwitchToMCErrors.Size = new System.Drawing.Size(51, 17);
             chkSwitchToMCErrors.TabIndex = 8;
@@ -111,7 +115,7 @@ namespace mRemoteNG.UI.Forms.OptionsPages
             chkSwitchToMCWarnings._mice = MrngCheckBox.MouseState.OUT;
             chkSwitchToMCWarnings.AutoSize = true;
             chkSwitchToMCWarnings.Font = new System.Drawing.Font("Segoe UI", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point);
-            chkSwitchToMCWarnings.Location = new System.Drawing.Point(195, 87);
+            chkSwitchToMCWarnings.Location = new System.Drawing.Point(318, 87);
             chkSwitchToMCWarnings.Name = "chkSwitchToMCWarnings";
             chkSwitchToMCWarnings.Size = new System.Drawing.Size(71, 17);
             chkSwitchToMCWarnings.TabIndex = 7;
