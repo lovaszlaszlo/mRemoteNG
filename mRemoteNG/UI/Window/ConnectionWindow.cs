@@ -300,7 +300,12 @@ namespace mRemoteNG.UI.Window
             cmenTabSendSpecialKeysCtrlEsc.Text = Language.CtrlEsc;
             cmenTabExternalApps.Text = Language._Tools;
             cmenTabRenameTab.Text = Language.RenameTab;
-            cmenTabDuplicateTab.Text = Language.DuplicateTab;
+            // Not "Duplicate Tab": nothing here is duplicated. It opens a second, independent
+            // session to the same machine, and leaves the tab it was invoked from alone. The
+            // connection tree already has an entry for exactly this action, worded this way, so
+            // the two places now read the same. (The tree's own "Duplicate" is a different thing
+            // again - it copies the connection into a new entry.)
+            cmenTabDuplicateTab.Text = Language.ConnectNewSession;
             cmenTabReconnect.Text = Language.Reconnect;
             cmenTabDisconnect.Text = Language.Disconnect;
             cmenTabDisconnectOthers.Text = Language.DisconnectOthers;
