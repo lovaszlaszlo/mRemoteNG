@@ -6900,6 +6900,33 @@ namespace mRemoteNG.Resources.Language {
         }
 
         /// <summary>
+        ///   Looks up a localized string similar to Only a connection can be a favourite.
+        /// </summary>
+        internal static string MenuReasonFavouriteConnectionOnly {
+            get {
+                return ResourceManager.GetString("MenuReasonFavouriteConnectionOnly", resourceCulture);
+            }
+        }
+
+        /// <summary>
+        ///   Looks up a localized string similar to Add to Favourites.
+        /// </summary>
+        internal static string AddToFavourites {
+            get {
+                return ResourceManager.GetString("AddToFavourites", resourceCulture);
+            }
+        }
+
+        /// <summary>
+        ///   Looks up a localized string similar to Remove from Favourites.
+        /// </summary>
+        internal static string RemoveFromFavourites {
+            get {
+                return ResourceManager.GetString("RemoveFromFavourites", resourceCulture);
+            }
+        }
+
+        /// <summary>
         ///   Looks up a localized string similar to SSH Options.
         /// </summary>
         internal static string SshOptions {

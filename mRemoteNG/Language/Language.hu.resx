@@ -925,6 +925,9 @@
   <data name="WarnIfAuthFails" xml:space="preserve"><value>Figyelmeztetés sikertelen hitelesítéskor</value></data>
   <data name="MenuReasonPuttyRootNode" xml:space="preserve"><value>Ez a csomópont csak felsorolja a PuTTY saját mentett munkameneteit. Itt olvashatók, módosítani a PuTTY-ban lehet őket.</value></data>
   <data name="MenuReasonPuttySession" xml:space="preserve"><value>Ez a PuTTY egyik saját mentett munkamenete. Az mRemoteNG csak olvassa; módosítani a PuTTY-ban kell.</value></data>
+  <data name="MenuReasonFavouriteConnectionOnly" xml:space="preserve"><value>Kedvenc csak kapcsolat lehet. A kedvencek listája azt nyitja meg, amire rákattintasz, egy mappát pedig nem tud megnyitni.</value></data>
+  <data name="AddToFavourites" xml:space="preserve"><value>Hozzáadás a kedvencekhez</value></data>
+  <data name="RemoveFromFavourites" xml:space="preserve"><value>Eltávolítás a kedvencekből</value></data>
   <data name="MenuReasonRootNode" xml:space="preserve"><value>Ez a kapcsolatfa gyökere, nem egy kapcsolat.</value></data>
   <data name="MenuReasonRootNodeImmovable" xml:space="preserve"><value>A fa gyökere nem törölhető és nem mozgatható — minden más benne lakik.</value></data>
   <data name="MenuReasonSingleSessionOnly" xml:space="preserve"><value>Ez egyetlen munkamenetre vonatkozik, egy mappa pedig nem az. Válassz egy kapcsolatot a mappából.</value></data>

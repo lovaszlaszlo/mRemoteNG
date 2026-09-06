@@ -48,6 +48,7 @@ namespace mRemoteNG.UI.Controls
         private ToolStripMenuItem _cMenTreeRename;
         private ToolStripMenuItem _cMenTreeDelete;
         private ToolStripMenuItem _cMenTreeCopyHostname;
+        private ToolStripMenuItem _cMenTreeFavorite;
         private ToolStripMenuItem _cMenTreeClearCachedRdpCredentials;
         private ToolStripSeparator _cMenTreeSep4;
         private ToolStripMenuItem _cMenTreeMoveUp;
@@ -297,6 +298,7 @@ namespace mRemoteNG.UI.Controls
             _cMenTreeRename = new ToolStripMenuItem();
             _cMenTreeDelete = new ToolStripMenuItem();
             _cMenTreeCopyHostname = new ToolStripMenuItem();
+            _cMenTreeFavorite = new ToolStripMenuItem();
             _cMenTreeClearCachedRdpCredentials = new ToolStripMenuItem();
             _cMenTreeSep3 = new ToolStripSeparator();
             _cMenTreeImport = new ToolStripMenuItem();
@@ -340,6 +342,7 @@ namespace mRemoteNG.UI.Controls
                 _cMenTreeRename,
                 _cMenTreeDelete,
                 _cMenTreeCopyHostname,
+                _cMenTreeFavorite,
                 _cMenTreeClearCachedRdpCredentials,
                 _cMenInheritanceSubMenu,
                 _cMenTreeSep3,
@@ -491,6 +494,12 @@ namespace mRemoteNG.UI.Controls
             //
             // cMenTreeCopyHostname
             //
+            _cMenTreeFavorite.Image = Properties.Resources.Favorite_16x;
+            _cMenTreeFavorite.Name = "_cMenTreeFavorite";
+            _cMenTreeFavorite.Size = new System.Drawing.Size(199, 22);
+            _cMenTreeFavorite.Text = "Favourite";
+            _cMenTreeFavorite.Click += Guarded(OnFavoriteClicked);
+
             _cMenTreeCopyHostname.Name = "_cMenTreeCopyHostname";
             _cMenTreeCopyHostname.Size = new System.Drawing.Size(199, 22);
             _cMenTreeCopyHostname.Text = "Copy Hostname";
@@ -697,6 +706,7 @@ namespace mRemoteNG.UI.Controls
             _cMenTreeRename.Text = Language.Rename;
             _cMenTreeDelete.Text = Language.Delete;
             _cMenTreeCopyHostname.Text = Language.CopyHostname;
+            _cMenTreeFavorite.Text = Language.AddToFavourites;
             _cMenTreeClearCachedRdpCredentials.Text = Language.ClearCachedRdpCredentials;
             _cMenTreeClearCachedRdpCredentials.ToolTipText = Language.PropertyDescriptionClearCachedRdpCredentials;
 
@@ -783,9 +793,10 @@ namespace mRemoteNG.UI.Controls
                          _cMenTreeDelete, _cMenTreeMoveUp, _cMenTreeMoveDown,
                          _cMenTreeConnectWithOptionsViewOnly, _cMenTreeApplyInheritanceToChildren,
                          _cMenTreeApplyDefaultInheritance, _cMenTreeCopyHostname,
-                         _cMenTreeClearCachedRdpCredentials
+                         _cMenTreeClearCachedRdpCredentials, _cMenTreeFavorite
                      })
                 Unavailable(item, reason);
+
         }
 
         internal void ShowHideMenuItemsForRootConnectionNode()
@@ -801,7 +812,8 @@ namespace mRemoteNG.UI.Controls
                          _cMenTreeDisconnect, _cMenTreeToolsTransferFile,
                          _cMenTreeToolsExternalApps, _cMenTreeDuplicate,
                          _cMenTreeConnectWithOptionsViewOnly,
-                         _cMenTreeApplyInheritanceToChildren, _cMenTreeApplyDefaultInheritance
+                         _cMenTreeApplyInheritanceToChildren, _cMenTreeApplyDefaultInheritance,
+                         _cMenTreeFavorite
                      })
                 Unavailable(item, notAConnection);
 
@@ -819,6 +831,8 @@ namespace mRemoteNG.UI.Controls
             Unavailable(_cMenTreeConnectWithOptionsConnectToConsoleSession, singleSessionOnly);
             Unavailable(_cMenTreeConnectWithOptionsViewOnly, singleSessionOnly);
             Unavailable(_cMenTreeToolsTransferFile, singleSessionOnly);
+
+            Unavailable(_cMenTreeFavorite, Language.MenuReasonFavouriteConnectionOnly);
 
             bool hasOpenConnections = containerInfo.Children.Any(child => child.OpenConnections.Count > 0);
             if (!hasOpenConnections)
@@ -883,6 +897,20 @@ namespace mRemoteNG.UI.Controls
             if (!SupportsFileTransfer(connectionInfo.Protocol))
                 Unavailable(_cMenTreeToolsTransferFile,
                             string.Format(Language.MenuReasonTransferNeedsSsh, connectionInfo.Protocol));
+
+            // The property is hidden on a PuTTY session, so there is nothing to toggle there.
+            if (connectionInfo is PuttySessionInfo)
+            {
+                Unavailable(_cMenTreeFavorite, Language.MenuReasonPuttySession);
+            }
+            else
+            {
+                // The caption says which way it goes, rather than a tick against the word
+                // "Favourite" that has to be read as a state and then turned into an action.
+                _cMenTreeFavorite.Text = connectionInfo.Favorite
+                    ? Language.RemoveFromFavourites
+                    : Language.AddToFavourites;
+            }
 
             if (connectionInfo.Protocol != ProtocolType.RDP)
             {
@@ -1141,6 +1169,24 @@ namespace mRemoteNG.UI.Controls
                                                                 "DisconnectConnection (UI.Window.ConnectionTreeWindow) failed",
                                                                 ex);
             }
+        }
+
+        /// <summary>
+        /// Turns the favourite flag on or off for the selected connection.
+        /// </summary>
+        /// <remarks>
+        /// The flag existed all along, in the properties panel under Miscellaneous, and that was
+        /// the only place it could be set - so the star on the tree's toolbar listed connections
+        /// that most people had no idea how to put there.
+        /// </remarks>
+        private void OnFavoriteClicked(object sender, EventArgs e)
+        {
+            ConnectionInfo node = _connectionTree.SelectedNode;
+            if (node == null || node is ContainerInfo) return;
+
+            node.Favorite = !node.Favorite;
+
+            Runtime.ConnectionsService.SaveConnections();
         }
 
         private void OnTransferFileClicked(object sender, EventArgs e)
