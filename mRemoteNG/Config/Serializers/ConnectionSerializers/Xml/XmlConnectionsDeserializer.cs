@@ -360,7 +360,7 @@ namespace mRemoteNG.Config.Serializers.ConnectionSerializers.Xml
                     if (xmlnode.GetAttributeAsBool("Inherit"))
                         connectionInfo.Inheritance.TurnOnInheritanceCompletely();
                     connectionInfo.Icon = xmlnode.GetAttributeAsString("Icon").Replace(".ico", "");
-                    connectionInfo.Panel = Language.General;
+                    connectionInfo.Panel = Connection.ConnectionInfo.DefaultPanel;
                 }
 
                 if (_confVersion >= 1.5)

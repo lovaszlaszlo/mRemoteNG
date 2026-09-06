@@ -60,6 +60,24 @@ namespace mRemoteNG.Connection
 
         #region Constructors
 
+        /// <summary>
+        /// The tab group a new connection starts in.
+        /// </summary>
+        /// <remarks>
+        /// A stored value, not a caption: it has to match the name of a real tab group, and the
+        /// group made at startup is named from StartUpPanelName - "General", untranslated. This
+        /// was Language.General, so on a Hungarian install a new connection asked for "Altalanos"
+        /// while the group standing there was called "General": two names, two groups, and every
+        /// connection saved before the translation existed pointing at the other one.
+        ///
+        /// Translating a value that is also a key is the mistake. The property grid's category
+        /// caption is a different string and stays translated.
+        /// </remarks>
+        public static string DefaultPanel =>
+            string.IsNullOrEmpty(Properties.OptionsTabsPanelsPage.Default.StartUpPanelName)
+                ? "General"
+                : Properties.OptionsTabsPanelsPage.Default.StartUpPanelName;
+
         public ConnectionInfo()
             : this(Guid.NewGuid().ToString())
         {
@@ -298,7 +316,7 @@ namespace mRemoteNG.Connection
             Name = Language.NewConnection;
             Description = Settings.Default.ConDefaultDescription;
             Icon = Settings.Default.ConDefaultIcon;
-            Panel = Language.General;
+            Panel = DefaultPanel;
             Color = string.Empty;
             TabColor = string.Empty;
             ConnectionFrameColor = ConnectionFrameColor.None;

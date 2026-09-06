@@ -34,6 +34,7 @@ namespace mRemoteNG.UI.Forms
             this.btnOK = new MrngButton();
             this.lblDescription = new mRemoteNG.UI.Controls.MrngLabel();
             this.btnNew = new MrngButton();
+            this.btnCancel = new MrngButton();
             this.SuspendLayout();
             // 
             // cbPanels
@@ -49,7 +50,7 @@ namespace mRemoteNG.UI.Forms
             // btnOK
             // 
             this.btnOK._mice = MrngButton.MouseState.HOVER;
-            this.btnOK.Location = new System.Drawing.Point(167, 72);
+            this.btnOK.Location = new System.Drawing.Point(167, 100);
             this.btnOK.Name = "btnOK";
             this.btnOK.Size = new System.Drawing.Size(75, 24);
             this.btnOK.TabIndex = 20;
@@ -71,23 +72,39 @@ namespace mRemoteNG.UI.Forms
             this.btnNew._mice = MrngButton.MouseState.HOVER;
             this.btnNew.Image = global::mRemoteNG.Properties.Resources.InsertPanel_16x;
             this.btnNew.ImageAlign = System.Drawing.ContentAlignment.MiddleLeft;
-            this.btnNew.Location = new System.Drawing.Point(86, 72);
+            this.btnNew.Location = new System.Drawing.Point(5, 100);
             this.btnNew.Name = "btnNew";
             this.btnNew.Size = new System.Drawing.Size(75, 24);
             this.btnNew.TabIndex = 40;
             this.btnNew.Text = Language._New;
             this.btnNew.UseVisualStyleBackColor = true;
             this.btnNew.Click += new System.EventHandler(this.btnNew_Click);
+            //
+            // btnCancel
+            //
+            // The dialog had no way out but the close box. It decides where a connection opens, so
+            // "nowhere, forget it" is a real answer and deserves a button - the code behind it has
+            // always treated anything but OK as "do not connect".
+            this.btnCancel._mice = MrngButton.MouseState.HOVER;
+            this.btnCancel.DialogResult = System.Windows.Forms.DialogResult.Cancel;
+            this.btnCancel.Location = new System.Drawing.Point(86, 100);
+            this.btnCancel.Name = "btnCancel";
+            this.btnCancel.Size = new System.Drawing.Size(75, 24);
+            this.btnCancel.TabIndex = 30;
+            this.btnCancel.Text = Language._Cancel;
+            this.btnCancel.UseVisualStyleBackColor = true;
             // 
             // FrmChoosePanel
             // 
             this.AcceptButton = this.btnOK;
+            this.CancelButton = this.btnCancel;
             this.AutoScaleDimensions = new System.Drawing.SizeF(96F, 96F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Dpi;
-            this.ClientSize = new System.Drawing.Size(245, 107);
+            this.ClientSize = new System.Drawing.Size(245, 135);
             this.Controls.Add(this.lblDescription);
             this.Controls.Add(this.btnNew);
             this.Controls.Add(this.btnOK);
+            this.Controls.Add(this.btnCancel);
             this.Controls.Add(this.cbPanels);
             this.Font = new System.Drawing.Font("Segoe UI", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedSingle;
@@ -105,5 +122,6 @@ namespace mRemoteNG.UI.Forms
 		internal MrngButton btnOK;
 		internal Controls.MrngLabel lblDescription;
 		internal MrngButton btnNew;
+		internal MrngButton btnCancel;
 	}
 }

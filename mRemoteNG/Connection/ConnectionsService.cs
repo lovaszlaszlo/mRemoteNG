@@ -103,7 +103,7 @@ namespace mRemoteNG.Connection
                 }
 
                 if (string.IsNullOrEmpty(newConnectionInfo.Panel))
-                    newConnectionInfo.Panel = Language.General;
+                    newConnectionInfo.Panel = ConnectionInfo.DefaultPanel;
 
                 newConnectionInfo.IsQuickConnect = true;
 

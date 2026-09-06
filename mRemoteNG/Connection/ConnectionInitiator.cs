@@ -1,4 +1,6 @@
 ﻿using System;
+using System.Linq;
+using System.Threading.Tasks;
 using System.Collections.Generic;
 using System.Windows.Forms;
 using mRemoteNG.App;
@@ -101,7 +103,8 @@ namespace mRemoteNG.Connection
                     }
                 }
 
-                StartPreConnectionExternalApp(connectionInfo);
+                if (!await RunPreConnectionExternalAppAsync(connectionInfo))
+                    return;
 
                 // Opening a connection that is already open goes to its tab instead of starting
                 // a second session. That is the sensible default and stays the default, but it is
@@ -115,7 +118,14 @@ namespace mRemoteNG.Connection
                 }
 
                 ProtocolFactory protocolFactory = new();
-                string connectionPanel = SetConnectionPanel(connectionInfo, force);
+
+                // A caller that named the window has already answered the question, so it is not
+                // asked: dropping a connection onto a tab group said where it goes, and putting a
+                // chooser in front of that is asking somebody to repeat themselves.
+                string connectionPanel = conForm != null
+                                             ? conForm.TabText
+                                             : SetConnectionPanel(connectionInfo, force);
+
                 if (string.IsNullOrEmpty(connectionPanel)) return;
                 ConnectionWindow connectionForm = SetConnectionForm(conForm, connectionPanel);
                 Control connectionContainer = null;
@@ -322,11 +332,61 @@ namespace mRemoteNG.Connection
         }
 
         #region Private
-        private static void StartPreConnectionExternalApp(ConnectionInfo connectionInfo)
+        /// <summary>
+        /// Runs whatever has to happen before this connection, and says whether to carry on.
+        /// </summary>
+        /// <remarks>
+        /// Two things were wrong with the old one line. It waited on the UI thread, so a tool that
+        /// takes a few seconds - bringing up a VPN, say - froze the whole window while it ran, with
+        /// nothing on screen to say why. And it ignored what the tool reported: a script that came
+        /// back saying the tunnel had not come up was followed by the connection attempt anyway,
+        /// which then failed with an error about the host, not about the VPN.
+        ///
+        /// Waiting happens off the UI thread now, under a wait cursor, and a non-zero exit stops
+        /// the connection and says so - naming the tool, so it is clear which step refused.
+        /// </remarks>
+        private static async Task<bool> RunPreConnectionExternalAppAsync(ConnectionInfo connectionInfo)
         {
-            if (connectionInfo.PreExtApp == "") return;
-            Tools.ExternalTool extA = Runtime.ExternalToolsService.GetExtAppByName(connectionInfo.PreExtApp);
-            extA?.Start(connectionInfo);
+            if (connectionInfo.PreExtApp == "") return true;
+
+            Tools.ExternalTool tool = Runtime.ExternalToolsService.GetExtAppByName(connectionInfo.PreExtApp);
+            if (tool == null) return true;
+
+            // Not asked to wait: start it and move on, exactly as before.
+            if (!tool.WaitForExit)
+            {
+                tool.Start(connectionInfo);
+                return true;
+            }
+
+            Form main = FrmMain.Default;
+            if (main != null && !main.IsDisposed) main.UseWaitCursor = true;
+
+            try
+            {
+                int exitCode = await Task.Run(() => tool.StartAndWait(connectionInfo));
+
+                if (exitCode == 0) return true;
+
+                Runtime.MessageCollector.AddMessage(MessageClass.WarningMsg,
+                    $"'{tool.DisplayName}' ended with {exitCode}, so '{connectionInfo.Name}' was not opened.");
+
+                MessageBox.Show(main,
+                                string.Format(Language.PreConnectionToolFailed, tool.DisplayName, exitCode),
+                                connectionInfo.Name, MessageBoxButtons.OK, MessageBoxIcon.Warning);
+
+                return false;
+            }
+            catch (Exception ex)
+            {
+                Runtime.MessageCollector.AddExceptionMessage(
+                    $"The tool to run before '{connectionInfo.Name}' could not be started", ex);
+                return false;
+            }
+            finally
+            {
+                if (main != null && !main.IsDisposed) main.UseWaitCursor = false;
+            }
         }
 
         private static InterfaceControl FindConnectionContainer(ConnectionInfo connectionInfo)
@@ -334,11 +394,16 @@ namespace mRemoteNG.Connection
             if (connectionInfo.OpenConnections.Count <= 0) return null;
             for (int i = 0; i <= Runtime.WindowList.Count - 1; i++)
             {
-                // the new structure is ConnectionWindow.Controls[0].ActiveDocument.Controls[0]
-                //                                       DockPanel                  InterfaceControl
+                // the new structure is ConnectionWindow -> DockPanel -> ActiveDocument -> InterfaceControl
                 if (!(Runtime.WindowList[i] is ConnectionWindow connectionWindow)) continue;
-                if (connectionWindow.Controls.Count < 1) continue;
-                if (!(connectionWindow.Controls[0] is DockPanel cwDp)) continue;
+
+                // Found among the controls, not assumed to be the first of them. Controls[0] is
+                // whatever is topmost in the z-order, so anything drawn over the dock panel - a
+                // label across an empty group, say - made this skip the whole window, and with it
+                // every session open in it: the connection looked closed and was opened a second
+                // time somewhere else.
+                DockPanel cwDp = connectionWindow.Controls.Cast<Control>().OfType<DockPanel>().FirstOrDefault();
+                if (cwDp == null) continue;
                 foreach (IDockContent dockContent in cwDp.Documents)
                 {
                     ConnectionTab tab = (ConnectionTab)dockContent;
@@ -352,16 +417,39 @@ namespace mRemoteNG.Connection
             return null;
         }
 
+        /// <summary>
+        /// Which tab group this connection opens in, asking only when there is a real choice.
+        /// </summary>
+        /// <remarks>
+        /// The setting used to be all or nothing: never ask, or ask on every single connection -
+        /// including when there was one group to choose from and the connection already named it.
+        /// A question with one possible answer is not a choice, it is an extra click.
+        ///
+        /// So: the connection's own group wins when it names one. Otherwise the dialog appears
+        /// only if there is more than one group to pick between; with a single group there is
+        /// nothing to decide and it opens there.
+        /// </remarks>
         private static string SetConnectionPanel(ConnectionInfo connectionInfo, ConnectionInfo.Force force)
         {
-            if (connectionInfo.Panel != "" && !force.HasFlag(ConnectionInfo.Force.OverridePanel) && !Properties.OptionsTabsPanelsPage.Default.AlwaysShowPanelSelectionDlg)
+            bool asked = force.HasFlag(ConnectionInfo.Force.OverridePanel) ||
+                         Properties.OptionsTabsPanelsPage.Default.AlwaysShowPanelSelectionDlg;
+
+            if (connectionInfo.Panel != "" && !asked)
                 return connectionInfo.Panel;
+
+            // Force.OverridePanel is somebody asking for the dialog on purpose - from the context
+            // menu's "Connect (with options)" - so that one still gets it either way.
+            if (!force.HasFlag(ConnectionInfo.Force.OverridePanel) && CountPanels() < 2)
+                return connectionInfo.Panel != "" ? connectionInfo.Panel : ConnectionInfo.DefaultPanel;
 
             FrmChoosePanel frmPnl = new();
             return frmPnl.ShowDialog() == DialogResult.OK
                 ? frmPnl.Panel
                 : null;
         }
+
+        private static int CountPanels() =>
+            Runtime.WindowList?.OfType<ConnectionWindow>().Count() ?? 0;
 
         private ConnectionWindow SetConnectionForm(ConnectionWindow conForm, string connectionPanel)
         {

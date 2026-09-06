@@ -19,6 +19,23 @@ namespace mRemoteNG.UI.Forms
             textBox.Text = value;
             ApplyLanguage();
             ApplyTheme();
+
+            // None of this was set. The dialog opened with the caret nowhere, Enter did nothing
+            // because there was no accept button, and Escape did nothing because there was no
+            // cancel button - so renaming a tab group meant clicking into the field and then
+            // clicking OK, and anyone who typed and pressed Enter watched nothing happen.
+            AcceptButton = _Ok;
+            CancelButton = buttonCancel;
+            ActiveControl = textBox;
+        }
+
+        protected override void OnShown(System.EventArgs e)
+        {
+            base.OnShown(e);
+
+            // Selected as well as focused: a rename starts by replacing what is there.
+            textBox.Focus();
+            textBox.SelectAll();
         }
 
         private void ApplyLanguage()

@@ -6,6 +6,9 @@ using System.Windows.Forms;
 using mRemoteNG.App;
 using mRemoteNG.App.Info;
 using mRemoteNG.Config;
+using BrightIdeasSoftware;
+using mRemoteNG.Container;
+using mRemoteNG.Tree.Root;
 using mRemoteNG.Connection;
 using mRemoteNG.Connection.Protocol;
 using mRemoteNG.Connection.Protocol.RDP;
@@ -68,6 +71,23 @@ namespace mRemoteNG.UI.Window
             Load += Connection_Load;
             DockStateChanged += Connection_DockStateChanged;
             FormClosing += Connection_FormClosing;
+
+            SetUpDropTarget();
+
+            // The hint goes the moment anything is added, without asking the dock panel how many
+            // documents it has - during ContentAdded it still answers zero, so the hint was put
+            // back and brought to the front, on top of the session that had just opened. The first
+            // connection appeared to open an empty page repeating the same text.
+            Load += (_, _) => UpdateEmptyHint();
+            connDock.ContentAdded += (_, _) =>
+            {
+                _everHadTabs = true;
+                if (_emptyHint != null) _emptyHint.Visible = false;
+
+                // Posted: the pane and its tab strip are built as part of this event, so walking
+                // the tree now would find nothing to wire up.
+                BeginInvoke(new Action(() => SpreadDropTargets(connDock)));
+            };
         }
 
         private void SetContextMenuEventHandlers()
@@ -339,6 +359,187 @@ namespace mRemoteNG.UI.Window
             ResizeEnd?.Invoke(sender, e);
         }
 
+        /// <summary>
+        /// Opens connections dropped here from the connection tree.
+        /// </summary>
+        /// <remarks>
+        /// The only way to put a connection in a particular tab group was to type that group's
+        /// name into the connection's own properties, which is not something anybody guesses. The
+        /// tree already offers its selection as a drag source; this is the other half.
+        ///
+        /// A folder dropped here opens everything inside it, so it asks first - the same question
+        /// the tree's own Connect asks, and for the same reason.
+        /// </remarks>
+        /// <summary>
+        /// The controls already wired for dropping, so none is wired twice.
+        /// </summary>
+        private readonly HashSet<Control> _dropTargets = new();
+
+        private void SetUpDropTarget()
+        {
+            // A child control that does not accept drops does not pass them up to its parent, and
+            // the form's whole surface is covered by connDock - so the form alone was never
+            // reached. Once a tab is open the dock panel is covered in turn, by the pane and its
+            // tab strip, and a drop worked only on a group that was still empty.
+            AcceptDrops(this);
+            AcceptDrops(connDock);
+        }
+
+        /// <summary>
+        /// Extends the drop target over whatever the dock panel has built inside itself.
+        /// </summary>
+        /// <remarks>
+        /// The session's own control is left out on purpose: the terminal and the RDP client
+        /// handle the mouse themselves, and a drop over a live session would have to be taken away
+        /// from them. The tab strip and the empty space around it are enough - that is where a tab
+        /// is dropped in every other program too.
+        /// </remarks>
+        private void SpreadDropTargets(Control parent)
+        {
+            foreach (Control child in parent.Controls)
+            {
+                if (child is InterfaceControl) continue;
+
+                AcceptDrops(child);
+                SpreadDropTargets(child);
+            }
+        }
+
+        private void AcceptDrops(Control target)
+        {
+            if (!_dropTargets.Add(target)) return;
+
+            target.AllowDrop = true;
+
+            target.DragEnter += (_, e) =>
+                e.Effect = DroppedConnections(e).Any() ? DragDropEffects.Copy : DragDropEffects.None;
+
+            target.DragOver += (_, e) =>
+                e.Effect = DroppedConnections(e).Any() ? DragDropEffects.Copy : DragDropEffects.None;
+
+            target.DragDrop += (_, e) => OpenDropped(DroppedConnections(e).ToArray());
+        }
+
+        private static IEnumerable<ConnectionInfo> DroppedConnections(DragEventArgs e)
+        {
+            // The dragged object itself, not a format stored inside it: ObjectListView hands its
+            // OLVDataObject straight to DoDragDrop, so within one process this is that instance.
+            // Asking for it by format name found nothing, which is why nothing could be dropped.
+            OLVDataObject data = e.Data as OLVDataObject
+                                 ?? e.Data?.GetData(typeof(OLVDataObject)) as OLVDataObject;
+
+            if (data?.ModelObjects == null) yield break;
+
+            foreach (object model in data.ModelObjects)
+            {
+                // The PuTTY sessions are read-only mirrors of another program's registry, and
+                // nothing here can open one into a chosen group.
+                if (model is RootPuttySessionsNodeInfo or PuttySessionInfo) continue;
+
+                if (model is ConnectionInfo connection) yield return connection;
+            }
+        }
+
+        private void OpenDropped(ConnectionInfo[] dropped)
+        {
+            if (dropped.Length == 0) return;
+
+            int count = dropped.Sum(CountConnections);
+            if (count == 0) return;
+
+            // Asked once for the whole drop, not once per item.
+            if (count > 1)
+            {
+                string question = string.Format(Language.ConfirmOpenDroppedConnections, count, TabText);
+
+                if (MessageBox.Show(this, question, GeneralAppInfo.ProductName,
+                                    MessageBoxButtons.YesNo, MessageBoxIcon.Question,
+                                    MessageBoxDefaultButton.Button2) != DialogResult.Yes)
+                    return;
+            }
+
+            foreach (ConnectionInfo connection in dropped)
+            {
+                // This window is passed as the target, which is what actually decides where the
+                // session opens. Force.OverridePanel is deliberately NOT set: despite the name it
+                // does not mean "use the panel I gave you" but "ask which panel to use", and it
+                // put a chooser dialog in front of a drop that had already said where to go.
+                Runtime.ConnectionInitiator.OpenConnection(
+                    connection,
+                    ConnectionInfo.Force.DoNotJump,
+                    this);
+            }
+        }
+
+        private static int CountConnections(ConnectionInfo node) =>
+            node is ContainerInfo container
+                ? container.Children.Sum(CountConnections)
+                : 1;
+
+        private Label _emptyHint;
+
+        /// <summary>
+        /// Tells an empty tab group what it is for.
+        /// </summary>
+        /// <remarks>
+        /// "New tab group" produced an empty container and stopped there. Nothing said that a
+        /// connection arrives in it only when its own Tab group property names this one, or when a
+        /// tab is dragged in - so the feature looked broken, and the only way to learn otherwise
+        /// was to be told. The group now says it itself, and says its own name, which is the part
+        /// that has to be typed into the connection.
+        /// </remarks>
+        private void ShowEmptyHint()
+        {
+            if (_emptyHint == null)
+            {
+                _emptyHint = new Label
+                {
+                    Dock = DockStyle.Fill,
+                    TextAlign = System.Drawing.ContentAlignment.MiddleCenter,
+                    Padding = new Padding(24),
+                    BackColor = connDock.DockBackColor
+                };
+
+                Controls.Add(_emptyHint);
+                AcceptDrops(_emptyHint);
+            }
+
+            _emptyHint.Text = string.Format(Language.EmptyTabGroupHint, TabText);
+            _emptyHint.ForeColor = ForeColor;
+            _emptyHint.BackColor = BackColor;
+            _emptyHint.Visible = true;
+            _emptyHint.BringToFront();
+        }
+
+        /// <summary>
+        /// Whether anything has ever been opened in this group.
+        /// </summary>
+        /// <remarks>
+        /// The hint belongs on a group that has never held a tab - a freshly made one, which is
+        /// exactly when nobody knows what to do with it. Closing the last session of the day is a
+        /// different moment: there the same text is a lecture about a feature that was not being
+        /// used, in the space where the work just was.
+        /// </remarks>
+        private bool _everHadTabs;
+
+        private void UpdateEmptyHint()
+        {
+            if (connDock.DocumentsCount > 0)
+            {
+                _everHadTabs = true;
+                if (_emptyHint != null) _emptyHint.Visible = false;
+                return;
+            }
+
+            if (_everHadTabs)
+            {
+                if (_emptyHint != null) _emptyHint.Visible = false;
+                return;
+            }
+
+            ShowEmptyHint();
+        }
+
         internal void NavigateToNextTab()
         {
             try
@@ -346,12 +547,14 @@ namespace mRemoteNG.UI.Window
                 var documents = connDock.DocumentsToArray();
                 if (documents.Length <= 1) return;
 
-                var currentIndex = Array.IndexOf(documents, connDock.ActiveContent);
+                // ActiveDocument first: ActiveContent is whatever last had the focus inside
+                // this dock panel, and while the focus is on the tree or a settings page it is
+                // not one of the tabs at all. Asking only that question made the shortcut give up
+                // with a line in the notifications panel and nothing on screen.
+                var current = connDock.ActiveDocument ?? connDock.ActiveContent;
+                var currentIndex = Array.IndexOf(documents, current);
                 if (currentIndex == -1)
-                {
-                    Runtime.MessageCollector.AddMessage(MessageClass.DebugMsg, "NavigateToNextTab: ActiveContent not found in documents array");
-                    return;
-                }
+                    currentIndex = 0;
 
                 var nextIndex = (currentIndex + 1) % documents.Length;
                 documents[nextIndex].DockHandler.Activate();
@@ -369,12 +572,14 @@ namespace mRemoteNG.UI.Window
                 var documents = connDock.DocumentsToArray();
                 if (documents.Length <= 1) return;
 
-                var currentIndex = Array.IndexOf(documents, connDock.ActiveContent);
+                // ActiveDocument first: ActiveContent is whatever last had the focus inside
+                // this dock panel, and while the focus is on the tree or a settings page it is
+                // not one of the tabs at all. Asking only that question made the shortcut give up
+                // with a line in the notifications panel and nothing on screen.
+                var current = connDock.ActiveDocument ?? connDock.ActiveContent;
+                var currentIndex = Array.IndexOf(documents, current);
                 if (currentIndex == -1)
-                {
-                    Runtime.MessageCollector.AddMessage(MessageClass.DebugMsg, "NavigateToPreviousTab: ActiveContent not found in documents array");
-                    return;
-                }
+                    currentIndex = 0;
 
                 var previousIndex = currentIndex - 1;
                 if (previousIndex < 0)

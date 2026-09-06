@@ -139,6 +139,33 @@ namespace mRemoteNG.Tools
             }
         }
 
+        /// <summary>
+        /// Runs the tool, waits for it, and says how it ended.
+        /// </summary>
+        /// <remarks>
+        /// <see cref="Start"/> throws the exit code away, which is fine for a tool that opens a
+        /// window. It is not fine before a connection: a script whose job is to bring up a VPN and
+        /// report whether it came up was asked, answered "no", and the connection went ahead anyway
+        /// to fail with its own unrelated error.
+        /// </remarks>
+        public int StartAndWait(ConnectionInfo startConnectionInfo)
+        {
+            ConnectionInfo = startConnectionInfo ?? new ConnectionInfo();
+
+            if (TryIntegrate)
+            {
+                StartIntegrated();
+                return 0;
+            }
+
+            using Process process = new();
+            SetProcessProperties(process, ConnectionInfo);
+            process.Start();
+            process.WaitForExit();
+
+            return process.ExitCode;
+        }
+
         private void StartExternalProcess()
         {
             Process process = new();

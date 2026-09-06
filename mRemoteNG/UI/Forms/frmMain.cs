@@ -18,6 +18,7 @@ using mRemoteNG.UI.Tabs;
 using mRemoteNG.UI.TaskDialog;
 using mRemoteNG.UI.Window;
 using System;
+using System.Linq;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Diagnostics;
@@ -548,7 +549,8 @@ namespace mRemoteNG.UI.Forms
             {
                 if (dc is not ConnectionWindow cw) continue;
                 if (cw.Controls.Count < 1) continue;
-                if (cw.Controls[0] is not DockPanel dp) continue;
+                // Not Controls[0]: see the note in ConnectionInitiator.FindConnectionContainer.
+                if (cw.Controls.Cast<Control>().OfType<DockPanel>().FirstOrDefault() is not DockPanel dp) continue;
                 openConnections += dp.Contents.Count;
             }
 
@@ -860,7 +862,6 @@ namespace mRemoteNG.UI.Forms
         private void PnlDock_ActiveDocumentChanged(object sender, EventArgs e)
         {
             ActivateConnection();
-            sessionsMenu.UpdateMenuState();
         }
 
         internal void UpdateWindowTitle()
@@ -967,18 +968,37 @@ namespace mRemoteNG.UI.Forms
             pnlDock.Visible = true;
         }
 
+        /// <summary>
+        /// Makes sure the menu bar is on screen.
+        /// </summary>
+        /// <remarks>
+        /// Its counterpart is gone. HideFileMenu set msMain.Visible to false - the whole menu bar,
+        /// not just the File menu - and the only way back was the View menu, which had just
+        /// vanished with it. It told you to press Alt, which does nothing to a hidden MenuStrip.
+        /// One click and the program had no menu until someone edited the settings by hand.
+        /// </remarks>
+        /// <summary>
+        /// Moves to the next or previous open session, whoever is asking.
+        /// </summary>
+        /// <remarks>
+        /// The Sessions menu is one caller; the native terminal is the other, and the important
+        /// one - a shortcut for switching sessions is worth nothing if it only works when the
+        /// focus is somewhere other than a session.
+        /// </remarks>
+        public void NextSession() => sessionsMenu.NextSession();
+
+        public void PreviousSession() => sessionsMenu.PreviousSession();
+
+        /// <summary>
+        /// Jumps to the numbered session, counting from one as the menu labels it.
+        /// </summary>
+        public void JumpToSession(int number) => sessionsMenu.JumpToSession(number - 1);
+
         public void ShowFileMenu()
         {
             msMain.Visible = true;
-            viewMenu._mMenViewFileMenu.Checked = true;
         }
 
-        public void HideFileMenu()
-        {
-            msMain.Visible = false;
-            viewMenu._mMenViewFileMenu.Checked = false;
-            MessageBox.Show(Language.FileMenuWillBeHiddenNow, string.Empty, MessageBoxButtons.OK, MessageBoxIcon.Information);
-        }
 
         public void SetLayout()
         {
@@ -1004,17 +1024,6 @@ namespace mRemoteNG.UI.Forms
                 viewMenu._mMenViewExtAppsToolbar.Checked = false;
             }
 
-            if (Properties.Settings.Default.ViewMenuMultiSSH == true)
-            {
-                viewMenu.TsMultiSsh.Visible = true;
-                viewMenu._mMenViewMultiSshToolbar.Checked = true;
-            }
-            else
-            {
-                viewMenu.TsMultiSsh.Visible = false;
-                viewMenu._mMenViewMultiSshToolbar.Checked = false;
-            }
-
             if (Properties.Settings.Default.ViewMenuQuickConnect == true)
             {
                 viewMenu.TsQuickConnect.Visible = true;
@@ -1024,17 +1033,6 @@ namespace mRemoteNG.UI.Forms
             {
                 viewMenu.TsQuickConnect.Visible = false;
                 viewMenu._mMenViewQuickConnectToolbar.Checked = false;
-            }
-
-            if (Properties.Settings.Default.LockToolbars == true)
-            {
-                Properties.Settings.Default.LockToolbars = true;
-                viewMenu._mMenViewLockToolbars.Checked = true;                
-            }
-            else
-            {
-                Properties.Settings.Default.LockToolbars = false;
-                viewMenu._mMenViewLockToolbars.Checked = false;
             }
 
             pnlDock.Visible = true;

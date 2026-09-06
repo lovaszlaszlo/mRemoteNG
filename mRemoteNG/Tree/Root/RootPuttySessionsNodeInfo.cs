@@ -17,7 +17,7 @@ namespace mRemoteNG.Tree.Root
             _name = Language.PuttySavedSessionsRootName;
             _panel =
                 string.IsNullOrEmpty(Settings.Default.PuttySavedSessionsPanel)
-                    ? Language.General
+                    ? Connection.ConnectionInfo.DefaultPanel
                     : Settings.Default.PuttySavedSessionsPanel;
         }
 
