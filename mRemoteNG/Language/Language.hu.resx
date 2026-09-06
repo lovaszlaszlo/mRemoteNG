@@ -406,7 +406,7 @@
   <data name="MinutesToIdleTimeout" xml:space="preserve"><value>Tétlenségi percek</value></data>
   <data name="Name" xml:space="preserve"><value>Név</value></data>
   <data name="OpeningCommand" xml:space="preserve"><value>Indító parancs</value></data>
-  <data name="Panel" xml:space="preserve"><value>Panel</value></data>
+  <data name="Panel" xml:space="preserve"><value>Fülcsoport</value></data>
   <data name="Password" xml:space="preserve"><value>Jelszó</value></data>
   <data name="Port" xml:space="preserve"><value>Port</value></data>
   <data name="Ports" xml:space="preserve"><value>Portok</value></data>
@@ -552,7 +552,7 @@
   <data name="ACLPermissionsReadOnly" xml:space="preserve"><value>Csak olvasható</value></data>
   <data name="ACLPermissionsWriteAllow" xml:space="preserve"><value>Írás engedélyezve</value></data>
   <data name="Add" xml:space="preserve"><value>Hozzáadás</value></data>
-  <data name="AddConnectionPanel" xml:space="preserve"><value>Kapcsolatpanel hozzáadása</value></data>
+  <data name="AddConnectionPanel" xml:space="preserve"><value>Új fülcsoport</value></data>
   <data name="AddRoot" xml:space="preserve"><value>Gyökér hozzáadása</value></data>
   <data name="Advanced" xml:space="preserve"><value>Speciális</value></data>
   <data name="AdvancedExpand" xml:space="preserve"><value>Speciális &gt;&gt;</value></data>
@@ -615,7 +615,7 @@
   <data name="ConnectInFullscreen" xml:space="preserve"><value>Csatlakozás teljes képernyős módban</value></data>
   <data name="ConnectInViewOnlyMode" xml:space="preserve"><value>Csatlakozás csak megtekintés módban</value></data>
   <data name="ConnectionOpenFailed" xml:space="preserve"><value>A kapcsolat megnyitása sikertelen!</value></data>
-  <data name="ConnectionPanels" xml:space="preserve"><value>Kapcsolatpanelek</value></data>
+  <data name="ConnectionPanels" xml:space="preserve"><value>Fülcsoportok</value></data>
   <data name="ConnectionProperties" xml:space="preserve"><value>Kapcsolat tulajdonságai</value></data>
   <data name="ConnectionSuccessful" xml:space="preserve"><value>Sikeres kapcsolódás</value></data>
   <data name="ConnectionTimeoutSeconds" xml:space="preserve"><value>Kapcsolat időkorlátja (mp):</value></data>
@@ -1004,4 +1004,27 @@ Jelszó nem jön át — azokat a Windows a Hitelesítőadat-kezelőben tartja, 
 {1}
 
 (Távoli asztal hibakód: {2})</value></data>
+  <data name="EmptyTabGroupHint" xml:space="preserve"><value>Ez a fülcsoport üres.
+
+Egy kapcsolat akkor nyílik ide, ha a tulajdonságai közt a Fülcsoport mezőben ez áll: „{0}”. A mezőt a Képernyő csoportban találod.
+
+Ha oda olyan nevet írsz, ami még nincs, a fülcsoport magától elkészül — ezért erre a menüpontra ritkán van szükség. Nyílt fület nem lehet áthúzni egyik csoportból a másikba — húzz ide egy kapcsolatot a fáról.</value></data>
+  <data name="ConfirmOpenDroppedConnections" xml:space="preserve"><value>Megnyitja mind a(z) {0} kapcsolatot a(z) „{1}” fülcsoportban?</value></data>
+  <data name="TerminalShortcuts" xml:space="preserve"><value>Billentyűparancsok...</value></data>
+  <data name="TerminalShortcutsHeading" xml:space="preserve"><value>Ezek a natív SSH terminálban működnek (protokoll: SSHNative). RDP-re, VNC-re és a PuTTY-alapú protokollokra nem vonatkoznak.
+A nagyítás egyetlen közös érték az összes natív SSH terminálra, Windows-felhasználónként tárolva: ha az egyikben állítod, mindegyikben megváltozik, és túéli az újraindítást. A Terminál lapon beállított méretet tolja el, nem írja felül — a Ctrl+0 visszaadja.</value></data>
+  <data name="TerminalShortcutZoomIn" xml:space="preserve"><value>Nagyobb betű</value></data>
+  <data name="TerminalShortcutZoomOut" xml:space="preserve"><value>Kisebb betű</value></data>
+  <data name="TerminalShortcutZoomReset" xml:space="preserve"><value>Vissza a beállított méretre</value></data>
+  <data name="TerminalShortcutZoomWheel" xml:space="preserve"><value>Ctrl és az egérgörgő ugyanezt teszi</value></data>
+  <data name="TerminalShortcutNextSession" xml:space="preserve"><value>Következő munkamenet</value></data>
+  <data name="TerminalShortcutPreviousSession" xml:space="preserve"><value>Előző munkamenet</value></data>
+  <data name="TerminalShortcutJumpSession" xml:space="preserve"><value>Ugrás az adott munkamenetre</value></data>
+  <data name="TerminalShortcutCopy" xml:space="preserve"><value>Másolás</value></data>
+  <data name="TerminalShortcutPaste" xml:space="preserve"><value>Beillesztés</value></data>
+  <data name="TerminalShortcutSelect" xml:space="preserve"><value>Az egérrel kijelölt szöveg azonnal a vágólapra kerül</value></data>
+  <data name="TerminalShortcutRightClick" xml:space="preserve"><value>Jobb klikk beilleszt; több sornál előbb kérdez</value></data>
+  <data name="PreConnectionToolFailed" xml:space="preserve"><value>A csatlakozás előtt futtatandó eszköz, „{0}”, {1} értékkel lépett ki 0 helyett, ezért a kapcsolat nem épült fel.
+
+Hogy mi bukott el, azt a szóban forgó eszköz szövege mondja meg.</value></data>
 </root>

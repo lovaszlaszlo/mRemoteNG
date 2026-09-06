@@ -74,6 +74,12 @@ namespace mRemoteNG.UI.Controls
             _cmbQuickConnect.AutoCompleteMode = AutoCompleteMode.SuggestAppend;
             _cmbQuickConnect.AutoCompleteSource = AutoCompleteSource.ListItems;
             _cmbQuickConnect.Margin = new Padding(1, 0, 3, 0);
+
+            // Never sent to the overflow menu. This toolbar shares its row with the main menu and
+            // gets whatever width is left - about 350 pixels here - and the field is 200 of them,
+            // so it was the item that did not fit and quietly went into an overflow list nobody
+            // opens. The result was a Quick Connect toolbar with nothing to type into.
+            _cmbQuickConnect.Overflow = ToolStripItemOverflow.Never;
             _cmbQuickConnect.Name = "cmbQuickConnect";
             _cmbQuickConnect.Size = new Size(_display.ScaleWidth(200), 25);
             _cmbQuickConnect.ConnectRequested += cmbQuickConnect_ConnectRequested;
@@ -82,9 +88,11 @@ namespace mRemoteNG.UI.Controls
             // tsQuickConnect
             // 
             Dock = DockStyle.None;
+            // The "Quick Connect" caption is gone. It cost 136 pixels of a bar that had none to
+            // spare, and it said what the toolbar is called - which the View menu already does -
+            // next to a field and a protocol button that say what it does.
             Items.AddRange(new ToolStripItem[]
             {
-                _lblQuickConnect,
                 _cmbQuickConnect,
                 _btnQuickConnect,
                 _btnConnections

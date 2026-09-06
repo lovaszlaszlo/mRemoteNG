@@ -17,6 +17,7 @@ namespace mRemoteNG.UI.Menu
         private ToolStripMenuItem _mMenInfoWebsite = null!;
         private ToolStripSeparator _mMenInfoSep1 = null!;
         private ToolStripMenuItem _mMenInfoAbout = null!;
+        private ToolStripMenuItem _mMenInfoShortcuts = null!;
         private ToolStripMenuItem _mMenInfoDonate = null!;
         private ToolStripSeparator _mMenInfoSep2 = null!;
         private ToolStripSeparator _mMenInfoSep3 = null!;
@@ -47,24 +48,20 @@ namespace mRemoteNG.UI.Menu
             _mMenInfoSep3 = new ToolStripSeparator();
             _mMenInfoSep4 = new ToolStripSeparator();
             _mMenInfoAbout = new ToolStripMenuItem();
+            _mMenInfoShortcuts = new ToolStripMenuItem();
 
             // 
             // mMenInfo
             // 
+            // Nine entries, seven of which led to another project's website, forum, chat room,
+            // issue tracker and donation page. On a personal fork they are not help - they are
+            // somebody else's front door, and every one of them was a wrong turn. Two are left:
+            // where a newer build comes from, and what this one is.
             DropDownItems.AddRange(new ToolStripItem[]
             {
-                _mMenInfoHelp,
-                _mMenInfoSep1,
-                _mMenInfoWebsite,
-                _mMenInfoForum,
-                _mMenInfoChat,
-                _mMenInfoCommunity,
-                _mMenInfoBug,
-                _mMenInfoSep2,
                 _mMenToolsUpdate,
-                _mMenInfoSep3,
-                _mMenInfoDonate,
-                _mMenInfoSep4,
+                _mMenInfoSep2,
+                _mMenInfoShortcuts,
                 _mMenInfoAbout
             });
             Name = "mMenInfo";
@@ -156,6 +153,11 @@ namespace mRemoteNG.UI.Menu
             // mMenInfoAbout
             // 
             _mMenInfoAbout.Image = Properties.Resources.UIAboutBox_16x;
+            _mMenInfoShortcuts.Name = "mMenInfoShortcuts";
+            _mMenInfoShortcuts.Size = new System.Drawing.Size(190, 22);
+            _mMenInfoShortcuts.Text = Language.TerminalShortcuts;
+            _mMenInfoShortcuts.Click += mMenInfoShortcuts_Click;
+            //
             _mMenInfoAbout.Name = "mMenInfoAbout";
             _mMenInfoAbout.Size = new System.Drawing.Size(190, 22);
             _mMenInfoAbout.Text = Language.MenuItem_About;
@@ -173,6 +175,7 @@ namespace mRemoteNG.UI.Menu
             _mMenInfoCommunity.Text = Language.MenuItem_Community;
             _mMenInfoBug.Text = Language.MenuItem_ReportIssue;
             _mMenInfoAbout.Text = Language.MenuItem_About;
+            _mMenInfoShortcuts.Text = Language.TerminalShortcuts;
             _mMenToolsUpdate.Text = Language.MenuItem_CheckForUpdates;
         }
 
@@ -217,11 +220,15 @@ namespace mRemoteNG.UI.Menu
             Process.Start(startInfo);
         }
 
+        private void mMenInfoShortcuts_Click(object? sender, EventArgs e)
+        {
+            using FrmTerminalShortcuts shortcuts = new();
+            shortcuts.ShowDialog(FrmMain.Default);
+        }
+
         private void mMenInfoAbout_Click(object? sender, EventArgs e)
         {
-            if (frmAbout.Instance == null || frmAbout.Instance.IsDisposed)
-                frmAbout.Instance = new frmAbout();
-            frmAbout.Instance.Show(FrmMain.Default.pnlDock);
+            FrmSplashScreenNew.ShowAbout(FrmMain.Default);
         }
 
         #endregion

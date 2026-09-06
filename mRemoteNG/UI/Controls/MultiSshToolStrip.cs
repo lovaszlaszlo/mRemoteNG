@@ -7,6 +7,7 @@ using System.Linq;
 using mRemoteNG.App;
 using mRemoteNG.Connection;
 using mRemoteNG.Connection.Protocol;
+using mRemoteNG.Connection.Protocol.SSH;
 using mRemoteNG.Resources.Language;
 using System.Runtime.Versioning;
 
@@ -41,16 +42,22 @@ namespace mRemoteNG.UI.Controls
             txtMultiSsh.ForeColor = _themeManager.ActiveTheme.ExtendedPalette.getColor("TextBox_Foreground");
         }
 
+        /// <summary>
+        /// The open sessions this toolbar can type into.
+        /// </summary>
+        /// <remarks>
+        /// PuTTY only, until now: it collected PuttyBase sessions and posted Windows messages to
+        /// their windows. Every connection on this fork uses the native SSH protocol, which has no
+        /// such window, so the toolbar accepted a command, said nothing, and sent it nowhere.
+        /// </remarks>
         private ArrayList ProcessOpenConnections(ConnectionInfo connection)
         {
             ArrayList handlers = new();
 
             foreach (ProtocolBase _base in connection.OpenConnections)
             {
-                if (_base.GetType().IsSubclassOf(typeof(PuttyBase)))
-                {
-                    handlers.Add((PuttyBase)_base);
-                }
+                if (_base is PuttyBase or ProtocolSshNative)
+                    handlers.Add(_base);
             }
 
             return handlers;
@@ -60,9 +67,24 @@ namespace mRemoteNG.UI.Controls
         {
             if (processHandlers.Count == 0) return;
 
-            foreach (PuttyBase proc in processHandlers)
+            foreach (object handler in processHandlers)
             {
-                NativeMethods.PostMessage(proc.PuttyHandle, keyType, new IntPtr(keyData), new IntPtr(0));
+                // Only PuTTY is driven a keystroke at a time; the native sessions get the whole
+                // line at once, from SendCommandToNativeSessions.
+                if (handler is PuttyBase proc)
+                    NativeMethods.PostMessage(proc.PuttyHandle, keyType, new IntPtr(keyData), new IntPtr(0));
+            }
+        }
+
+        /// <summary>
+        /// Gives the native sessions the finished line, rather than one character at a time.
+        /// </summary>
+        private void SendCommandToNativeSessions(string command)
+        {
+            foreach (object handler in processHandlers)
+            {
+                if (handler is ProtocolSshNative ssh)
+                    ssh.SendCommand(command);
             }
         }
 
@@ -122,6 +144,7 @@ namespace mRemoteNG.UI.Controls
                 }
 
                 SendAllKeystrokes(NativeMethods.WM_KEYDOWN, 13); // Enter = char13
+                SendCommandToNativeSessions(txtMultiSsh.Text);
             }
         }
 

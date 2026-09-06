@@ -3046,4 +3046,59 @@ No password comes across - Windows keeps those in Credential Manager, encrypted 
 
 (Remote Desktop code: {2})</value>
   </data>
+  <data name="EmptyTabGroupHint" xml:space="preserve">
+    <value>This tab group is empty.
+
+A connection opens here when its Tab group property says "{0}". You will find it on the connection's properties, under Display.
+
+Typing a name there that does not exist yet creates the group by itself, so this menu item is rarely needed. Open tabs cannot be dragged from one group to another - drag a connection from the tree onto this group instead.</value>
+  </data>
+  <data name="ConfirmOpenDroppedConnections" xml:space="preserve">
+    <value>Open all {0} connections in the "{1}" tab group?</value>
+  </data>
+  <data name="TerminalShortcuts" xml:space="preserve">
+    <value>Terminal shortcuts...</value>
+  </data>
+  <data name="TerminalShortcutsHeading" xml:space="preserve">
+    <value>These work in the native SSH terminal (protocol: SSHNative). They do not apply to RDP, VNC or the PuTTY based protocols.
+The zoom is one setting shared by every native SSH terminal, kept per Windows user: changing it in one changes it everywhere, and it survives restarts. It shifts the size set on the Terminal page rather than replacing it - Ctrl+0 puts it back.</value>
+  </data>
+  <data name="TerminalShortcutZoomIn" xml:space="preserve">
+    <value>Larger text</value>
+  </data>
+  <data name="TerminalShortcutZoomOut" xml:space="preserve">
+    <value>Smaller text</value>
+  </data>
+  <data name="TerminalShortcutZoomReset" xml:space="preserve">
+    <value>Back to the configured size</value>
+  </data>
+  <data name="TerminalShortcutZoomWheel" xml:space="preserve">
+    <value>Ctrl and the mouse wheel does the same</value>
+  </data>
+  <data name="TerminalShortcutNextSession" xml:space="preserve">
+    <value>Next session</value>
+  </data>
+  <data name="TerminalShortcutPreviousSession" xml:space="preserve">
+    <value>Previous session</value>
+  </data>
+  <data name="TerminalShortcutJumpSession" xml:space="preserve">
+    <value>Jump to that session</value>
+  </data>
+  <data name="TerminalShortcutCopy" xml:space="preserve">
+    <value>Copy</value>
+  </data>
+  <data name="TerminalShortcutPaste" xml:space="preserve">
+    <value>Paste</value>
+  </data>
+  <data name="TerminalShortcutSelect" xml:space="preserve">
+    <value>Selecting with the mouse copies straight away</value>
+  </data>
+  <data name="TerminalShortcutRightClick" xml:space="preserve">
+    <value>Right click pastes; more than one line is confirmed first</value>
+  </data>
+  <data name="PreConnectionToolFailed" xml:space="preserve">
+    <value>The tool to run before this connection, "{0}", ended with {1} instead of 0, so the connection was not attempted.
+
+Its own output says why it failed.</value>
+  </data>
 </root>

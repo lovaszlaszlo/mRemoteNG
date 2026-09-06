@@ -1,0 +1,30 @@
+1.80 (Build 3696)
+
+  Native SSH terminal
+    - Font and colours are settings of this program now, under Options - Terminal.
+      They used to be read from a saved PuTTY session named on the connection, so
+      choosing a font meant installing PuTTY and nothing said so. A PuTTY session
+      can still be imported once, by a button.
+    - Selecting with the mouse copies what was just selected, not the previous
+      selection.
+    - Pasting more than one line asks first, showing the first twelve.
+    - A session that has died is reconnected on a double click instead of being
+      switched to.
+
+  Connections
+    - Import from the machines Windows Remote Desktop remembers, ticking what to
+      take.
+    - Export takes the node that is selected, and says which one.
+    - The PuTTY sessions node can be turned off.
+    - Fifteen new icons, and the icon folder can be extended by dropping files in.
+
+  Port scan
+    - The "only responding hosts" filter works; it never did.
+    - Hostname and address are separate columns, and the address sorts as a number.
+    - Filters for protocol and for hosts not yet in the tree.
+    - The progress bar says how far along it is, and what happened when it stops.
+
+  Dialogs
+    - Yes and No have keyboard shortcuts.
+    - An RDP connection that fails says why instead of flashing a tab.
+    - Escape declines the SSH questions.

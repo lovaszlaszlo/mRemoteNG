@@ -1,0 +1,16 @@
+# What this file is
+#
+# The application fetches it when Help - Check for updates is used, and compares
+# Version with its own AssemblyVersion. Everything below is read by
+# UpdateFile/UpdateInfo; a missing key makes the whole file invalid and the check
+# reports a failure rather than "up to date", so keep all five.
+#
+# To announce a new build: publish the release on GitHub, then set Version to
+# the new AssemblyVersion, dURL to the asset's download URL, and Checksum to its
+# SHA-256 (certutil -hashfile <file> SHA256).
+
+Version: 1.80.0.0
+dURL: https://github.com/lovaszlaszlo/mRemoteNG/releases/download/v1.80/mRemoteNG-1.80-dbsystem-hu-x64-portable.zip
+clURL: https://raw.githubusercontent.com/lovaszlaszlo/mRemoteNG/dbsystem/main/updates/changelog.txt
+Checksum: 0000000000000000000000000000000000000000000000000000000000000000
+CertificateThumbprint: 

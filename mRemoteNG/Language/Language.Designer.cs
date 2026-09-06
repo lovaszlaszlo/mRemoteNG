@@ -8501,5 +8501,149 @@ namespace mRemoteNG.Resources.Language {
                 return ResourceManager.GetString("RdpConnectFailed", resourceCulture);
             }
         }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to This tab group is empty..
+        /// </summary>
+        internal static string EmptyTabGroupHint {
+            get {
+                return ResourceManager.GetString("EmptyTabGroupHint", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Open all {0} connections in the {1} tab group?.
+        /// </summary>
+        internal static string ConfirmOpenDroppedConnections {
+            get {
+                return ResourceManager.GetString("ConfirmOpenDroppedConnections", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Terminal shortcuts....
+        /// </summary>
+        internal static string TerminalShortcuts {
+            get {
+                return ResourceManager.GetString("TerminalShortcuts", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to These work in the native SSH terminal (protocol: SSHNative). They do not apply t.
+        /// </summary>
+        internal static string TerminalShortcutsHeading {
+            get {
+                return ResourceManager.GetString("TerminalShortcutsHeading", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Larger text.
+        /// </summary>
+        internal static string TerminalShortcutZoomIn {
+            get {
+                return ResourceManager.GetString("TerminalShortcutZoomIn", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Smaller text.
+        /// </summary>
+        internal static string TerminalShortcutZoomOut {
+            get {
+                return ResourceManager.GetString("TerminalShortcutZoomOut", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Back to the configured size.
+        /// </summary>
+        internal static string TerminalShortcutZoomReset {
+            get {
+                return ResourceManager.GetString("TerminalShortcutZoomReset", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Ctrl and the mouse wheel does the same.
+        /// </summary>
+        internal static string TerminalShortcutZoomWheel {
+            get {
+                return ResourceManager.GetString("TerminalShortcutZoomWheel", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Next session.
+        /// </summary>
+        internal static string TerminalShortcutNextSession {
+            get {
+                return ResourceManager.GetString("TerminalShortcutNextSession", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Previous session.
+        /// </summary>
+        internal static string TerminalShortcutPreviousSession {
+            get {
+                return ResourceManager.GetString("TerminalShortcutPreviousSession", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Jump to that session.
+        /// </summary>
+        internal static string TerminalShortcutJumpSession {
+            get {
+                return ResourceManager.GetString("TerminalShortcutJumpSession", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Copy.
+        /// </summary>
+        internal static string TerminalShortcutCopy {
+            get {
+                return ResourceManager.GetString("TerminalShortcutCopy", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Paste.
+        /// </summary>
+        internal static string TerminalShortcutPaste {
+            get {
+                return ResourceManager.GetString("TerminalShortcutPaste", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Selecting with the mouse copies straight away.
+        /// </summary>
+        internal static string TerminalShortcutSelect {
+            get {
+                return ResourceManager.GetString("TerminalShortcutSelect", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Right click pastes; more than one line is confirmed first.
+        /// </summary>
+        internal static string TerminalShortcutRightClick {
+            get {
+                return ResourceManager.GetString("TerminalShortcutRightClick", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to The tool to run before this connection ended with an error.
+        /// </summary>
+        internal static string PreConnectionToolFailed {
+            get {
+                return ResourceManager.GetString("PreConnectionToolFailed", resourceCulture);
+            }
+        }
     }
 }
