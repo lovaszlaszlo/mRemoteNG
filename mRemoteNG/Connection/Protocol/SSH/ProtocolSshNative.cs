@@ -985,6 +985,13 @@ namespace mRemoteNG.Connection.Protocol.SSH
                         WriteClipboard(message.GetProperty("data").GetString());
                         break;
 
+                    case "session":
+                        SwitchSession(message.GetProperty("move").GetString(),
+                                      message.TryGetProperty("index", out JsonElement index)
+                                          ? index.GetInt32()
+                                          : 0);
+                        break;
+
                     case "resize":
                         _columns = (uint)message.GetProperty("cols").GetInt32();
                         _rows = (uint)message.GetProperty("rows").GetInt32();
@@ -992,6 +999,33 @@ namespace mRemoteNG.Connection.Protocol.SSH
                         break;
                 }
             }
+        }
+
+        /// <summary>
+        /// Moves to the next or previous session, asked for from inside this one.
+        /// </summary>
+        private static void SwitchSession(string move, int index)
+        {
+            FrmMain main = FrmMain.Default;
+            if (main == null || main.IsDisposed) return;
+
+            main.BeginInvoke(new Action(() =>
+            {
+                switch (move)
+                {
+                    case "previous":
+                        main.PreviousSession();
+                        break;
+
+                    case "index":
+                        main.JumpToSession(index);
+                        break;
+
+                    default:
+                        main.NextSession();
+                        break;
+                }
+            }));
         }
 
         /// <summary>
@@ -1134,6 +1168,21 @@ namespace mRemoteNG.Connection.Protocol.SSH
             if (string.IsNullOrEmpty(command)) return;
 
             WriteToShell(command.TrimEnd() + "\n");
+        }
+
+        /// <summary>
+        /// Types a line into this session, as the multi-SSH toolbar does to many at once.
+        /// </summary>
+        /// <remarks>
+        /// That toolbar posted Windows messages to PuTTY's window and knew no other way to reach a
+        /// session, so with every connection on this fork moved to the native protocol it sent
+        /// commands into the void - typed, entered, nothing.
+        /// </remarks>
+        public void SendCommand(string command)
+        {
+            if (string.IsNullOrEmpty(command)) return;
+
+            WriteToShell(command.TrimEnd('\r', '\n') + "\n");
         }
 
         private void WriteToShell(string text)

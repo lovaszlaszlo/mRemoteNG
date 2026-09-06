@@ -111,6 +111,19 @@
             if (e.key === '-') { zoom(-1); return false; }
             if (e.key === '0') { zoom(0); return false; }
 
+            // Switching sessions has to work from inside a session - that is the only place it is
+            // any use. The menu never gets these: the page has the keyboard, and the WinForms
+            // WebView2 control exposes no way for the host to see an accelerator first. Caught
+            // here and handed over instead.
+            if (e.key === 'PageDown') { send({ type: 'session', move: 'next' }); return false; }
+            if (e.key === 'PageUp') { send({ type: 'session', move: 'previous' }); return false; }
+
+            // Ctrl+1..9 as well. Ctrl+0 is taken above, for resetting the zoom.
+            if (e.key >= '1' && e.key <= '9') {
+                send({ type: 'session', move: 'index', index: Number(e.key) });
+                return false;
+            }
+
             return true;
         });
 
