@@ -6,6 +6,12 @@
     <style>
         html, body { height: 100%; margin: 0; background: #1e1e1e; overflow: hidden; }
         #terminal { height: 100%; width: 100%; }
+
+        /* The scrollback is scrolled with the wheel and with Shift+PageUp, so the bar itself is
+           only in the way - and being the browser's own, it is drawn in the browser's light grey
+           down the edge of a dark terminal. */
+        .xterm-viewport { scrollbar-width: none; }
+        .xterm-viewport::-webkit-scrollbar { width: 0; height: 0; }
     </style>
 </head>
 <body>
@@ -103,9 +109,18 @@
             applyFontSize();
         }
 
+        // Applied now, not only when an appearance message arrives. A connection that names no
+        // PuTTY session and has no terminal options set gets no such message at all, so the
+        // remembered adjustment was never put on - the terminal opened at the default size, and
+        // the first Ctrl++ jumped it to the remembered size plus one, which looked like the
+        // setting had not been kept.
+        applyFontSize();
+
         // Return false to keep the key away from the session.
         term.attachCustomKeyEventHandler(e => {
-            if (!e.ctrlKey || e.type !== 'keydown') return true;
+            if (e.type !== 'keydown') return true;
+
+            if (!e.ctrlKey) return true;
 
             if (e.key === '+' || e.key === '=') { zoom(1); return false; }
             if (e.key === '-') { zoom(-1); return false; }
@@ -126,6 +141,21 @@
 
             return true;
         });
+
+        // F11 belongs to the window, not to the shell. Left alone it is delivered to the
+        // terminal, which writes its escape sequence into the session.
+        //
+        // On the document rather than through xterm's key handler, because that one only runs for
+        // keys that reach the terminal's own input. Entering fullscreen rebuilds the layout around
+        // this control, and afterwards the focus sits inside the page but outside the terminal -
+        // so F11 got in but never back out. The document sees it either way.
+        document.addEventListener('keydown', e => {
+            if (e.key !== 'F11') return;
+
+            e.preventDefault();
+            e.stopPropagation();
+            send({ type: 'fullscreen' });
+        }, true);
 
         term.element.addEventListener('wheel', e => {
             if (!e.ctrlKey) return;
@@ -159,12 +189,18 @@
             }
         });
 
-        // The panel drives the size, so refit whenever the window changes and once at startup.
+        // Watches the terminal's own box rather than the window, because the two do not always
+        // change together: a tab dragged out into a window of its own, or that window resized,
+        // gave the page a new size without a window resize event to go with it - so the terminal
+        // kept the row count it had in the tab and left the rest of the window empty.
         let resizeTimer = null;
-        window.addEventListener('resize', () => {
+        function refitSoon() {
             clearTimeout(resizeTimer);
             resizeTimer = setTimeout(fitAndReport, 100);
-        });
+        }
+
+        new ResizeObserver(refitSoon).observe(document.getElementById('terminal'));
+        window.addEventListener('resize', refitSoon);
 
         // Temporary marker: PuTTY and this terminal are being compared side by side and look
         // alike, so say which one this is. Remove once PuTTY is no longer in the picture.
