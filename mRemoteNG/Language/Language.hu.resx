@@ -291,6 +291,8 @@
   <data name="Reconnect" xml:space="preserve">
     <value>Újrakapcsolódás</value>
   </data>
+  <data name="RedockTab" xml:space="preserve"><value>Visszadokkolás</value></data>
+  <data name="FloatTab" xml:space="preserve"><value>Önálló ablakba</value></data>
   <data name="RenameTab" xml:space="preserve">
     <value>Fül átnevezése</value>
   </data>

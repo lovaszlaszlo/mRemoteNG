@@ -992,6 +992,13 @@ namespace mRemoteNG.Connection.Protocol.SSH
                                           : 0);
                         break;
 
+                    case "fullscreen":
+                        // TopLevelControl, not FindForm: a docking library tab is itself a Form,
+                        // so FindForm stopped at the tab and made that go fullscreen inside the
+                        // window - the tab strip vanished and nothing else did.
+                        ToggleFullscreen(_webView?.TopLevelControl as Form);
+                        break;
+
                     case "resize":
                         _columns = (uint)message.GetProperty("cols").GetInt32();
                         _rows = (uint)message.GetProperty("rows").GetInt32();
@@ -1026,6 +1033,48 @@ namespace mRemoteNG.Connection.Protocol.SSH
                         break;
                 }
             }));
+        }
+
+        /// <summary>
+        /// Turns fullscreen on or off for the window this session is actually in.
+        /// </summary>
+        /// <remarks>
+        /// A tab dragged off its group lives in a floating window of its own. Sending this to the
+        /// main window regardless meant F11 in a torn-off session went fullscreen somewhere else
+        /// entirely - on the window behind it.
+        ///
+        /// A floating window has no menu bar and no toolbars, so there is nothing to hide there:
+        /// its fullscreen is the border and the size, and that is all.
+        /// </remarks>
+        private static void ToggleFullscreen(Form form)
+        {
+            FrmMain main = FrmMain.Default;
+
+            if (form == null || form == main)
+            {
+                if (main == null || main.IsDisposed) return;
+
+                main.BeginInvoke(new Action(main.ToggleFullscreen));
+                return;
+            }
+
+            form.BeginInvoke(new Action(() => FullscreenFor(form).Value = !FullscreenFor(form).Value));
+        }
+
+        /// <summary>
+        /// The fullscreen state of a floating window, kept for as long as the window is.
+        /// </summary>
+        private static readonly Dictionary<Form, UI.FullscreenHandler> FloatingFullscreen = [];
+
+        private static UI.FullscreenHandler FullscreenFor(Form form)
+        {
+            if (FloatingFullscreen.TryGetValue(form, out UI.FullscreenHandler handler)) return handler;
+
+            handler = new UI.FullscreenHandler(form);
+            FloatingFullscreen[form] = handler;
+            form.FormClosed += (_, _) => FloatingFullscreen.Remove(form);
+
+            return handler;
         }
 
         /// <summary>

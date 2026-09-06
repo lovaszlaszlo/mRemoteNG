@@ -126,6 +126,8 @@ namespace mRemoteNG.UI.Forms
             this.Top = viewport.Top + (targetScreen.Bounds.Size.Height / 2) - (this.Height / 2);
 
             Fullscreen = new FullscreenHandler(this);
+            Fullscreen.Chrome.Add(tsContainer.TopToolStripPanel);
+            Fullscreen.ChromeToggled = SetTabStripsForFullscreen;
 
             //Theming support
             _themeManager = ThemeManager.getInstance();
@@ -905,6 +907,81 @@ namespace mRemoteNG.UI.Forms
             Text = titleBuilder.ToString();
         }
 
+        /// <summary>
+        /// Catches F11 whatever has the focus, and whether or not the menu bar is on screen.
+        /// </summary>
+        /// <remarks>
+        /// F11 is the View menu item's shortcut, and a ToolStripMenuItem's shortcut is only
+        /// delivered while its menu strip is visible. Fullscreen hides the menu bar, so the very
+        /// key that would leave fullscreen stopped working the moment it was used - one way in,
+        /// no way out. Sessions in the native terminal are covered separately, by the page.
+        /// </remarks>
+        protected override bool ProcessCmdKey(ref System.Windows.Forms.Message msg, Keys keyData)
+        {
+            if (keyData == Keys.F11)
+            {
+                ToggleFullscreen();
+                return true;
+            }
+
+            // Kept from the designer file, where it had no business being: a way back to the menu
+            // bar if anything ever leaves it hidden.
+            if (keyData == (Keys.Alt | Keys.Menu) && !msMain.Visible)
+                msMain.Visible = true;
+
+            return base.ProcessCmdKey(ref msg, keyData);
+        }
+
+        /// <summary>
+        /// Turns fullscreen on or off.
+        /// </summary>
+        /// <remarks>
+        /// Public because a native SSH session has to ask for it. The terminal is a page in a
+        /// WebView2 control, the page holds the keyboard, and the WinForms control gives the host
+        /// no way to see an accelerator first - so F11 never reaches the menu item that owns it.
+        /// The page catches the key and calls this instead.
+        /// </remarks>
+        public void ToggleFullscreen()
+        {
+            Fullscreen.Value = !Fullscreen.Value;
+            viewMenu.SetFullscreenChecked(Fullscreen.Value);
+        }
+
+        /// <summary>
+        /// Takes the tab strips away while fullscreen, and puts them back afterwards.
+        /// </summary>
+        /// <remarks>
+        /// Both of them: the panel tabs across the top of the main dock, and the session tabs
+        /// inside every tab group. Hiding the menu and the toolbars alone still left two rows of
+        /// tabs between the session and the edge of the screen.
+        /// </remarks>
+        private void SetTabStripsForFullscreen(bool fullscreen)
+        {
+            if (fullscreen)
+            {
+                if (pnlDock.DocumentStyle != DocumentStyle.DockingSdi)
+                {
+                    pnlDock.DocumentStyle = DocumentStyle.DockingSdi;
+                    pnlDock.Size = new Size(1, 1);
+                }
+            }
+            else
+            {
+                // Works out for itself which style belongs here, so a panel opened while
+                // fullscreen is accounted for.
+                ShowHidePanelTabs();
+            }
+
+            if (Runtime.WindowList == null) return;
+
+            for (int i = 0; i < Runtime.WindowList.Count; i++)
+                (Runtime.WindowList[i] as ConnectionWindow)?.ShowSessionTabs(!fullscreen);
+
+            // Last, once the panes have been rebuilt: whatever had the keyboard before is gone
+            // with them.
+            (pnlDock.ActiveDocument as ConnectionWindow)?.FocusActiveSession();
+        }
+
         public void ShowHidePanelTabs(DockContent closingDocument = null)
         {
             DocumentStyle newDocumentStyle;
@@ -960,8 +1037,17 @@ namespace mRemoteNG.UI.Forms
             pnlDock.Visible = false;
 
             AppWindows.TreeForm.Show(pnlDock, DockState.DockLeft);
-            AppWindows.ConfigForm.Show(pnlDock, DockState.DockLeft);
+
+            // Below the tree, not in the same place as it. Both were shown at DockLeft, which put
+            // them in one pane as two tabs - and since the properties were shown second, they came
+            // up in front and the connection tree was behind them, out of sight. On a fresh start
+            // the program looked as though it had lost every connection.
+            AppWindows.ConfigForm.Show(AppWindows.TreeForm.Pane, DockAlignment.Bottom, 0.4);
+
             AppWindows.ErrorsForm.Show(pnlDock, DockState.DockBottomAutoHide);
+
+            // And the tree is what the window is for, so it is the one holding the focus.
+            AppWindows.TreeForm.Activate();
             viewMenu._mMenViewErrorsAndInfos.Checked = true;
 
             ShowFileMenu();

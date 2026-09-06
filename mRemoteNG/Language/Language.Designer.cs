@@ -6882,6 +6882,24 @@ namespace mRemoteNG.Resources.Language {
         }
 
         /// <summary>
+        ///   Looks up a localized string similar to Dock Back.
+        /// </summary>
+        internal static string RedockTab {
+            get {
+                return ResourceManager.GetString("RedockTab", resourceCulture);
+            }
+        }
+
+        /// <summary>
+        ///   Looks up a localized string similar to Open in a Separate Window.
+        /// </summary>
+        internal static string FloatTab {
+            get {
+                return ResourceManager.GetString("FloatTab", resourceCulture);
+            }
+        }
+
+        /// <summary>
         ///   Looks up a localized string similar to SSH Options.
         /// </summary>
         internal static string SshOptions {

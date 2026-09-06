@@ -14,6 +14,8 @@ namespace mRemoteNG.UI.Window
         private ToolStripSeparator cmenTabSep1;
         private ToolStripSeparator cmenTabSep2;
         private ToolStripMenuItem cmenTabRenameTab;
+        private ToolStripMenuItem cmenTabFloat;
+        private ToolStripMenuItem cmenTabRedock;
         private ToolStripMenuItem cmenTabDuplicateTab;
         private ToolStripMenuItem cmenTabDisconnect;
         private ToolStripMenuItem cmenTabDisconnectOthers;
@@ -40,6 +42,8 @@ namespace mRemoteNG.UI.Window
             this.cmenTabDisconnectOthers = new System.Windows.Forms.ToolStripMenuItem();
             this.cmenTabDisconnectOthersRight = new System.Windows.Forms.ToolStripMenuItem();
             this.cmenTabRenameTab = new System.Windows.Forms.ToolStripMenuItem();
+            this.cmenTabFloat = new System.Windows.Forms.ToolStripMenuItem();
+            this.cmenTabRedock = new System.Windows.Forms.ToolStripMenuItem();
             this.cmenTabDuplicateTab = new System.Windows.Forms.ToolStripMenuItem();
             this.cmenTabSep1 = new System.Windows.Forms.ToolStripSeparator();
             this.cmenTabFullscreen = new System.Windows.Forms.ToolStripMenuItem();
@@ -76,6 +80,8 @@ namespace mRemoteNG.UI.Window
             this.cmenTabDisconnectOthers,
             this.cmenTabDisconnectOthersRight,
             this.cmenTabRenameTab,
+            this.cmenTabFloat,
+            this.cmenTabRedock,
             this.cmenTabDuplicateTab,
             this.cmenTabSep1,
             this.cmenTabFullscreen,
@@ -120,8 +126,20 @@ namespace mRemoteNG.UI.Window
             this.cmenTabDisconnectOthersRight.Size = new System.Drawing.Size(230, 22);
             this.cmenTabDisconnectOthersRight.Text = "Disconnect Tabs To The Right";
             // 
+            // cmenTabFloat
+            //
+            this.cmenTabFloat.Name = "cmenTabFloat";
+            this.cmenTabFloat.Size = new System.Drawing.Size(230, 22);
+            this.cmenTabFloat.Text = "Open in a Separate Window";
+            //
+            // cmenTabRedock
+            //
+            this.cmenTabRedock.Name = "cmenTabRedock";
+            this.cmenTabRedock.Size = new System.Drawing.Size(230, 22);
+            this.cmenTabRedock.Text = "Dock Back";
+            //
             // cmenTabRenameTab
-            // 
+            //  
             this.cmenTabRenameTab.Image = global::mRemoteNG.Properties.Resources.Rename_16x;
             this.cmenTabRenameTab.Name = "cmenTabRenameTab";
             this.cmenTabRenameTab.Size = new System.Drawing.Size(230, 22);

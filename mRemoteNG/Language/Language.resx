@@ -878,6 +878,12 @@ See the Microsoft Support article at http://support.microsoft.com/kb/811833 for 
   <data name="ExternalToolUnsavedOnClose" xml:space="preserve">
     <value>The external tools have changes that are not saved yet. Save them?</value>
   </data>
+  <data name="RedockTab" xml:space="preserve">
+    <value>Dock Back</value>
+  </data>
+  <data name="FloatTab" xml:space="preserve">
+    <value>Open in a Separate Window</value>
+  </data>
   <data name="StartChat" xml:space="preserve">
     <value>Start Chat (VNC)</value>
   </data>

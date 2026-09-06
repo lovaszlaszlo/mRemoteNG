@@ -105,6 +105,8 @@ namespace mRemoteNG.UI.Window
             cmenTabSendSpecialKeysCtrlAltDel.Click += (sender, args) => SendSpecialKeys(ProtocolVNC.SpecialKeys.CtrlAltDel);
             cmenTabSendSpecialKeysCtrlEsc.Click += (sender, args) => SendSpecialKeys(ProtocolVNC.SpecialKeys.CtrlEsc);
             cmenTabRenameTab.Click += (sender, args) => RenameTab();
+            cmenTabFloat.Click += (sender, args) => MoveTab(DockState.Float);
+            cmenTabRedock.Click += (sender, args) => MoveTab(DockState.Document);
             cmenTabDuplicateTab.Click += (sender, args) => DuplicateTab();
             cmenTabReconnect.Click += (sender, args) => Reconnect();
             cmenTabDisconnect.Click += (sender, args) => CloseTabMenu();
@@ -158,6 +160,18 @@ namespace mRemoteNG.UI.Window
                     TabText = titleText,
                     TabPageContextMenuStrip = cmenTab
                 };
+
+                // Dragged out into a window of its own, the tab arrives without the keyboard: the
+                // new window comes up in front but nothing inside it has the focus, so the first
+                // keystroke goes nowhere and the terminal has to be clicked first.
+                conTab.DockStateChanged += (_, _) =>
+                {
+                    if (conTab.DockState != DockState.Float || conTab.IsDisposed) return;
+
+                    conTab.BeginInvoke(new Action(() =>
+                        InterfaceControl.FindInterfaceControl(conTab)?.Protocol?.Focus()));
+                };
+
 
                 //if (Settings.Default.AlwaysShowConnectionTabs == false)
                 // TODO: See if we can make this work with DPS...
@@ -300,6 +314,8 @@ namespace mRemoteNG.UI.Window
             cmenTabSendSpecialKeysCtrlEsc.Text = Language.CtrlEsc;
             cmenTabExternalApps.Text = Language._Tools;
             cmenTabRenameTab.Text = Language.RenameTab;
+            cmenTabFloat.Text = Language.FloatTab;
+            cmenTabRedock.Text = Language.RedockTab;
             // Not "Duplicate Tab": nothing here is duplicated. It opens a second, independent
             // session to the same machine, and leaves the tab it was invoked from alone. The
             // connection tree already has an entry for exactly this action, worded this way, so
@@ -659,6 +675,49 @@ namespace mRemoteNG.UI.Window
         /// still needs a click; the RDP client and the native SSH terminal are ordinary controls
         /// and have no such behaviour.
         /// </remarks>
+        /// <summary>
+        /// Hands the keyboard back to the session in front.
+        /// </summary>
+        /// <remarks>
+        /// Needed after the layout is rebuilt under a session - going fullscreen does that. The
+        /// focus lands on the rebuilt panes and no longer inside the terminal page, and the page
+        /// is the only thing that can see a key pressed over it: F11 got into fullscreen and then
+        /// had nothing left to listen for the F11 that would come back out.
+        /// </remarks>
+        /// <summary>
+        /// Moves the tab that was right-clicked between its own window and this group.
+        /// </summary>
+        /// <remarks>
+        /// The docking library does this by dragging a window's title bar back over the panel it
+        /// came from, which shows nothing at all here - and even where it works, dragging a window
+        /// across a large screen to hit a drop target is not how anybody wants to put a tab back.
+        /// Two menu entries say the two directions out loud instead.
+        /// </remarks>
+        private void MoveTab(DockState state)
+        {
+            try
+            {
+                if (connDock.ActiveContent is not ConnectionTab tab || tab.IsDisposed) return;
+                if (tab.DockState == state) return;
+
+                tab.DockState = state;
+                tab.Activate();
+
+                // Whichever window it ended up in, the session takes the keyboard.
+                BeginInvoke(new Action(() =>
+                    InterfaceControl.FindInterfaceControl(tab)?.Protocol?.Focus()));
+            }
+            catch (Exception ex)
+            {
+                Runtime.MessageCollector.AddExceptionMessage("MoveTab (UI.Window.ConnectionWindow) failed", ex);
+            }
+        }
+
+        internal void FocusActiveSession()
+        {
+            FocusActiveConnection(connDock.ActiveDocument);
+        }
+
         private void FocusActiveConnection(IDockContent expectedDocument)
         {
             if (!IsHandleCreated || IsDisposed) return;
@@ -679,6 +738,22 @@ namespace mRemoteNG.UI.Window
 
         #region Tab Menu
 
+        /// <summary>
+        /// Shows or hides this group's session tabs.
+        /// </summary>
+        /// <remarks>
+        /// Fullscreen asks for this. Ctrl+PageUp and Ctrl+PageDown still switch sessions with the
+        /// tabs gone, so there is still a way through them without leaving fullscreen.
+        /// </remarks>
+        internal void ShowSessionTabs(bool show)
+        {
+            DocumentStyle style = show ? DocumentStyle.DockingWindow : DocumentStyle.DockingSdi;
+            if (connDock.DocumentStyle == style) return;
+
+            connDock.DocumentStyle = style;
+            connDock.Size = new System.Drawing.Size(1, 1);
+        }
+
         private void ShowHideMenuButtons(object sender, CancelEventArgs e)
         {
             try
@@ -695,6 +770,13 @@ namespace mRemoteNG.UI.Window
                 {
                     cmenTabViewOnly.Visible = false;
                 }
+
+                // One of the two, never both: a docked tab can be sent out, a floating one can
+                // come back.
+                bool floating = connDock.ActiveContent is ConnectionTab active &&
+                                active.DockState == DockState.Float;
+                cmenTabFloat.Visible = !floating;
+                cmenTabRedock.Visible = floating;
 
                 if (interfaceControl.Info.Protocol == ProtocolType.RDP)
                 {

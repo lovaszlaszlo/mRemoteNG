@@ -249,7 +249,16 @@ namespace mRemoteNG.UI.Menu
         private void mMenViewFullscreen_Click(object sender, EventArgs e)
         {
             FullscreenHandler.Value = !FullscreenHandler.Value;
-            _mMenViewFullscreen.Checked = FullscreenHandler.Value;
+            SetFullscreenChecked(FullscreenHandler.Value);
+        }
+
+        /// <summary>
+        /// Keeps the tick in step when fullscreen is turned on from somewhere else - F11 pressed
+        /// inside a terminal, which the menu never sees.
+        /// </summary>
+        internal void SetFullscreenChecked(bool fullscreen)
+        {
+            _mMenViewFullscreen.Checked = fullscreen;
         }
 
         private void mMenReconnectAll_Click(object sender, EventArgs e)
