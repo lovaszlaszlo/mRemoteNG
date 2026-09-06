@@ -868,6 +868,12 @@ namespace mRemoteNG.UI.Forms
             }
 
             StringBuilder titleBuilder = new(Application.ProductName);
+#if DEBUG
+            // A debug and a release build looked identical in the title bar while sharing one
+            // confCons.xml - whichever saved last overwrote the other. With two copies running
+            // there was nothing on screen to say which window was which.
+            titleBuilder.Append(" [Debug]");
+#endif
             const string separator = " - ";
 
             if (Runtime.ConnectionsService.IsConnectionsFileLoaded)
