@@ -245,17 +245,119 @@ namespace mRemoteNG.App
             {
                 _wpfSplash = FrmSplashScreenNew.GetInstance();
 
-                // Center the splash screen on the primary screen before showing it
-                _wpfSplash.WindowStartupLocation = System.Windows.WindowStartupLocation.CenterScreen;
+                // Shown transparent and placed afterwards. CenterScreen put it on the primary
+                // monitor every time - it runs on a thread of its own with no owner window, and
+                // that is what WPF centres on then - while the main window comes up wherever it
+                // was left. On two monitors the splash was on the other screen from the program
+                // it belongs to, and had to be hunted for.
+                //
+                // Placed after Show because the exact conversion from screen pixels to WPF's own
+                // units comes from the window's presentation source, which does not exist until
+                // then. Opacity keeps that first frame from being seen in the wrong place.
+                _wpfSplash.WindowStartupLocation = System.Windows.WindowStartupLocation.Manual;
+                _wpfSplash.Opacity = 0;
 
                 _wpfSplash.ShowInTaskbar = false;
                 _wpfSplash.Show();
+                CentreOnStartupScreen(_wpfSplash);
+                _wpfSplash.Opacity = 1;
                 System.Windows.Forms.Integration.ElementHost.EnableModelessKeyboardInterop(_wpfSplash);
                 System.Windows.Threading.Dispatcher.Run(); // WPF message loop
             })
             { IsBackground = true };
             _wpfSplashThread.SetApartmentState(System.Threading.ApartmentState.STA);
             _wpfSplashThread.Start();
+        }
+
+        /// <summary>
+        /// Centres a window on the screen the main window is going to open on.
+        /// </summary>
+        private static void CentreOnStartupScreen(System.Windows.Window window)
+        {
+            try
+            {
+                Rectangle area = StartupScreen().WorkingArea;
+
+                System.Windows.Media.CompositionTarget target =
+                    System.Windows.PresentationSource.FromVisual(window)?.CompositionTarget;
+                if (target == null) return;
+
+                System.Windows.Point topLeft = target.TransformFromDevice.Transform(
+                    new System.Windows.Point(area.Left, area.Top));
+                System.Windows.Point size = target.TransformFromDevice.Transform(
+                    new System.Windows.Point(area.Width, area.Height));
+
+                window.Left = topLeft.X + (size.X - window.Width) / 2;
+                window.Top = topLeft.Y + (size.Y - window.Height) / 2;
+            }
+            catch (Exception ex)
+            {
+                Runtime.MessageCollector.AddExceptionMessage("Could not place the splash screen", ex,
+                                                             MessageClass.WarningMsg, false);
+            }
+        }
+
+        /// <summary>
+        /// The screen the main window is going to open on.
+        /// </summary>
+        /// <remarks>
+        /// The stored position first, and the mouse pointer's screen when there is none to be had.
+        /// The splash runs on a thread of its own before much of the program exists, and a stored
+        /// setting read that early is not something to lean on - where the pointer is needs no
+        /// settings at all, and it is where the program was just started from.
+        /// </remarks>
+        private static Screen StartupScreen()
+        {
+            Screen fromSettings = ScreenFromStoredPosition();
+
+            Screen chosen = fromSettings ?? Screen.FromPoint(Cursor.Position) ?? Screen.PrimaryScreen;
+
+            // Straight to the logger, not through the message collector. This runs before
+            // Application.Run, and the collector's writers are not built until the main form
+            // loads - anything handed to it this early is kept and never written anywhere.
+            Logger.Instance.Log.Info(
+                $"Splash screen: {chosen.DeviceName} " +
+                $"({(fromSettings != null ? "stored main window position" : "mouse pointer")}); " +
+                $"stored state={Properties.App.Default.MainFormState}, " +
+                $"location={Properties.App.Default.MainFormLocation}, " +
+                $"restore={Properties.App.Default.MainFormRestoreLocation}, " +
+                $"pointer={Cursor.Position}");
+
+            return chosen;
+        }
+
+        /// <summary>
+        /// The screen holding the main window's stored position, or null if there is not one.
+        /// </summary>
+        private static Screen ScreenFromStoredPosition()
+        {
+            try
+            {
+                bool maximized = Properties.App.Default.MainFormState == FormWindowState.Maximized;
+
+                Point location = maximized
+                    ? Properties.App.Default.MainFormRestoreLocation
+                    : Properties.App.Default.MainFormLocation;
+                Size size = maximized
+                    ? Properties.App.Default.MainFormRestoreSize
+                    : Properties.App.Default.MainFormSize;
+
+                if (size.Width <= 0 || size.Height <= 0) return null;
+                if (location.X == 0 && location.Y == 0) return null;
+
+                Rectangle where = new(location, size);
+
+                foreach (Screen screen in Screen.AllScreens)
+                {
+                    if (screen.Bounds.IntersectsWith(where)) return screen;
+                }
+            }
+            catch
+            {
+                // Nothing usable stored - the caller falls back to the pointer.
+            }
+
+            return null;
         }
 
         internal static void CloseSplash()
