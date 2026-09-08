@@ -46,6 +46,14 @@ namespace mRemoteNG.UI.Window
             SetMenuEventHandlers();
             SetConnectionTreeEventHandlers();
             Settings.Default.PropertyChanged += OnAppSettingsChanged;
+
+            // Placed here as well, not only when a setting changes. The designer docks the
+            // search bar to the bottom, and the only thing that ever moved it was the
+            // settings-changed handler - so the setting was obeyed the moment any setting
+            // was touched, and ignored on every start. Ticked "above the tree" and sitting
+            // below it, every time.
+            PlaceSearchBar(Settings.Default.PlaceSearchBarAboveConnectionTree);
+
             ApplyLanguage();
         }
 
@@ -98,7 +106,9 @@ namespace mRemoteNG.UI.Window
             mMenSort.ToolTipText = Language.Sort;
             mMenFavorites.ToolTipText = Language.Favorites;
 
-            txtSearch.Text = Language.SearchPrompt;
+            // Not Text: the prompt is the box's placeholder now, and putting it in Text would
+            // make the word "Search" a search term the moment the language is applied.
+            txtSearch.PlaceholderText = mRemoteNG.UI.Controls.MrngSearchBox.Prompt;
         }
 
         private new void ApplyTheme()
@@ -311,7 +321,9 @@ namespace mRemoteNG.UI.Window
         {
             if (Settings.Default.UseFilterSearch)
             {
-                if (txtSearch.Text == "" || txtSearch.Text == Language.SearchPrompt)
+                // No need to spot the prompt among the search terms any more: it is the
+                // box's placeholder, so an empty box really is empty.
+                if (txtSearch.Text == "")
                 {
                     ConnectionTree.RemoveFilter();
                     return;
@@ -321,9 +333,14 @@ namespace mRemoteNG.UI.Window
             }
             else
             {
-                if (txtSearch.Text == "") return;
+                // An empty box is searched for too, rather than returned from. SearchByName
+                // clears the matches when given nothing, and skipping the call left the
+                // previous ones in place: clearing the box and pressing Up or Down went on
+                // walking the results of a search that was no longer on screen.
                 ConnectionTree.NodeSearcher?.SearchByName(txtSearch.Text);
-                JumpToNode(ConnectionTree.NodeSearcher?.CurrentMatch);
+
+                ConnectionInfo? match = ConnectionTree.NodeSearcher?.CurrentMatch;
+                if (match != null) JumpToNode(match);
             }
         }
 
