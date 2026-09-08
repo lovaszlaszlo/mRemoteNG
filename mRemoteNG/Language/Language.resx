@@ -893,6 +893,12 @@ See the Microsoft Support article at http://support.microsoft.com/kb/811833 for 
   <data name="RemoveFromFavourites" xml:space="preserve">
     <value>Remove from Favourites</value>
   </data>
+  <data name="DuplicateExternalTool" xml:space="preserve">
+    <value>Duplicate External Tool</value>
+  </data>
+  <data name="ExternalToolCopySuffix" xml:space="preserve">
+    <value> - copy</value>
+  </data>
   <data name="StartChat" xml:space="preserve">
     <value>Start Chat (VNC)</value>
   </data>

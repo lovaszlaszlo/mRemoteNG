@@ -53,6 +53,7 @@ namespace mRemoteNG.UI.Window
             this.ToolsContextMenuStrip = new System.Windows.Forms.ContextMenuStrip(this.components);
             this.NewToolMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.DeleteToolMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.DuplicateToolMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.ToolStripSeparator1 = new System.Windows.Forms.ToolStripSeparator();
             this.LaunchToolMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.PropertiesGroupBox = new MrngGroupBox();
@@ -76,10 +77,8 @@ namespace mRemoteNG.UI.Window
             this.ToolStrip = new System.Windows.Forms.ToolStrip();
             this.NewToolToolstripButton = new System.Windows.Forms.ToolStripButton();
             this.DeleteToolToolstripButton = new System.Windows.Forms.ToolStripButton();
+            this.DuplicateToolToolstripButton = new System.Windows.Forms.ToolStripButton();
             this.ToolStripSeparator2 = new System.Windows.Forms.ToolStripSeparator();
-            this.ToolStripSeparator3 = new System.Windows.Forms.ToolStripSeparator();
-            this.SaveToolstripButton = new System.Windows.Forms.ToolStripButton();
-            this.DiscardToolstripButton = new System.Windows.Forms.ToolStripButton();
             this.LaunchToolToolstripButton = new System.Windows.Forms.ToolStripButton();
             this.vsToolStripExtender = new WeifenLuo.WinFormsUI.Docking.VisualStudioToolStripExtender(this.components);
             ((System.ComponentModel.ISupportInitialize)(this.ToolsListObjView)).BeginInit();
@@ -210,14 +209,32 @@ namespace mRemoteNG.UI.Window
             // 
             this.ToolsContextMenuStrip.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.NewToolMenuItem,
+            this.DuplicateToolMenuItem,
             this.DeleteToolMenuItem,
             this.ToolStripSeparator1,
             this.LaunchToolMenuItem});
             this.ToolsContextMenuStrip.Name = "cMenApps";
             this.ToolsContextMenuStrip.Size = new System.Drawing.Size(220, 76);
             // 
+            // DuplicateToolMenuItem
+            //
+            this.DuplicateToolMenuItem.Image = global::mRemoteNG.Properties.Resources.Copy_16x;
+            this.DuplicateToolMenuItem.Name = "DuplicateToolMenuItem";
+            this.DuplicateToolMenuItem.Size = new System.Drawing.Size(219, 22);
+            this.DuplicateToolMenuItem.Text = "Duplicate External Tool";
+            this.DuplicateToolMenuItem.Click += new System.EventHandler(this.DuplicateTool_Click);
+            //
+            // DuplicateToolToolstripButton
+            //
+            this.DuplicateToolToolstripButton.Image = global::mRemoteNG.Properties.Resources.Copy_16x;
+            this.DuplicateToolToolstripButton.ImageTransparentColor = System.Drawing.Color.Magenta;
+            this.DuplicateToolToolstripButton.Name = "DuplicateToolToolstripButton";
+            this.DuplicateToolToolstripButton.Size = new System.Drawing.Size(80, 22);
+            this.DuplicateToolToolstripButton.Text = "Duplicate";
+            this.DuplicateToolToolstripButton.Click += new System.EventHandler(this.DuplicateTool_Click);
+            //
             // NewToolMenuItem
-            // 
+            //  
             this.NewToolMenuItem.Image = global::mRemoteNG.Properties.Resources.Add_16x;
             this.NewToolMenuItem.Name = "NewToolMenuItem";
             this.NewToolMenuItem.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Shift | System.Windows.Forms.Keys.F4)));
@@ -510,12 +527,10 @@ namespace mRemoteNG.UI.Window
             this.ToolStrip.GripStyle = System.Windows.Forms.ToolStripGripStyle.Hidden;
             this.ToolStrip.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.NewToolToolstripButton,
+            this.DuplicateToolToolstripButton,
             this.DeleteToolToolstripButton,
             this.ToolStripSeparator2,
-            this.LaunchToolToolstripButton,
-            this.ToolStripSeparator3,
-            this.SaveToolstripButton,
-            this.DiscardToolstripButton});
+            this.LaunchToolToolstripButton});
             this.ToolStrip.Location = new System.Drawing.Point(3, 0);
             this.ToolStrip.Name = "ToolStrip";
             this.ToolStrip.Size = new System.Drawing.Size(186, 25);
@@ -540,29 +555,6 @@ namespace mRemoteNG.UI.Window
             this.DeleteToolToolstripButton.Text = "Delete";
             this.DeleteToolToolstripButton.Click += new System.EventHandler(this.DeleteTool_Click);
             // 
-            // ToolStripSeparator3
-            //
-            this.ToolStripSeparator3.Name = "ToolStripSeparator3";
-            this.ToolStripSeparator3.Size = new System.Drawing.Size(6, 25);
-            //
-            // SaveToolstripButton
-            //
-            this.SaveToolstripButton.Image = global::mRemoteNG.Properties.Resources.Save_16x;
-            this.SaveToolstripButton.ImageTransparentColor = System.Drawing.Color.Magenta;
-            this.SaveToolstripButton.Name = "SaveToolstripButton";
-            this.SaveToolstripButton.Size = new System.Drawing.Size(51, 22);
-            this.SaveToolstripButton.Text = "Save";
-            this.SaveToolstripButton.Click += new System.EventHandler(this.SaveTools_Click);
-            //
-            // DiscardToolstripButton
-            //
-            this.DiscardToolstripButton.Image = global::mRemoteNG.Properties.Resources.Refresh_16x;
-            this.DiscardToolstripButton.ImageTransparentColor = System.Drawing.Color.Magenta;
-            this.DiscardToolstripButton.Name = "DiscardToolstripButton";
-            this.DiscardToolstripButton.Size = new System.Drawing.Size(60, 22);
-            this.DiscardToolstripButton.Text = "Discard";
-            this.DiscardToolstripButton.Click += new System.EventHandler(this.DiscardTools_Click);
-            //
             // ToolStripSeparator2
             //  
             this.ToolStripSeparator2.Name = "ToolStripSeparator2";
@@ -593,7 +585,6 @@ namespace mRemoteNG.UI.Window
             this.TabText = "External Applications";
             this.Text = "External Tools";
             this.FormClosed += new System.Windows.Forms.FormClosedEventHandler(this.ExternalTools_FormClosed);
-            this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.ExternalTools_FormClosing);
             this.Load += new System.EventHandler(this.ExternalTools_Load);
             ((System.ComponentModel.ISupportInitialize)(this.ToolsListObjView)).EndInit();
             this.ToolsContextMenuStrip.ResumeLayout(false);
@@ -616,9 +607,8 @@ namespace mRemoteNG.UI.Window
 		internal System.Windows.Forms.ToolStripButton DeleteToolToolstripButton;
 		internal System.Windows.Forms.ToolStripSeparator ToolStripSeparator2;
 		internal System.Windows.Forms.ToolStripButton LaunchToolToolstripButton;
-		internal System.Windows.Forms.ToolStripSeparator ToolStripSeparator3;
-		internal System.Windows.Forms.ToolStripButton SaveToolstripButton;
-		internal System.Windows.Forms.ToolStripButton DiscardToolstripButton;
+		internal System.Windows.Forms.ToolStripButton DuplicateToolToolstripButton;
+		internal System.Windows.Forms.ToolStripMenuItem DuplicateToolMenuItem;
         private WeifenLuo.WinFormsUI.Docking.VisualStudioToolStripExtender vsToolStripExtender;
         #endregion
 

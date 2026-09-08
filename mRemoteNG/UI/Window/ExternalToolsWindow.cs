@@ -22,11 +22,6 @@ namespace mRemoteNG.UI.Window
         private readonly ThemeManager _themeManager;
         private readonly FullyObservableCollection<ExternalTool> _currentlySelectedExternalTools;
 
-        /// <summary>
-        /// The tools as they stand on disk, to go back to.
-        /// </summary>
-        private List<ExternalTool> _savedState = [];
-
         public ExternalToolsWindow()
         {
             InitializeComponent();
@@ -50,15 +45,25 @@ namespace mRemoteNG.UI.Window
             ApplyLanguage();
             ApplyTheme();
             UpdateToolsListObjView();
-            TakeSnapshot();
         }
 
         /// <summary>
-        /// Remembers the tools as they are now, so a discard has something to go back to.
+        /// Writes the tools to disk. Called after anything that changes them.
         /// </summary>
-        private void TakeSnapshot()
+        /// <remarks>
+        /// Everything here takes effect at once, the way the connection tree does - rename,
+        /// duplicate, delete, and it is done. There is no Save button and nothing to save: an
+        /// explicit save alongside a New that already added the row, and fields that already
+        /// committed as the focus left them, meant two rules at the same time and no way to tell
+        /// which one applied to what.
+        ///
+        /// It also has to be this way round. The external tools toolbar rebuilds itself from this
+        /// same collection whenever it changes, and a connection names the tool to run before it
+        /// opens - so a tool that existed only in an unsaved copy could not be picked there.
+        /// </remarks>
+        private void Persist()
         {
-            _savedState = Runtime.ExternalToolsService.ExternalTools.Select(Copy).ToList();
+            _externalAppsSaver.Save(Runtime.ExternalToolsService.ExternalTools);
         }
 
         private static ExternalTool Copy(ExternalTool tool) =>
@@ -69,41 +74,6 @@ namespace mRemoteNG.UI.Window
                 ShowOnToolbar = tool.ShowOnToolbar
             };
 
-        private static bool Same(ExternalTool a, ExternalTool b) =>
-            a.DisplayName == b.DisplayName &&
-            a.FileName == b.FileName &&
-            a.Arguments == b.Arguments &&
-            a.WorkingDir == b.WorkingDir &&
-            a.WaitForExit == b.WaitForExit &&
-            a.TryIntegrate == b.TryIntegrate &&
-            a.ShowOnToolbar == b.ShowOnToolbar &&
-            a.RunElevated == b.RunElevated;
-
-        private bool HasUnsavedChanges()
-        {
-            IList<ExternalTool> current = Runtime.ExternalToolsService.ExternalTools;
-
-            if (current.Count != _savedState.Count) return true;
-
-            return current.Where((tool, i) => !Same(tool, _savedState[i])).Any();
-        }
-
-        private void SaveTools()
-        {
-            _externalAppsSaver.Save(Runtime.ExternalToolsService.ExternalTools);
-            TakeSnapshot();
-        }
-
-        private void RestoreSnapshot()
-        {
-            _currentlySelectedExternalTools.Clear();
-            Runtime.ExternalToolsService.ExternalTools.Clear();
-            Runtime.ExternalToolsService.ExternalTools.AddRange(_savedState.Select(Copy));
-
-            UpdateToolsListObjView();
-            UpdateToolstipControls();
-        }
-
         private void ApplyLanguage()
         {
             Text = Language.ExternalTool;
@@ -111,9 +81,9 @@ namespace mRemoteNG.UI.Window
 
             NewToolToolstripButton.Text = Language._New;
             DeleteToolToolstripButton.Text = Language.Delete;
+            DuplicateToolToolstripButton.Text = Language.Duplicate;
+            DuplicateToolMenuItem.Text = Language.DuplicateExternalTool;
             LaunchToolToolstripButton.Text = Language._Launch;
-            SaveToolstripButton.Text = Language.Save;
-            DiscardToolstripButton.Text = Language.ExternalToolDiscard;
 
             DisplayNameColumnHeader.Text = Language.DisplayName;
             FilenameColumnHeader.Text = Language.Filename;
@@ -221,6 +191,12 @@ namespace mRemoteNG.UI.Window
             bool atleastOneToolSelected = _currentlySelectedExternalTools.Count > 0;
             DeleteToolMenuItem.Enabled = atleastOneToolSelected;
             DeleteToolToolstripButton.Enabled = atleastOneToolSelected;
+
+            // One at a time: duplicating a handful at once would put a pile of copies in the list
+            // with nothing to say which came from what.
+            bool exactlyOneSelected = _currentlySelectedExternalTools.Count == 1;
+            DuplicateToolMenuItem.Enabled = exactlyOneSelected;
+            DuplicateToolToolstripButton.Enabled = exactlyOneSelected;
             LaunchToolMenuItem.Enabled = atleastOneToolSelected;
             LaunchToolToolstripButton.Enabled = atleastOneToolSelected;
         }
@@ -234,37 +210,6 @@ namespace mRemoteNG.UI.Window
                                                                            collectionUpdatedEventArgs)
         {
             UpdateEditorControls();
-        }
-
-        /// <summary>
-        /// Asks what to do with unsaved edits instead of deciding alone.
-        /// </summary>
-        /// <remarks>
-        /// This window has no OK and no Cancel, because it is a docked panel and not a dialog:
-        /// New added a row on the spot, every field was committed as the focus left it, and the
-        /// lot was written to disk when the tab was closed. There was no way to back out of a
-        /// mistake and nothing said when anything had been stored.
-        /// </remarks>
-        private void ExternalTools_FormClosing(object sender, FormClosingEventArgs e)
-        {
-            if (!HasUnsavedChanges()) return;
-
-            DialogResult answer = MessageBox.Show(FrmMain.Default, Language.ExternalToolUnsavedOnClose,
-                                                  Language.ExternalTool, MessageBoxButtons.YesNoCancel,
-                                                  MessageBoxIcon.Question);
-
-            switch (answer)
-            {
-                case DialogResult.Yes:
-                    SaveTools();
-                    break;
-                case DialogResult.No:
-                    RestoreSnapshot();
-                    break;
-                default:
-                    e.Cancel = true;
-                    break;
-            }
         }
 
         private void ExternalTools_FormClosed(object sender, FormClosedEventArgs e)
@@ -300,11 +245,64 @@ namespace mRemoteNG.UI.Window
                 ToolsListObjView.Focus();
                 ToolsListObjView.SelectedObject = externalTool;
                 ToolsListObjView.EnsureModelVisible(externalTool);
+
+                Persist();
             }
             catch (Exception ex)
             {
                 Runtime.MessageCollector.AddExceptionMessage("UI.Window.ExternalTools.NewTool_Click() failed.", ex);
             }
+        }
+
+        private void DuplicateTool_Click(object sender, EventArgs e)
+        {
+            try
+            {
+                ExternalTool original = _currentlySelectedExternalTools.FirstOrDefault();
+                if (original == null) return;
+
+                ExternalTool copy = Copy(original);
+                copy.DisplayName = UnusedName(original.DisplayName + Language.ExternalToolCopySuffix);
+
+                Runtime.ExternalToolsService.ExternalTools.Add(copy);
+                UpdateToolsListObjView();
+
+                ToolsListObjView.Focus();
+                ToolsListObjView.SelectedObject = copy;
+                ToolsListObjView.EnsureModelVisible(copy);
+
+                Persist();
+            }
+            catch (Exception ex)
+            {
+                Runtime.MessageCollector.AddExceptionMessage("UI.Window.ExternalTools.DuplicateTool_Click() failed.",
+                                                             ex);
+            }
+        }
+
+        /// <summary>
+        /// The given name, or the first numbered variant of it that no tool is using.
+        /// </summary>
+        /// <remarks>
+        /// Tools are looked up by their display name - that is how a connection names the one to
+        /// run before it opens - so two with the same name would make which one runs a matter of
+        /// which was found first.
+        /// </remarks>
+        private static string UnusedName(string wanted)
+        {
+            bool Taken(string name) =>
+                Runtime.ExternalToolsService.ExternalTools.Any(
+                    tool => string.Equals(tool.DisplayName, name, StringComparison.CurrentCultureIgnoreCase));
+
+            if (!Taken(wanted)) return wanted;
+
+            for (int i = 2; i < 1000; i++)
+            {
+                string candidate = $"{wanted} ({i})";
+                if (!Taken(candidate)) return candidate;
+            }
+
+            return wanted;
         }
 
         private void DeleteTool_Click(object sender, EventArgs e)
@@ -340,6 +338,7 @@ namespace mRemoteNG.UI.Window
                     : maxIndex;
 
                 UpdateToolstipControls();
+                Persist();
             }
             catch (Exception ex)
             {
@@ -350,36 +349,6 @@ namespace mRemoteNG.UI.Window
         private void LaunchTool_Click(object sender, EventArgs e)
         {
             LaunchTool();
-        }
-
-        private void SaveTools_Click(object sender, EventArgs e)
-        {
-            try
-            {
-                SaveTools();
-            }
-            catch (Exception ex)
-            {
-                Runtime.MessageCollector.AddExceptionMessage("UI.Window.ExternalTools.SaveTools_Click() failed.", ex);
-            }
-        }
-
-        private void DiscardTools_Click(object sender, EventArgs e)
-        {
-            try
-            {
-                if (!HasUnsavedChanges()) return;
-
-                if (!Confirm.Ask(FrmMain.Default, Language.ExternalToolConfirmDiscard, Language.ExternalTool))
-                    return;
-
-                RestoreSnapshot();
-            }
-            catch (Exception ex)
-            {
-                Runtime.MessageCollector.AddExceptionMessage("UI.Window.ExternalTools.DiscardTools_Click() failed.",
-                                                             ex);
-            }
         }
 
         private void ToolsListObjView_SelectedIndexChanged(object sender, EventArgs e)
@@ -422,6 +391,10 @@ namespace mRemoteNG.UI.Window
                 selectedTool.RunElevated = RunElevatedCheckBox.Checked;
 
                 UpdateToolsListObjView();
+
+                // Once per field, as the focus leaves it, or per checkbox click - not per
+                // keystroke: nothing here is wired to TextChanged.
+                Persist();
             }
             catch (Exception ex)
             {

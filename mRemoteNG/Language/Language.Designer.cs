@@ -6927,6 +6927,24 @@ namespace mRemoteNG.Resources.Language {
         }
 
         /// <summary>
+        ///   Looks up a localized string similar to Duplicate External Tool.
+        /// </summary>
+        internal static string DuplicateExternalTool {
+            get {
+                return ResourceManager.GetString("DuplicateExternalTool", resourceCulture);
+            }
+        }
+
+        /// <summary>
+        ///   Looks up a localized string similar to - copy.
+        /// </summary>
+        internal static string ExternalToolCopySuffix {
+            get {
+                return ResourceManager.GetString("ExternalToolCopySuffix", resourceCulture);
+            }
+        }
+
+        /// <summary>
         ///   Looks up a localized string similar to SSH Options.
         /// </summary>
         internal static string SshOptions {
