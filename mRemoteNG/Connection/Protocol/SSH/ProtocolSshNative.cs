@@ -159,6 +159,12 @@ namespace mRemoteNG.Connection.Protocol.SSH
                 // is not coming.
                 _startFailed = true;
 
+                // And the session counts as gone, not as never having been. IsSessionAlive
+                // reads this flag, and it starts at zero - so a session that never came up
+                // looked alive, and double-clicking the connection jumped to the dead tab
+                // instead of trying again. Closing the tab first was the only way to retry.
+                Interlocked.Exchange(ref _linkLost, 1);
+
                 // Deliberately leaves the tab open, unlike a session that ended normally: the
                 // reason it could not connect is worth reading, and it is written into the
                 // terminal itself.
@@ -169,9 +175,37 @@ namespace mRemoteNG.Connection.Protocol.SSH
                 // itself - most often a machine with no WebView2 runtime - it reaches nothing and
                 // the tab just sits there empty, which is what this fallback is for.
                 ShowFallbackMessage(ex.Message);
+                ReportStartFailure(ex);
 
                 Event_Disconnected(this, ex.Message, null);
             }
+        }
+
+        /// <summary>
+        /// Says out loud that the session could not be started.
+        /// </summary>
+        /// <remarks>
+        /// The reason is written into the terminal as well, and that is worth keeping - it stays
+        /// there to be read, next to whatever the server said before giving up. But a line of red
+        /// text in a tab that has just opened is easy to miss, and a wrong password is something
+        /// to be told about rather than to discover. The tab stays open either way, so the
+        /// password can be corrected and the connection tried again from where it failed.
+        ///
+        /// First attempt only. Automatic reconnects run through Reconnect and its own handling,
+        /// so a server that is down does not produce a dialog a minute.
+        /// </remarks>
+        private void ReportStartFailure(Exception ex)
+        {
+            FrmMain main = FrmMain.Default;
+            if (main == null || main.IsDisposed) return;
+
+            string name = string.IsNullOrEmpty(_connectionInfo.Name)
+                ? _connectionInfo.Hostname
+                : _connectionInfo.Name;
+
+            main.BeginInvoke(new Action(() =>
+                CTaskDialog.MessageBox(main, name, Language.ConnectionOpenFailed, ex.Message,
+                                       ETaskDialogButtons.Ok, ESysIcons.Warning)));
         }
 
         private async Task InitializeWebViewAsync()
