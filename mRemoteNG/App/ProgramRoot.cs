@@ -10,6 +10,7 @@ using System;
 using System.Diagnostics;
 using System.Drawing;
 using System.IO;
+using System.Linq;
 using System.Reflection;
 using System.Runtime.InteropServices;
 using System.Runtime.Versioning;
@@ -270,6 +271,26 @@ namespace mRemoteNG.App
         }
 
         /// <summary>
+        /// A window's position and size in screen pixels.
+        /// </summary>
+        /// <remarks>
+        /// Declared here rather than using NativeMethods.RECT, whose fields are long. Win32 writes
+        /// four 32-bit values into this, so that one is twice the size the API expects.
+        /// </remarks>
+        [StructLayout(LayoutKind.Sequential)]
+        private struct WindowRect
+        {
+            public int Left;
+            public int Top;
+            public int Right;
+            public int Bottom;
+        }
+
+        [DllImport("user32.dll")]
+        [return: MarshalAs(UnmanagedType.Bool)]
+        private static extern bool GetWindowRect(IntPtr hWnd, out WindowRect rect);
+
+        /// <summary>
         /// Centres a window on the screen the main window is going to open on.
         /// </summary>
         private static void CentreOnStartupScreen(System.Windows.Window window)
@@ -278,17 +299,28 @@ namespace mRemoteNG.App
             {
                 Rectangle area = StartupScreen().WorkingArea;
 
-                System.Windows.Media.CompositionTarget target =
-                    System.Windows.PresentationSource.FromVisual(window)?.CompositionTarget;
-                if (target == null) return;
+                // Moved in screen pixels, through the window handle, rather than by setting Left
+                // and Top. Those are in WPF's own units, converted with the scaling of the monitor
+                // the window happens to be on - the primary, at this point - while the screen
+                // bounds are real pixels. With the two monitors at different scalings the sum was
+                // out by that ratio: the splash landed on the right screen, thirty pixels from its
+                // left edge instead of in the middle.
+                IntPtr handle = new System.Windows.Interop.WindowInteropHelper(window).Handle;
+                if (handle == IntPtr.Zero) return;
+                if (!GetWindowRect(handle, out WindowRect bounds)) return;
 
-                System.Windows.Point topLeft = target.TransformFromDevice.Transform(
-                    new System.Windows.Point(area.Left, area.Top));
-                System.Windows.Point size = target.TransformFromDevice.Transform(
-                    new System.Windows.Point(area.Width, area.Height));
+                int width = bounds.Right - bounds.Left;
+                int height = bounds.Bottom - bounds.Top;
 
-                window.Left = topLeft.X + (size.X - window.Width) / 2;
-                window.Top = topLeft.Y + (size.Y - window.Height) / 2;
+                int x = area.Left + (area.Width - width) / 2;
+                int y = area.Top + (area.Height - height) / 2;
+
+                NativeMethods.SetWindowPos(handle, IntPtr.Zero, x, y, 0, 0,
+                                           NativeMethods.SWP_NOSIZE | NativeMethods.SWP_NOZORDER |
+                                           NativeMethods.SWP_NOACTIVATE);
+
+                Logger.Instance.Log.Info(
+                    $"Splash placement: area={area}, window={width}x{height}, x={x}, y={y}");
             }
             catch (Exception ex)
             {
@@ -321,7 +353,8 @@ namespace mRemoteNG.App
                 $"stored state={Properties.App.Default.MainFormState}, " +
                 $"location={Properties.App.Default.MainFormLocation}, " +
                 $"restore={Properties.App.Default.MainFormRestoreLocation}, " +
-                $"pointer={Cursor.Position}");
+                $"pointer={Cursor.Position}; " +
+                $"screens={string.Join(" | ", Screen.AllScreens.Select(s => s.DeviceName + " " + s.Bounds))}");
 
             return chosen;
         }
@@ -345,11 +378,15 @@ namespace mRemoteNG.App
                 if (size.Width <= 0 || size.Height <= 0) return null;
                 if (location.X == 0 && location.Y == 0) return null;
 
-                Rectangle where = new(location, size);
+                // The centre of the stored window, not an overlap with it. Monitors need not
+                // sit edge to edge - on this machine there is a 768 pixel gap between them - and a
+                // window stored with its left edge in that gap overlaps whichever screen its far
+                // side happens to reach. The centre is the screen it was actually on.
+                Point centre = new(location.X + size.Width / 2, location.Y + size.Height / 2);
 
                 foreach (Screen screen in Screen.AllScreens)
                 {
-                    if (screen.Bounds.IntersectsWith(where)) return screen;
+                    if (screen.Bounds.Contains(centre)) return screen;
                 }
             }
             catch
