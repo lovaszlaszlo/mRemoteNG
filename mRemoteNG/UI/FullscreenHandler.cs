@@ -75,8 +75,25 @@ namespace mRemoteNG.UI
         private void ExitFullscreen()
         {
             _handledForm.FormBorderStyle = _savedBorderStyle;
-            _handledForm.WindowState = _savedWindowState;
-            _handledForm.Bounds = _savedBounds;
+
+            // The bounds are only put back for a window that was not maximised. Setting both a
+            // state and a rectangle left the window in neither: maximised windows carry bounds
+            // that belong to the screen they were maximised on, and applying them afterwards -
+            // across two monitors at different scalings - put the title bar off every screen,
+            // with no way left to move the window back.
+            if (_savedWindowState == FormWindowState.Maximized)
+            {
+                _handledForm.WindowState = FormWindowState.Maximized;
+            }
+            else
+            {
+                _handledForm.WindowState = FormWindowState.Normal;
+                _handledForm.Bounds = _savedBounds;
+            }
+
+            // Last resort: whatever came out of the above, the title bar has to be somewhere the
+            // mouse can reach it. A window that cannot be moved cannot be recovered from either.
+            EnsureOnAScreen();
 
             // Put back what each control was, not just "visible": a toolbar the user had turned
             // off in the View menu has to stay off.
@@ -90,5 +107,25 @@ namespace mRemoteNG.UI
         }
 
         private readonly Dictionary<Control, bool> _savedChromeVisibility = [];
+
+        /// <summary>
+        /// Nudges the window back onto a screen if its title bar ended up on none of them.
+        /// </summary>
+        private void EnsureOnAScreen()
+        {
+            if (_handledForm.WindowState != FormWindowState.Normal) return;
+
+            Rectangle titleBar = new(_handledForm.Left, _handledForm.Top, _handledForm.Width, 30);
+
+            foreach (Screen screen in Screen.AllScreens)
+            {
+                if (screen.WorkingArea.IntersectsWith(titleBar)) return;
+            }
+
+            Rectangle area = Screen.PrimaryScreen.WorkingArea;
+            _handledForm.Location = new Point(
+                area.Left + Math.Max(0, (area.Width - _handledForm.Width) / 2),
+                area.Top + Math.Max(0, (area.Height - _handledForm.Height) / 2));
+        }
     }
 }

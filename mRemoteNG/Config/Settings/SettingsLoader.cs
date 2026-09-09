@@ -76,6 +76,41 @@ namespace mRemoteNG.Config.Settings
             _messageCollector.AddMessage(MessageClass.InformationMsg, $"Override Culture: {Thread.CurrentThread.CurrentUICulture.Name}/{Thread.CurrentThread.CurrentUICulture.NativeName}", true);
         }
 
+        /// <summary>
+        /// Moves the window back into view if its title bar is on no screen at all.
+        /// </summary>
+        /// <remarks>
+        /// A stored position is not wrong for being negative: monitors sit in one coordinate
+        /// system with the primary at 0,0, so a screen placed left of or above it holds perfectly
+        /// valid negative coordinates - and a maximised window overhangs its screen by a few
+        /// pixels anyway. What matters is whether the title bar lands on a screen in the layout
+        /// that exists now.
+        ///
+        /// It need not have been wrong when it was written. Unplug the second monitor, or let a
+        /// window end up somewhere odd, and the same numbers point at nothing - and a window whose
+        /// title bar cannot be reached cannot be moved back by hand either.
+        /// </remarks>
+        private void BringTitleBarOntoAScreen()
+        {
+            Rectangle titleBar = new(MainForm.Left, MainForm.Top, MainForm.Width, 30);
+
+            foreach (Screen screen in Screen.AllScreens)
+            {
+                if (screen.WorkingArea.IntersectsWith(titleBar)) return;
+            }
+
+            Rectangle area = Screen.PrimaryScreen.WorkingArea;
+
+            Runtime.MessageCollector.AddMessage(MessageClass.WarningMsg,
+                $"The stored window position {MainForm.Bounds} is on no screen in the current " +
+                $"layout, so the window has been moved back onto {Screen.PrimaryScreen.DeviceName}.",
+                true);
+
+            MainForm.Location = new Point(
+                area.Left + Math.Max(0, (area.Width - MainForm.Width) / 2),
+                area.Top + Math.Max(0, (area.Height - MainForm.Height) / 2));
+        }
+
         private void SetApplicationWindowPositionAndSize()
         {
             MainForm.WindowState = FormWindowState.Normal;
@@ -94,6 +129,8 @@ namespace mRemoteNG.Config.Settings
                 MainForm.Size = savedSize;
             else
                 SizeToMostOfTheScreen();
+
+            BringTitleBarOntoAScreen();
 
             if (startsMaximized)
             {
