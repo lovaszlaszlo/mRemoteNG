@@ -662,7 +662,7 @@ namespace mRemoteNG.UI.Forms
                             _connectionHadFocusOnDeactivate = ConnectionHasFocus();
 
                         Control candidateTabToFocus = FromChildHandle(NativeMethods.WindowFromPoint(MousePosition))
-                                               ?? GetChildAtPoint(MousePosition);
+                                               ?? GetChildAtScreenPoint(this, MousePosition);
                         if (candidateTabToFocus is InterfaceControl)
                         {
                             candidateTabToFocus.Parent.Focus();
@@ -685,7 +685,7 @@ namespace mRemoteNG.UI.Forms
                         if (NativeMethods.LOWORD(m.WParam) == NativeMethods.WA_CLICKACTIVE)
                         {
                             Control controlThatWasClicked = FromChildHandle(NativeMethods.WindowFromPoint(MousePosition))
-                                                     ?? GetChildAtPoint(MousePosition);
+                                                     ?? GetChildAtScreenPoint(this, MousePosition);
                             if (controlThatWasClicked != null)
                             {
                                 if (controlThatWasClicked is TreeView ||
@@ -838,6 +838,21 @@ namespace mRemoteNG.UI.Forms
 
             _ = NativeMethods.GetWindowThreadProcessId(rootWindow, out uint rootProcessId);
             return rootProcessId == (uint)Environment.ProcessId;
+        }
+
+        /// <summary>
+        /// The child control under a point given in screen coordinates.
+        /// </summary>
+        /// <remarks>
+        /// From upstream fd511f0f. GetChildAtPoint wants client coordinates and was being
+        /// handed MousePosition, which is in screen ones - so the hit test looked in the
+        /// wrong place, and the further the window sat from the origin, the further out it
+        /// was. Converting first is the whole fix.
+        /// </remarks>
+        internal static Control GetChildAtScreenPoint(Control parentControl, Point screenPoint)
+        {
+            Point clientPoint = parentControl.PointToClient(screenPoint);
+            return parentControl.GetChildAtPoint(clientPoint);
         }
 
         private void ActivateConnection()
