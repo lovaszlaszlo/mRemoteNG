@@ -908,6 +908,31 @@ namespace mRemoteNG.UI.Forms
         }
 
         /// <summary>
+        /// Puts the mouse cursor back if something left it hidden.
+        /// </summary>
+        /// <remarks>
+        /// The RDP control hides the local cursor while the remote desktop draws its own, and it
+        /// does so with ShowCursor - a counter on the whole thread's input queue, not on that one
+        /// control. When it is not raised again the cursor is gone over the tree, the menus and
+        /// every other window of the program, while it stays perfectly visible outside it.
+        /// Measured on 2026-09-09: hidden over the connection tree, a scroll bar and the RDP
+        /// control alike, with the pointer still moving and still having an effect.
+        ///
+        /// Done when the window is activated, the one moment the pointer is known to be on the
+        /// program's own chrome rather than inside a remote desktop. A session that wants the
+        /// cursor hidden hides it again as soon as the pointer enters it.
+        /// </remarks>
+        protected override void OnActivated(EventArgs e)
+        {
+            base.OnActivated(e);
+
+            // Bounded: ShowCursor counts, and a runaway loop here would be worse than no cursor.
+            for (int i = 0; i < 20 && NativeMethods.ShowCursor(true) < 0; i++)
+            {
+            }
+        }
+
+        /// <summary>
         /// Catches F11 whatever has the focus, and whether or not the menu bar is on screen.
         /// </summary>
         /// <remarks>

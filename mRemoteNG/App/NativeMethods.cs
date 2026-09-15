@@ -181,6 +181,16 @@ namespace mRemoteNG.App
         [DllImport("user32.dll", SetLastError = true)]
         internal static extern bool SetWindowPos(IntPtr hWnd, IntPtr hWndInsertAfter, int X, int Y, int cx, int cy, int uFlags);
 
+        /// <summary>
+        /// Raises or lowers the cursor's display counter, and returns what it became.
+        /// </summary>
+        /// <remarks>
+        /// The counter belongs to the thread's input queue, not to any one control, so a
+        /// control that hides the cursor hides it over every window on that thread.
+        /// </remarks>
+        [DllImport("user32.dll")]
+        internal static extern int ShowCursor([MarshalAs(UnmanagedType.Bool)] bool bShow);
+
         [DllImport("kernel32", SetLastError = true)]
         internal static extern bool CloseHandle(IntPtr handle);
 
