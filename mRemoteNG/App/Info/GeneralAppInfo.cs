@@ -21,6 +21,14 @@ namespace mRemoteNG.App.Info
         public const string UrlBugs = "https://github.com/mRemoteNG/mRemoteNG/issues/new";
         public const string UrlDocumentation = "https://mremoteng.readthedocs.io/en/latest/";
         public static readonly string ApplicationVersion = Application.ProductVersion;
+
+        /// <summary>
+        /// The version line, as the about box shows it and the title bar repeats it.
+        /// </summary>
+        /// <remarks>
+        /// One source for both, so the two cannot come to say different things.
+        /// </remarks>
+        public static string VersionLine => $"v. {ApplicationVersion} - 'DBSystem Kft.'";
         public static readonly string? ProductName = Application.ProductName;
         public static readonly string? Copyright = (Attribute.GetCustomAttribute(Assembly.GetExecutingAssembly(), typeof(AssemblyCopyrightAttribute), false) as AssemblyCopyrightAttribute)?.Copyright;
         public static readonly string? HomePath = Path.GetDirectoryName(Assembly.GetEntryAssembly()?.Location);

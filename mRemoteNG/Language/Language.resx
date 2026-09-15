@@ -2150,7 +2150,7 @@ mRemoteNG will now quit and begin with the installation.</value>
     <value>Place search bar above connection tree</value>
   </data>
   <data name="TrackActiveConnectionInConnectionTree" xml:space="preserve">
-    <value>Track active connection in the connection tree</value>
+    <value>Track the active tab's connection in the connection tree</value>
   </data>
   <data name="AlwaysShowConnectionTabs" xml:space="preserve">
     <value>Always show connection tabs</value>

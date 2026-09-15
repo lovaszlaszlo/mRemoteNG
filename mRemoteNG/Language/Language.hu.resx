@@ -888,7 +888,7 @@
   <data name="TitlePassword" xml:space="preserve"><value>mRemoteNG jelszó</value></data>
   <data name="TitlePasswordWithName" xml:space="preserve"><value>mRemoteNG jelszó ehhez: {0}</value></data>
   <data name="TitleSelectPanel" xml:space="preserve"><value>Panel választása</value></data>
-  <data name="TrackActiveConnectionInConnectionTree" xml:space="preserve"><value>Az aktív kapcsolat követése a kapcsolatfában</value></data>
+  <data name="TrackActiveConnectionInConnectionTree" xml:space="preserve"><value>Az aktív fül kapcsolatának követése a kapcsolatfában</value></data>
   <data name="Transfer" xml:space="preserve"><value>Átvitel</value></data>
   <data name="TransferFile" xml:space="preserve"><value>SSH fájlátvitel</value></data>
   <data name="TrustServerCertificate" xml:space="preserve"><value>Kiszolgálói tanúsítvány megbízhatónak tekintése:</value></data>

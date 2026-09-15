@@ -200,6 +200,12 @@ namespace mRemoteNG.UI.Forms
 
                 _selectedConnection = value;
                 UpdateWindowTitle();
+
+                // Moved out of the title builder, which had no business doing it: building a
+                // caption is not the moment to move the tree. This is - the selection has just
+                // changed, which is what the setting is about.
+                if (value != null && Properties.Settings.Default.TrackActiveConnectionInConnectionTree)
+                    AppWindows.TreeForm.JumpToNode(value);
             }
         }
 
@@ -876,32 +882,27 @@ namespace mRemoteNG.UI.Forms
             // there was nothing on screen to say which window was which.
             titleBuilder.Append(" [Debug]");
 #endif
-            const string separator = " - ";
+            // The version, the same line the about box shows.
+            titleBuilder.Append(" - ");
+            titleBuilder.Append(GeneralAppInfo.VersionLine);
 
+            // The connection file in brackets, because it is which file rather than what is being
+            // worked on. The connection selected in the tree used to be here too; it changed as
+            // the tree was clicked through, which is not what a window title is for.
             if (Runtime.ConnectionsService.IsConnectionsFileLoaded)
             {
                 if (Runtime.ConnectionsService.UsingDatabase)
                 {
-                    titleBuilder.Append(separator);
-                    titleBuilder.Append(Language.SQLServer.TrimEnd(':'));
+                    titleBuilder.Append($" ({Language.SQLServer.TrimEnd(':')})");
                 }
-                else
+                else if (!string.IsNullOrEmpty(Runtime.ConnectionsService.ConnectionFileName))
                 {
-                    if (!string.IsNullOrEmpty(Runtime.ConnectionsService.ConnectionFileName))
-                    {
-                        titleBuilder.Append(separator);
-                        titleBuilder.Append(Properties.OptionsAppearancePage.Default.ShowCompleteConsPathInTitle ? Runtime.ConnectionsService.ConnectionFileName : Path.GetFileName(Runtime.ConnectionsService.ConnectionFileName));
-                    }
+                    string file = Properties.OptionsAppearancePage.Default.ShowCompleteConsPathInTitle
+                        ? Runtime.ConnectionsService.ConnectionFileName
+                        : Path.GetFileName(Runtime.ConnectionsService.ConnectionFileName);
+
+                    titleBuilder.Append($" ({file})");
                 }
-            }
-
-            if (!string.IsNullOrEmpty(SelectedConnection?.Name))
-            {
-                titleBuilder.Append(separator);
-                titleBuilder.Append(SelectedConnection.Name);
-
-                if (Properties.Settings.Default.TrackActiveConnectionInConnectionTree)
-                    AppWindows.TreeForm.JumpToNode(SelectedConnection);
             }
 
             Text = titleBuilder.ToString();
