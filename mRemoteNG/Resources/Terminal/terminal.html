@@ -12,10 +12,35 @@
            down the edge of a dark terminal. */
         .xterm-viewport { scrollbar-width: none; }
         .xterm-viewport::-webkit-scrollbar { width: 0; height: 0; }
+
+/* Shown for a moment after a selection is copied. In the middle and large, because in a
+           corner at text size it was there and nobody saw it. It fades out on its own and does not
+           take the mouse, so it covers the terminal for a second and asks nothing of anybody. */
+        #copied {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            font-size: 96px;
+            line-height: 1;
+            color: #35c759;
+            text-shadow: 0 2px 12px rgba(0, 0, 0, 0.55);
+            pointer-events: none;
+            opacity: 0;
+            transition: opacity 1.4s ease-out;
+        }
+
+        /* No transition on the way in: the tick is wanted the moment the button is released, and
+           the fade is what makes it go. */
+        #copied.shown {
+            opacity: 0.85;
+            transition: none;
+        }
     </style>
 </head>
 <body>
     <div id="terminal"></div>
+    <div id="copied">&#10003;</div>
 
     <script src="xterm.js"></script>
     <script src="addon-fit.js"></script>
@@ -79,12 +104,44 @@
         // Not on mouseup: xterm has not settled the selection by then, so what came back was the
         // one before it - copying appeared to work only on the second try. onSelectionChange fires
         // when the selection is final, and the wait swallows the storm of them during a drag.
+        const copiedBadge = document.getElementById('copied');
+        let copiedTimer = null;
+
+        function showCopied() {
+            copiedBadge.classList.add('shown');
+            clearTimeout(copiedTimer);
+
+            // A tick of a frame before the class comes off, so the browser has painted the opaque
+            // state and the removal is a transition rather than a jump.
+            copiedTimer = setTimeout(() => copiedBadge.classList.remove('shown'), 60);
+        }
+
         let selectionTimer = null;
+        let clearingSelection = false;
+
         term.onSelectionChange(() => {
+            // Our own clearSelection below raises this event again with nothing selected. Without
+            // the guard that restarts the timer for no reason on every copy.
+            if (clearingSelection) return;
+
             clearTimeout(selectionTimer);
             selectionTimer = setTimeout(() => {
                 const selection = term.getSelection();
-                if (selection) send({ type: 'copy', data: selection });
+                if (!selection) return;
+
+                send({ type: 'copy', data: selection });
+
+                // The highlight goes as soon as the text is on the clipboard. It has done its job
+                // by then, and leaving it behind gives no sign of whether anything was copied -
+                // which is what the badge says instead.
+                clearingSelection = true;
+                try {
+                    term.clearSelection();
+                } finally {
+                    clearingSelection = false;
+                }
+
+                showCopied();
             }, 60);
         });
 
