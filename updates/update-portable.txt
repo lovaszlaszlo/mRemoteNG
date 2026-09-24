@@ -9,8 +9,8 @@
 # the new AssemblyVersion, dURL to the asset's download URL, and Checksum to its
 # SHA-256 (certutil -hashfile <file> SHA256).
 
-Version: 1.80.0.0
-dURL: https://github.com/lovaszlaszlo/mRemoteNG/releases/download/v1.80/mRemoteNG-1.80-dbsystem-hu-x64-portable.zip
+Version: 1.81.0.0
+dURL: https://github.com/lovaszlaszlo/mRemoteNG/releases/download/v1.81/mRemoteNG-1.81-dbsystem-hu-x64-portable.zip
 clURL: https://raw.githubusercontent.com/lovaszlaszlo/mRemoteNG/dbsystem/main/updates/changelog.txt
-Checksum: CB7DEC98D76F46A7E550245BF6CA844C737DF1B68652510C608F5EC2AB2952EF
+Checksum: 2C289DF454C0BF0E865A2FE6EFE8F52B4616E8FB15900A4BE61173694D4178E5
 CertificateThumbprint: 

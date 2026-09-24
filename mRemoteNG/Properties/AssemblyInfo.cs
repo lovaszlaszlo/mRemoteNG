@@ -61,7 +61,7 @@ using System.Resources;
 //
 // Nothing regenerates this file: the T4 transform is disabled on this branch so the project builds
 // without a full Visual Studio. The numbers stay exactly as written until someone edits them.
-[assembly: AssemblyVersion("1.80.0.0")]
-[assembly: AssemblyFileVersion("1.80.0.3696")]
+[assembly: AssemblyVersion("1.81.0.0")]
+[assembly: AssemblyFileVersion("1.81.0.3728")]
 [assembly: NeutralResourcesLanguageAttribute("en-US")]
-[assembly: AssemblyInformationalVersion("1.80 (Build 3696) x64")]
+[assembly: AssemblyInformationalVersion("1.81 (Build 3728) x64")]

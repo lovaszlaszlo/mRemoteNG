@@ -1,3 +1,58 @@
+1.81 (Build 3728)
+
+  Windows and screens
+    - Full screen now hides the menu, the toolbars and both rows of tabs, so a
+      session fills the screen whatever protocol it uses. Only RDP had a real
+      full screen before, because that one belongs to the RDP control itself.
+    - F11 works from inside a native SSH session, where the page holds the
+      keyboard, and it acts on the window the session is in - a torn-off tab
+      goes full screen itself instead of the window behind it.
+    - The title bar cannot end up off every screen any more. Leaving full
+      screen restored a size belonging to the screen it was maximised on, which
+      with two monitors at different scalings put the title bar out of reach -
+      and the position was saved, so the next start came up the same way.
+    - The splash screen opens on the screen the program is going to open on.
+    - A connection fills the tab it sits in. It kept the size it had before the
+      tab grew, so a full-screen session covered four fifths of the screen.
+
+  Sessions and tabs
+    - A tab can be sent to a window of its own and brought back, from its
+      right-click menu. The docking library wants a window dragged onto a drop
+      target that never appeared here.
+    - A session in a torn-off window counts as open: double-clicking its
+      connection goes to it instead of opening another one each time.
+    - A failed SSH connection says why, in a dialog, and the tab stays open so
+      the password can be corrected and the connection tried again.
+    - "Duplicate Tab" is now "Connect (new session)", which is what it does.
+
+  Native SSH terminal
+    - Selecting with the mouse clears the highlight and shows a tick: the text
+      is on the clipboard, and now something says so.
+    - The terminal follows the size of whatever holds it, so a torn-off or
+      resized window is filled rather than left half empty.
+    - The scrollback bar is hidden; the wheel and Shift+PageUp still scroll.
+
+  Connections and tools
+    - A connection can be made a favourite from the tree, and the menu says
+      which way it goes.
+    - External tools can be duplicated, and everything in that window takes
+      effect at once - the save and discard buttons are gone, as is the
+      question on closing.
+    - SSH file transfer can take its host, user and password from a connection,
+      and every transfer opens in its own tab.
+
+  Corrections
+    - The properties panel no longer gives up building its grid. A static
+      property added in 1.80 made it fail for every connection selected.
+    - The search box above the tree has a border, a real placeholder naming
+      Ctrl+F, and sits where its setting says on startup. Clearing it clears
+      the search.
+    - The mouse cursor comes back if an RDP session left it hidden.
+    - Clicks are hit-tested in the right place on a scaled monitor (from
+      upstream), and the active tab stays put when a tab close is cancelled
+      (from upstream).
+    - Yes/no questions answer to the keyboard, Escape included.
+
 1.80 (Build 3696)
 
   Native SSH terminal
