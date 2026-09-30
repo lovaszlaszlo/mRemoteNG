@@ -299,6 +299,9 @@
   <data name="MenuItem_ReportIssue" xml:space="preserve">
     <value>Hibabejelentés</value>
   </data>
+  <data name="MenuItem_Discussions" xml:space="preserve">
+    <value>Kérdések, ötletek</value>
+  </data>
   <data name="ResetLayout" xml:space="preserve">
     <value>Elrendezés alaphelyzetbe állítása</value>
   </data>

@@ -3594,6 +3594,15 @@ namespace mRemoteNG.Resources.Language {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Questions and Ideas.
+        /// </summary>
+        internal static string MenuItem_Discussions {
+            get {
+                return ResourceManager.GetString("MenuItem_Discussions", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Support Forum.
         /// </summary>
         internal static string MenuItem_SupportForum {

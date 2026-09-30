@@ -26,6 +26,7 @@ namespace mRemoteNG.UI.Menu
         private ToolStripMenuItem _mMenInfoChat = null!;
         private ToolStripMenuItem _mMenInfoCommunity = null!;
         private ToolStripMenuItem _mMenInfoBug = null!;
+        private ToolStripMenuItem _mMenInfoDiscussions = null!;
         private ToolStripMenuItem _mMenToolsUpdate = null!;
 
         public HelpMenu()
@@ -43,6 +44,7 @@ namespace mRemoteNG.UI.Menu
             _mMenInfoChat = new ToolStripMenuItem();
             _mMenInfoCommunity = new ToolStripMenuItem();
             _mMenInfoBug = new ToolStripMenuItem();
+            _mMenInfoDiscussions = new ToolStripMenuItem();
             _mMenToolsUpdate = new ToolStripMenuItem();
             _mMenInfoSep2 = new ToolStripSeparator();
             _mMenInfoSep3 = new ToolStripSeparator();
@@ -55,12 +57,16 @@ namespace mRemoteNG.UI.Menu
             // 
             // Nine entries, seven of which led to another project's website, forum, chat room,
             // issue tracker and donation page. On a personal fork they are not help - they are
-            // somebody else's front door, and every one of them was a wrong turn. Two are left:
-            // where a newer build comes from, and what this one is.
+            // somebody else's front door, and every one of them was a wrong turn. What is left
+            // points here: where a newer build comes from, where to report what is wrong with
+            // it, where to ask for something, and what this one is.
             DropDownItems.AddRange(new ToolStripItem[]
             {
                 _mMenToolsUpdate,
                 _mMenInfoSep2,
+                _mMenInfoBug,
+                _mMenInfoDiscussions,
+                _mMenInfoSep3,
                 _mMenInfoShortcuts,
                 _mMenInfoAbout
             });
@@ -130,10 +136,19 @@ namespace mRemoteNG.UI.Menu
             // 
             // mMenInfoBug
             // 
+            _mMenInfoBug.Image = Properties.Resources.LogError_16x;
             _mMenInfoBug.Name = "mMenInfoBug";
             _mMenInfoBug.Size = new System.Drawing.Size(190, 22);
             _mMenInfoBug.Text = Language.MenuItem_ReportIssue;
             _mMenInfoBug.Click += mMenInfoBug_Click;
+            // 
+            // mMenInfoDiscussions
+            // 
+            _mMenInfoDiscussions.Image = Properties.Resources.Message_16x;
+            _mMenInfoDiscussions.Name = "mMenInfoDiscussions";
+            _mMenInfoDiscussions.Size = new System.Drawing.Size(190, 22);
+            _mMenInfoDiscussions.Text = Language.MenuItem_Discussions;
+            _mMenInfoDiscussions.Click += mMenInfoDiscussions_Click;
             // 
             // mMenInfoSep2
             // 
@@ -174,6 +189,7 @@ namespace mRemoteNG.UI.Menu
             _mMenInfoChat.Text = Language.MenuItem_Chat;
             _mMenInfoCommunity.Text = Language.MenuItem_Community;
             _mMenInfoBug.Text = Language.MenuItem_ReportIssue;
+            _mMenInfoDiscussions.Text = Language.MenuItem_Discussions;
             _mMenInfoAbout.Text = Language.MenuItem_About;
             _mMenInfoShortcuts.Text = Language.TerminalShortcuts;
             _mMenToolsUpdate.Text = Language.MenuItem_CheckForUpdates;
@@ -200,6 +216,8 @@ namespace mRemoteNG.UI.Menu
         private void mMenInfoCommunity_Click(object? sender, EventArgs e) => OpenUrl(GeneralAppInfo.UrlCommunity);
 
         private void mMenInfoBug_Click(object? sender, EventArgs e) => OpenUrl(GeneralAppInfo.UrlBugs);
+
+        private void mMenInfoDiscussions_Click(object? sender, EventArgs e) => OpenUrl(GeneralAppInfo.UrlDiscussions);
 
         private void mMenInfoWebsite_Click(object? sender, EventArgs e) => OpenUrl(GeneralAppInfo.UrlHome);
 

@@ -830,6 +830,9 @@ See the Microsoft Support article at http://support.microsoft.com/kb/811833 for 
   <data name="MenuItem_ReportIssue" xml:space="preserve">
     <value>Report an Issue</value>
   </data>
+  <data name="MenuItem_Discussions" xml:space="preserve">
+    <value>Questions and Ideas</value>
+  </data>
   <data name="ResetLayout" xml:space="preserve">
     <value>Reset layout</value>
   </data>
