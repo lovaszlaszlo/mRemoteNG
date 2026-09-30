@@ -1,164 +1,233 @@
-<p align="Left">
-	Developing mRemoteNG to its fullest potential is my personal priority.<br>
-While the project remains non-commercial, it does come with ongoing costs — including VPS hosting for testing, AI tools, domain fees, and more. <br> If you find value in mRemoteNG and want to support its future, even a small donation from our community can make a huge difference.<br>
-Your support helps me keep the project secure, modern, and accessible for everyone who relies on it — and brings us closer to a brighter, more collaborative future.<br><br>
-Consider donating — every contribution counts!
-	<br><br>
-	<a href="https://www.paypal.com/paypalme/mremoteng">
-    	<img height='36' alt="PayPal" style='border:0px;height:36px;' src="https://img.shields.io/badge/%24-PayPal-blue.svg?label=Donate&logo=PayPal&style=flat-square">
-	</a><br>
-	<a href='https://ko-fi.com/Q5Q41I7JS' target='_blank'><img height='36' style='border:0px;height:36px;' src='https://storage.ko-fi.com/cdn/kofi6.png?v=6' border='0' alt='Buy Me a Coffee at ko-fi.com' /></a>
-  </a>
-</p>
+# mRemoteNG — DBSystem fork
+
+A personal fork of [mRemoteNG](https://github.com/mRemoteNG/mRemoteNG), used every
+working day to drive a few dozen RDP and SSH sessions. It is not a competing
+project and not a rewrite. It is the same program, with the parts its author uses
+every day made to work properly, and the parts nobody here has ever opened either
+repaired or taken out.
+
+It was written for one desk. It is published anyway, under the same GPL v2 as the
+original: take it, run it, fork it again, you owe nobody anything. There is no
+support, no roadmap, and no promise that tomorrow's commit will not break
+something. What there is: it runs here all day, every day, and it is markedly
+steadier than the build it grew out of.
 
 ---
 
-<p align="center">
-  <img width="450" src="https://github.com/mRemoteNG/mRemoteNG/blob/mRemoteNGProjectFiles/Header_dark.png">
-</p>
-  
-<p align="center">
-  An open source, multi-protocol, tabbed remote connections manager allowing you to view all of your connections in a simple yet powerful interface
-</p>
+## What is different
 
-<p align="center">
-  <img alt="GitHub All Releases" src="https://img.shields.io/github/downloads/mremoteng/mremoteng/total?label=Overall%20Downloads&style=for-the-badge">
-</p>
+### A native SSH terminal
 
-<p align="center">
-  <a href="https://www.reddit.com/r/mRemoteNG/">
-    <img alt="Subreddit subscribers" src="https://img.shields.io/reddit/subreddit-subscribers/mremoteng?label=Reddit&logo=Reddit&style=flat-square">
-  </a>
-  <a href="https://twitter.com/mremoteng">
-    <img alt="Twitter Follow" src="https://img.shields.io/twitter/follow/mremoteng?color=%231DA1F2&label=Twitter&logo=Twitter&style=flat-square">
-  </a>
-  <a href="https://app.element.io/#/room/#mremoteng:matrix.org">
-    <img alt="Element" src="https://img.shields.io/matrix/mremoteng:matrix.org?label=Join%20to%20chat%20about%20mRemoteNG&logo=element&style=social&link=https://app.element.io/#/room/#mremoteng:matrix.org">
-  </a>  
-</p>
+SSH no longer runs inside an embedded PuTTY window. A session is an
+[xterm.js](https://xtermjs.org/) terminal hosted in WebView2, speaking to the
+server over SSH.NET. That removes an entire class of problems that came from
+gluing another program's top-level window into a tab — focus, Alt+Tab, resizing,
+keyboard ownership and clipboard all now behave like the rest of the application.
+Selecting text with the mouse copies it, clears the highlight and shows a tick, so
+you know it happened. A failed connection says why and leaves the tab open, so you
+can fix the password and retry where you are.
 
-<p align="center">
-  <a href="https://github.com/mRemoteNG/mRemoteNG/blob/develop/COPYING.TXT">
-    <img alt="License" src="https://img.shields.io/github/license/mremoteng/mremoteng?label=License&style=flat">
-  </a>
-  <a href="https://bestpractices.coreinfrastructure.org/projects/529">
-    <img alt="CII Best Practices" src="https://bestpractices.coreinfrastructure.org/projects/529/badge?style=flat">
-  </a>
-  <a href='https://mremoteng.readthedocs.io/en/latest/?badge=latest'>
-    <img src='https://readthedocs.org/projects/mremoteng/badge/?version=latest' alt='Documentation Status' />
-  </a>
-  <a href="https://gurubase.io/g/mremoteng">
-    <img alt="Gurubase" src="https://img.shields.io/badge/Gurubase-Ask%20mRemoteNG%20Guru-006BFF?style=flat-square">
-  </a>
-</p>
+### Fullscreen for every protocol
+
+Before, only RDP had one, and it belonged to the RDP control rather than to the
+program. Now fullscreen hides the menu, the toolbars and both rows of tabs
+whatever the session is. F11 works from inside a terminal too — where the web page
+owns the keyboard — and acts on the window the session is actually in, so a
+torn-off tab goes fullscreen itself instead of the window behind it.
+
+### Tabs that come off and go back
+
+A session can be sent to a window of its own and docked back from its right-click
+menu. The docking library only ever offered this by dragging a window onto a drop
+target that never appeared here. A session in a torn-off window still counts as
+open, so double-clicking its connection goes to it rather than opening a second
+one.
+
+### Hungarian
+
+The interface is translated to Hungarian at roughly two thirds. The rest falls
+back to English. Both are selectable; nothing changed for the other languages.
+
+### Steadier
+
+The fixes that matter day to day, rather than a changelog:
+
+- The properties panel no longer gives up building its grid.
+- A connection fills the tab it sits in, instead of keeping the size it had
+  before the tab grew.
+- The window cannot end up with its title bar off every screen — which used to
+  happen leaving fullscreen on a multi-monitor setup with mixed scaling, and the
+  position was saved, so the next start came up the same way.
+- The mouse cursor comes back if an RDP session left it hidden.
+- Yes/no questions answer to the keyboard, Escape included.
+- The splash screen opens on the screen the program itself will open on.
+
+For the full list, see the [release notes](../../releases).
 
 ---
 
-| Channel | Build Status | Downloads |
-| ---------------|--------------|-----------|
-| Stable | ![Build status](https://ci.appveyor.com/api/projects/status/rqwxjxldail7btcf?svg=true) | [![Github Releases (by Release)](https://img.shields.io/github/downloads/mRemoteNG/mRemoteNG/v1.76.20/total.svg)](https://github.com/mRemoteNG/mRemoteNG/releases/tag/v1.76.20) |
-| Preview | ![Build status](https://ci.appveyor.com/api/projects/status/rqwxjxldail7btcf/branch/preview?svg=true) | [![Github Releases (by Release)](https://img.shields.io/github/downloads/mRemoteNG/mRemoteNG/v1.77.1/total.svg)](https://github.com/mRemoteNG/mRemoteNG/releases/tag/v1.77.1) |
-| Nightly | ![Build status](https://ci.appveyor.com/api/projects/status/rqwxjxldail7btcf/branch/develop?svg=true) | [![Github Releases](https://img.shields.io/github/downloads/mRemoteNG/mRemoteNG/20250916-v1.78.2-NB-(3177)/total.svg)](https://github.com/mRemoteNG/mRemoteNG/releases/tag/20250916-v1.78.2-NB-(3177)) |
+## Download
 
-## Features
+Releases are portable ZIPs: unpack and run, nothing is installed, the .NET runtime
+is inside the package.
 
-The following protocols are supported:
+**[Latest release](../../releases/latest)** — Windows x64.
 
-* RDP (Remote Desktop Protocol)
-* VNC (Virtual Network Computing)
-* SSH (Secure Shell)
-* Telnet (TELecommunication NETwork)
-* HTTP/HTTPS (Hypertext Transfer Protocol)
-* rlogin (Remote Login)
-* Raw Socket Connections
-* Powershell remoting
-* AnyDesk
+There is no MSI here. If you want an installer, upstream publishes one.
 
-For a detailed feature list and general usage support, refer to the [Documentation](https://mremoteng.readthedocs.io/en/latest/).
+### Requirements
 
-## Installation
+- Windows 10 or 11, x64.
+- **The WebView2 runtime**, for the native SSH terminal. Windows 11 has it
+  already. On a Windows 10 machine without it the SSH tab opens and tells you so —
+  install the *Evergreen Standalone Installer* from Microsoft.
+- Windows 8.1 will not work. WebView2 dropped it, and no amount of fixed-version
+  packaging gets around the SDK's minimum.
+- For RDP, the Microsoft Terminal Services client that ships with Windows.
 
-### Supported Operating Systems
+### Your data
 
-- [Windows 11](https://en.wikipedia.org/wiki/Windows_11)
-- [Windows 10](https://en.wikipedia.org/wiki/Windows_10)
-- [Windows 8.1](https://en.wikipedia.org/wiki/Windows_8.1)
-- [Windows Server 2022](https://en.wikipedia.org/wiki/Windows_Server_2022)
-- [Windows Server 2019](https://en.wikipedia.org/wiki/Windows_Server_2019)
-- [Windows Server 2016](https://en.wikipedia.org/wiki/Windows_Server_2016)
-- [Windows Server 2012 R2](https://en.wikipedia.org/wiki/Windows_Server_2012_R2)
+The released build is a **portable** one: its settings, connection file and log
+sit **next to the executable**, not in `%APPDATA%`. Unpack it somewhere you can
+write to — not `C:\Program Files` — and back the folder up like any other data.
 
-#### Source package
+It will not see the connections of an installed upstream mRemoteNG and will not
+touch them. To bring them across, copy `confCons.xml` from `%APPDATA%\mRemoteNG`
+into the unpacked folder. Make a copy of it first.
 
-This contains the source code from which mRemoteNG is built.
-You will need to compile it yourself using Visual Studio.
+---
 
-### Minimum Requirements
+## Building it yourself
 
-Make sure you have the latest version installed:
+`dotnet build` **cannot** build this project: the csproj carries a COM reference
+and `ResolveComReference` is not supported on .NET Core MSBuild. Use the Framework
+MSBuild, and pass the platform explicitly or the solution picks arm64 and fails.
 
-* [Microsoft .NET Desktop Runtime 10.0](https://dotnet.microsoft.com/download/dotnet/10.0)
-* Microsoft Visual C++ Redistributable 2015–2026 is needed:
- - [x64](https://aka.ms/vs/18/release/vc_redist.x64.exe)
- - [ARM64](https://aka.ms/vs/18/release/vc_redist.arm64.exe)
- - [x86](https://aka.ms/vs/18/release/vc_redist.x86.exe)
-* Microsoft Terminal Service Client 6.0 or later (needed if you use RDP with mstscax.dll and/or msrdp.ocx to be registered)
+```powershell
+& "C:\Program Files (x86)\Microsoft Visual Studio\18\BuildTools\MSBuild\Current\Bin\MSBuild.exe" `
+  mRemoteNG\mRemoteNG.csproj -p:Configuration=Release -p:Platform=x64
+```
 
-### Download
+For the self-contained portable package:
 
-> :star: Starting Windows 11 you can use winget to install mRemoteNG. Just run `winget install -e --id mRemoteNG.mRemoteNG`
+```powershell
+& "C:\Program Files (x86)\Microsoft Visual Studio\18\BuildTools\MSBuild\Current\Bin\MSBuild.exe" `
+  mRemoteNG\mRemoteNG.csproj -p:Configuration="Release Self-Contained" -p:Platform=x64 `
+  -p:PublishReadyToRun=false
+```
 
-mRemoteNG is available as a redistributable MSI package or as a portable ZIP package and can be downloaded from the following locations:
-* [GitHub](https://github.com/mRemoteNG/mRemoteNG/releases)
-* [Project Website](https://mremoteng.org/download)
+`-p:PublishReadyToRun=false` is required; without it the publish step dies on a
+runtime pack that was never restored. Output lands in
+`mRemoteNG\bin\x64\Publish Self-Contained\`.
 
-### Command line install
+The test project does not compile, and did not before this fork either.
 
-The MSI package of mRemoteNG can be installed using the command line:
+---
 
-`msiexec /i [/qn] C:\Path\To\mRemoteNG-Installer.exe [INSTALLDIR=value] [IGNOREPREREQUISITES=value] [/lv* <log path>]`
+## Relationship to upstream
 
-| Argument/Property | Value | Description |
-|-|-|-|
-| /qn | `Silent Installation` | Will run the installer silently in the background. |
-| /lv* | `Silent Installation` | Will write a logfile to the specified location. (For paths that contain spaces, enclose the path in double quotes) |
-| INSTALLDIR | `folder path` | Allows you to set the installation directory from the command line. (For paths that contain spaces, enclose the path in double quotes) |
-| IGNOREPREREQUISITES | `0` or `1` | When set to `1`, the installer will not be halted if any prerequisite check is not met. You must still run the installer as administrator. |
+This fork diverged from `mRemoteNG/mRemoteNG` at commit `9211babf`, and is 109
+commits ahead of it at the time of writing. Upstream work is looked at
+periodically and taken across where it is worth having;
+**[UPSTREAM-REVIEW.md](UPSTREAM-REVIEW.md)** records what was taken, what was
+left, and why — because cherry-picking records the former and nothing of the
+latter.
 
-## Manual Uninstall
+Nothing here has been offered back upstream. Most of it is opinionated in ways a
+general-purpose project should not be.
 
-_If you are using the Portable version, simply deleting the folder that contains mRemoteNG should be sufficient. These uninstall instructions are only necessary for the normal binary .MSI installed version of mRemoteNG_
+## Reporting something
 
-* Delete the folder where mRemoteNG was installed. By default, this is:
-	`%PROGRAMFILES%\mRemoteNG` (for versions before 1.77 on a x64 Windows its `%programfiles(x86)%\mRemoteNG`)
+Bugs, questions, ideas and suggestions are welcome, with no expectation that any
+of them get acted on quickly:
 
-* Delete the mRemoteNG install entry from the following location. You may search for "mRemoteNG" in the DisplayName field:
-  * x86 Windows or mRemoteNG starting with v1.77: `HKLM\SOFTWARE\Microsoft\Windows\CurrentVersion\Uninstall\`
-  * x64 Windows and mRemoteNG before 1.77: `HKLM\SOFTWARE\WOW6432Node\Microsoft\Windows\CurrentVersion\Uninstall\`
-* Remove the following registry key: `HKLM\SOFTWARE\mRemoteNG` (on x64 Windows with mRemoteNG before 1.77 it's `HKLM\SOFTWARE\WOW6432Node\mRemoteNG`)
+- **[Issues](../../issues)** — something is broken.
+- **[Discussions](../../discussions)** — a question, an idea, a suggestion.
 
-* (Optional) If you would also like to delete user data remove `%LOCALAPPDATA%\mRemoteNG`
-* (Optional) If you would also like to remove the connection configuration, delete `%APPDATA%\mRemoteNG`
+Both are reachable from the program's **Help** menu.
 
-* (Optional) If no other software uses it, the "Microsoft Windows Desktop Runtime" may be uninstalled too.
+## Licence and credit
 
-## Featured Projects
+GPL v2, inherited from mRemoteNG — see [COPYING.txt](COPYING.txt).
 
-* [PSmRemoteNG](https://github.com/realslacker/PSmRemoteNG) A module to create mRemoteNG connection files from PowerShell.
-* [mRemoteNGOpenVPN](https://github.com/T3los/mRemoteNGOpenVPN) A script that can be embedded as an external tool to control OpenVPN.
-* [mRemoteNG-Icons](https://github.com/bearlikelion/mRemoteNG-Icons) A collection of fancy icons to customize the connections
+Essentially all of this program was written by the
+**[mRemoteNG team](https://github.com/mRemoteNG/mRemoteNG)** and the mRemote
+authors before them, over many years. This fork is a thin layer of changes on top
+of their work. See [CREDITS.md](CREDITS.md). If you want the maintained,
+supported, installable version — with a community, documentation and people who
+will answer you — go to them, and consider
+[supporting them](https://mremoteng.org/contribute).
 
-## Contribute
+---
+---
 
-If you find mRemoteNG useful and would like to contribute, it would be greatly appreciated. When you contribute, you make it possible for the team to cover the costs of producing mRemoteNG.
+# Magyarul
 
-### Submit Code
-Check out the [Wiki page](https://github.com/mRemoteNG/mRemoteNG/wiki) on how to configure your development environment and submit a pull request.
+Személyes fork az [mRemoteNG](https://github.com/mRemoteNG/mRemoteNG)-ből, napi
+munkára, néhány tucat RDP és SSH kapcsolathoz. Nem konkurens projekt és nem
+újraírás: ugyanaz a program, csak azok a részei, amiket a szerzője nap mint nap
+használ, rendesen működnek — amit meg soha senki nem nyitott meg itt, az vagy
+megjavult, vagy kikerült.
 
-### Translate
-Check out the [Wiki page](https://github.com/mRemoteNG/mRemoteNG/wiki) on how to help make mRemoteNG a polyglot.
+Egy íróasztalra készült. Mégis közzétéve, ugyanazzal a GPL v2 licenccel, mint az
+eredeti: vidd, használd, forkold tovább, senkinek nem tartozol semmivel. Nincs
+támogatás, nincs ütemterv, és nincs ígéret arra, hogy a holnapi commit nem ront el
+valamit. Ami van: itt fut egész nap, minden nap, és érezhetően stabilabb, mint az
+a build, amiből nőtt.
 
-</br>
-<p align="center">
-  <img alt="Developed with ReSharper" src="https://github.com/mRemoteNG/mRemoteNG/blob/mRemoteNGProjectFiles/icon_ReSharper.png">
-</p>
+## Mi más benne
+
+**Natív SSH terminál.** Az SSH már nem beágyazott PuTTY-ablakban fut, hanem
+[xterm.js](https://xtermjs.org/) terminálban, WebView2-ben, SSH.NET kapcsolaton.
+Ezzel elmegy az a problémakör, ami abból jött, hogy egy másik program önálló
+ablakát ragasztottuk egy fülbe: a fókusz, az Alt+Tab, az átméretezés, a
+billentyűzet és a vágólap mostantól úgy viselkedik, mint a program többi része. Az
+egérrel kijelölt szöveg a vágólapra kerül, a kijelölés eltűnik, és egy pipa
+megmondja, hogy megtörtént. A sikertelen kapcsolat megmondja, miért, és a fül
+nyitva marad.
+
+**Teljes képernyő minden protokollhoz.** Eddig csak az RDP-nek volt ilyenje, és az
+is az RDP vezérlőjéé volt. Az F11 a terminálon belülről is működik, és arra az
+ablakra hat, amelyikben a munkamenet valóban van.
+
+**A fülek önálló ablakba küldhetők és visszadokkolhatók** a jobbgombos menüből.
+
+**Magyar felület**, nagyjából kétharmadáig lefordítva; a többi angolul marad.
+
+**Stabilabb**: a Tulajdonságok panel nem adja fel a rács felépítését, a kapcsolat
+kitölti a fülét, a címsor nem kerülhet minden képernyőn kívülre, az egérkurzor
+visszajön egy RDP munkamenet után, az igen/nem kérdések billentyűzetről is
+kezelhetők, és a splash ott jelenik meg, ahol a program is meg fog.
+
+## Letöltés és követelmények
+
+A kiadások hordozható ZIP-ek: kicsomagolod és indítod, telepíteni nem kell, a .NET
+futtatókörnyezet benne van. **[Legutóbbi kiadás](../../releases/latest)** —
+Windows x64.
+
+A natív SSH-hoz kell a **WebView2 futtatókörnyezet**. Windows 11-en alapból ott
+van; Windows 10-en, ha hiányzik, a program a fülön megmondja. Windows 8.1-en nem
+működik.
+
+**Az adataid** a hordozható csomagban az **exe mellé** kerülnek, nem a
+`%APPDATA%`-ba. Oda csomagold ki, ahová írni tudsz, és mentsd a mappát, mint
+bármilyen más adatot. A telepített upstream mRemoteNG kapcsolatait nem látja és
+nem bántja; ha át akarod hozni őket, másold be a `confCons.xml`-t a
+`%APPDATA%\mRemoteNG` mappából — előtte készíts róla másolatot.
+
+## Bejelentés
+
+**[Issues](../../issues)** — ha valami elromlott.
+**[Discussions](../../discussions)** — kérdés, ötlet, javaslat. Mindkettő elérhető
+a program **Súgó** menüjéből is.
+
+## Licenc
+
+GPL v2, az mRemoteNG-től örökölve — lásd [COPYING.txt](COPYING.txt).
+
+Ennek a programnak gyakorlatilag az egészét az
+**[mRemoteNG csapat](https://github.com/mRemoteNG/mRemoteNG)** írta, és előttük az
+mRemote szerzői, hosszú évek alatt. Ez a fork egy vékony réteg a munkájukon. Ha
+karbantartott, támogatott, telepíthető változatot akarsz — közösséggel,
+dokumentációval és emberekkel, akik válaszolnak —, hozzájuk menj, és fontold meg,
+hogy [támogatod őket](https://mremoteng.org/contribute).
