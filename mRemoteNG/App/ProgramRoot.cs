@@ -342,14 +342,19 @@ namespace mRemoteNG.App
         {
             Screen fromSettings = ScreenFromStoredPosition();
 
-            Screen chosen = fromSettings ?? Screen.FromPoint(Cursor.Position) ?? Screen.PrimaryScreen;
+            // The primary screen when there is nothing stored, not the mouse pointer. Both are
+            // reasonable guesses on their own, but the main window does not guess: with no stored
+            // position it comes up at 0,0, which is the primary screen by definition. The pointer
+            // sent the splash to whichever monitor the mouse happened to be on, and on 2026-09-25
+            // that was the other one from the window it belonged to.
+            Screen chosen = fromSettings ?? Screen.PrimaryScreen ?? Screen.FromPoint(Cursor.Position);
 
             // Straight to the logger, not through the message collector. This runs before
             // Application.Run, and the collector's writers are not built until the main form
             // loads - anything handed to it this early is kept and never written anywhere.
             Logger.Instance.Log.Info(
                 $"Splash screen: {chosen.DeviceName} " +
-                $"({(fromSettings != null ? "stored main window position" : "mouse pointer")}); " +
+                $"({(fromSettings != null ? "stored main window position" : "primary, nothing stored")}); " +
                 $"stored state={Properties.App.Default.MainFormState}, " +
                 $"location={Properties.App.Default.MainFormLocation}, " +
                 $"restore={Properties.App.Default.MainFormRestoreLocation}, " +
